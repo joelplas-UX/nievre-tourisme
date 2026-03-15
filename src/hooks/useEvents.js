@@ -13,14 +13,9 @@ export function useEvents(typeFilter = 'all') {
     );
 
     const unsub = onSnapshot(q, (snap) => {
-      const now = new Date();
       let data = snap.docs
         .map(d => ({ id: d.id, ...d.data() }))
-        .filter(e => !e.hidden)
-        .filter(e => {
-          const d = e.date?.toDate?.();
-          return !d || d >= now; // toon alleen toekomstige events
-        });
+        .filter(e => !e.hidden);
 
       if (typeFilter !== 'all') {
         data = data.filter(e => e.type === typeFilter);
