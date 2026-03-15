@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { collection, query, orderBy, onSnapshot } from 'firebase/firestore';
+import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../firebase';
 
 export function useEvents(typeFilter = 'all') {
@@ -7,28 +7,27 @@ export function useEvents(typeFilter = 'all') {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const q = query(
-      collection(db, 'morvan', 'data', 'events'),
-      orderBy('date', 'asc')
-    );
-
-    const unsub = onSnapshot(q, (snap) => {
-      let data = snap.docs
-        .map(d => ({ id: d.id, ...d.data() }))
-        .filter(e => !e.hidden);
-
-      if (typeFilter !== 'all') {
-        data = data.filter(e => e.type === typeFilter);
-      }
-
-      setEvents(data);
-      setLoading(false);
-    }, (err) => {
-      console.error('[useEvents] Firestore fout:', err);
-      setLoading(false);
-    });
-
-    return unsub;
+    getDocs(collection(db, 'morvan', 'data', 'events'))
+      .then(snap => {
+        console.log('[useEvents] docs geladen:', snap.size);
+        let data = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        if (typeFilter !== 'all') {
+          data = data.filter(e => e.type === typeFilter);
+        }
+        // Sorteer client-side op datum
+        data.sort((a, b) => {
+          const da = a.date?.toDate?.() ?? new Date(0);
+          const db2 = b.date?.toDate?.() ?? new Date(0);
+          return da - db2;
+        });
+        console.log('[useEvents] eerste event:', data[0]);
+        setEvents(data);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error('[useEvents] fout:', err.code, err.message);
+        setLoading(false);
+      });
   }, [typeFilter]);
 
   return { events, loading };
