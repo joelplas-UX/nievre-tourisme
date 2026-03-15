@@ -3,7 +3,8 @@
  * Scrapes tourism sites using fetch + Claude API for intelligent extraction
  * Writes results to Firestore /morvan/data/events
  *
- * To add a new source: add an object to SCRAPE_SOURCES below.
+ * Sources are managed via the admin panel (/admin → Scrapebronnen tab)
+ * and stored in Firestore /morvan/data/scrape_sources.
  */
 
 import Anthropic from '@anthropic-ai/sdk';
@@ -23,40 +24,28 @@ const db = getFirestore(app);
 // ─── Claude client ─────────────────────────────────────────────────────────
 const claude = new Anthropic({ apiKey: process.env.CLAUDE_API_KEY });
 
-// ─── Sources ────────────────────────────────────────────────────────────────
-// To add a new source: add one object here. selector = CSS hint for Claude.
-const SCRAPE_SOURCES = [
-  {
-    name: 'Nièvre Tourisme',
-    url: 'https://www.nievre-tourisme.com/agenda/',
-    selector: 'article, .event, .agenda-item, .card',
-  },
-  {
-    name: 'La Nièvre naturellement',
-    url: 'https://www.lanievrenaturellement.com/agenda/',
-    selector: '.event-item, article, .card-event',
-  },
-  {
-    name: 'Agenda Culturel 58',
-    url: 'https://58.agendaculturel.fr',
-    selector: '.event, article, .listing-item',
-  },
-  {
-    name: 'Tourisme Pays du Roi Morvan',
-    url: 'https://www.tourismepaysroimorvan.com/agenda/',
-    selector: 'article, .event',
-  },
-  {
-    name: 'Rives du Morvan',
-    url: 'https://www.rivesdumorvan.fr/agenda/',
-    selector: '.event, article',
-  },
-  {
-    name: 'Coeur de Nièvre',
-    url: 'https://www.tourismecoeurdenievre.com/agenda/',
-    selector: '.event, article, .programme',
-  },
+// ─── Sources — loaded from Firestore (managed via admin panel) ──────────────
+const FALLBACK_SOURCES = [
+  { name: 'Nièvre Tourisme',             url: 'https://www.nievre-tourisme.com/agenda/' },
+  { name: 'La Nièvre naturellement',     url: 'https://www.lanievrenaturellement.com/agenda/' },
+  { name: 'Agenda Culturel 58',          url: 'https://58.agendaculturel.fr' },
+  { name: 'Tourisme Pays du Roi Morvan', url: 'https://www.tourismepaysroimorvan.com/agenda/' },
+  { name: 'Rives du Morvan',             url: 'https://www.rivesdumorvan.fr/agenda/' },
+  { name: 'Coeur de Nièvre',            url: 'https://www.tourismecoeurdenievre.com/agenda/' },
 ];
+
+async function loadSources() {
+  try {
+    const snap = await db.collection('morvan').doc('data').collection('scrape_sources').get();
+    if (snap.empty) return FALLBACK_SOURCES;
+    return snap.docs
+      .map(d => ({ id: d.id, ...d.data() }))
+      .filter(s => s.enabled !== false); // only enabled sources
+  } catch (err) {
+    console.warn('Could not load sources from Firestore, using fallback:', err.message);
+    return FALLBACK_SOURCES;
+  }
+}
 
 // ─── Extraction prompt ──────────────────────────────────────────────────────
 function buildPrompt(html, sourceName, sourceUrl) {
@@ -104,6 +93,10 @@ export const handler = async () => {
   let eventsFound = 0;
   let eventsAdded = 0;
   const errors = [];
+
+  // Load sources from Firestore (editable via admin panel)
+  const SCRAPE_SOURCES = await loadSources();
+  console.log(`Using ${SCRAPE_SOURCES.length} sources from Firestore`);
 
   for (const source of SCRAPE_SOURCES) {
     try {
