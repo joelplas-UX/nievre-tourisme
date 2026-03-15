@@ -19,7 +19,10 @@ export function useActivities(categoryFilter = 'all') {
       }
       setActivities(data);
       setLoading(false);
-    }, () => setLoading(false));
+    }, (err) => {
+      console.error('[useActivities] Firestore fout:', err);
+      setLoading(false);
+    });
 
     return unsub;
   }, [categoryFilter]);
