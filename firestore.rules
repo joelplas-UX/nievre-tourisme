@@ -1,13 +1,26 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Public read access for all morvan data (events, activities)
-    match /morvan/data/{collection}/{document=**} {
+
+    // Events: publiek leesbaar, admin kan zichtbaarheid aan/uit zetten
+    match /morvan/data/events/{doc} {
       allow read: if true;
-      allow write: if false; // only via Firebase Admin SDK (Netlify Functions)
+      allow update: if request.auth != null; // admin: toggle hidden
+      allow create, delete: if false;        // alleen via Netlify Function (Admin SDK)
     }
 
-    // Scrape run logs — read only for authenticated admin
+    // Activiteiten: publiek leesbaar, admin kan aanmaken + bewerken
+    match /morvan/data/activities/{doc} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+
+    // Scrapebronnen: alleen ingelogde admin
+    match /morvan/data/scrape_sources/{doc} {
+      allow read, write: if request.auth != null;
+    }
+
+    // Scrape run logs: admin mag lezen, schrijven alleen via Admin SDK
     match /morvan/data/scrape_runs/{doc} {
       allow read: if request.auth != null;
       allow write: if false;

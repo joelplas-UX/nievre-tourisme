@@ -129,10 +129,14 @@ export default function AdminPage({ lang, tr }) {
     setScraping(true);
     setScrapeMsg('');
     try {
-      const res = await fetch('/.netlify/functions/trigger-scrape', { method: 'POST' });
-      const data = await res.json();
-      setScrapeMsg(data.message || 'Scraping gestart!');
-      setTimeout(() => loadData(), 3000);
+      const res = await fetch('/.netlify/functions/trigger-scrape-background', { method: 'POST' });
+      // Background function geeft altijd 202 terug — scraping loopt door op de achtergrond
+      if (res.status === 202 || res.ok) {
+        setScrapeMsg('✅ Scraping gestart! Resultaten verschijnen over 2–5 minuten. Ververs de pagina om de run-log te zien.');
+      } else {
+        setScrapeMsg(`⚠️ Status ${res.status} — controleer de Netlify function logs.`);
+      }
+      setTimeout(() => loadData(), 60000); // herlaad na 1 min
     } catch (err) {
       setScrapeMsg('Fout: ' + err.message);
     } finally {
