@@ -1,0 +1,20 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# SPA fallback — React Router
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Background Function scheduled weekly (maandag 6:00 UTC)
+[functions]
+  node_bundler = "esbuild"
+
+[[functions]]
+  path = "netlify/functions/scrape-events.js"
+  schedule = "0 6 * * 1"

@@ -1,0 +1,24 @@
+import { Link } from 'react-router-dom';
+
+export default function Footer({ tr }) {
+  return (
+    <footer className="footer">
+      <div className="footer-inner">
+        <div className="footer-brand">
+          <span className="logo-icon">🌿</span>
+          <span className="logo-text">{tr.siteTitle}</span>
+        </div>
+        <div className="footer-links">
+          <Link to="/">{tr.nav.home}</Link>
+          <Link to="/evenements">{tr.nav.events}</Link>
+          <Link to="/activites">{tr.nav.activities}</Link>
+          <Link to="/region">{tr.nav.region}</Link>
+        </div>
+        <div className="footer-meta">
+          <p>✅ {tr.footer.updated}</p>
+          <p className="footer-sources">{tr.footer.sources}</p>
+        </div>
+      </div>
+    </footer>
+  );
+}

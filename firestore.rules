@@ -1,0 +1,16 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Public read access for all morvan data (events, activities)
+    match /morvan/data/{collection}/{document=**} {
+      allow read: if true;
+      allow write: if false; // only via Firebase Admin SDK (Netlify Functions)
+    }
+
+    // Scrape run logs — read only for authenticated admin
+    match /morvan/data/scrape_runs/{doc} {
+      allow read: if request.auth != null;
+      allow write: if false;
+    }
+  }
+}
