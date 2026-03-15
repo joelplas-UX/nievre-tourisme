@@ -11,10 +11,10 @@
   to = "/index.html"
   status = 200
 
-# Background Function scheduled weekly (maandag 6:00 UTC)
+# Functions config
 [functions]
   node_bundler = "esbuild"
 
-[[functions]]
-  path = "netlify/functions/scrape-events.js"
+# Scheduled scraper — elke maandag 06:00 UTC
+[functions."scrape-events"]
   schedule = "0 6 * * 1"
