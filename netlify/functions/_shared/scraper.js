@@ -74,7 +74,7 @@ Rules:
 - Return ONLY valid JSON, no markdown
 
 HTML:
-${html.slice(0, 55000)}`;
+${html.slice(0, 40000)}`;
 }
 
 // ─── ID voor deduplicatie ─────────────────────────────────────────────────────
@@ -112,7 +112,7 @@ export async function runScrape() {
         model: 'claude-haiku-4-5-20251001',
         max_tokens: 4096,
         messages: [{ role: 'user', content: buildPrompt(html, source.name, source.url) }],
-      });
+      }, { timeout: 60000 });
 
       const raw = msg.content[0]?.text?.trim() || '[]';
       let extracted;
@@ -126,39 +126,39 @@ export async function runScrape() {
       eventsFound += extracted.length;
       console.log(`[scraper] ${source.name}: ${extracted.length} evenementen`);
 
-      // Schrijf naar Firestore
-      for (const ev of extracted) {
-        if (!ev.date_iso || !ev.title_fr) continue;
-        const id = makeId(ev);
-        const ref = db.collection('morvan').doc('data').collection('events').doc(id);
+      // Schrijf naar Firestore (parallel)
+      const writeResults = await Promise.allSettled(
+        extracted
+          .filter(ev => ev.date_iso && ev.title_fr)
+          .map(async ev => {
+            const id = makeId(ev);
+            const ref = db.collection('morvan').doc('data').collection('events').doc(id);
+            const existing = await ref.get();
+            if (existing.exists && existing.data().manuallyEdited) return 'skipped';
 
-        const existing = await ref.get();
-        if (existing.exists && existing.data().manuallyEdited) continue;
+            const data = {
+              title: { fr: ev.title_fr || '', en: ev.title_en || ev.title_fr || '', nl: ev.title_nl || ev.title_fr || '' },
+              description: { fr: ev.description_fr || '', en: ev.description_en || '', nl: ev.description_nl || '' },
+              date: Timestamp.fromDate(new Date(ev.date_iso)),
+              endDate: ev.end_date_iso ? Timestamp.fromDate(new Date(ev.end_date_iso)) : null,
+              location: ev.location || '',
+              lat: ev.lat || null,
+              lng: ev.lng || null,
+              type: ev.type || 'overig',
+              sourceUrl: ev.source_url || source.url,
+              sourceName: source.name,
+              imageUrl: ev.image_url || null,
+              featured: false,
+              hidden: false,
+              updatedAt: Timestamp.now(),
+            };
 
-        const data = {
-          title: { fr: ev.title_fr || '', en: ev.title_en || ev.title_fr || '', nl: ev.title_nl || ev.title_fr || '' },
-          description: { fr: ev.description_fr || '', en: ev.description_en || '', nl: ev.description_nl || '' },
-          date: Timestamp.fromDate(new Date(ev.date_iso)),
-          endDate: ev.end_date_iso ? Timestamp.fromDate(new Date(ev.end_date_iso)) : null,
-          location: ev.location || '',
-          lat: ev.lat || null,
-          lng: ev.lng || null,
-          type: ev.type || 'overig',
-          sourceUrl: ev.source_url || source.url,
-          sourceName: source.name,
-          imageUrl: ev.image_url || null,
-          featured: false,
-          hidden: false,
-          updatedAt: Timestamp.now(),
-        };
-
-        if (!existing.exists) {
-          data.createdAt = Timestamp.now();
-          eventsAdded++;
-        }
-
-        await ref.set(data, { merge: true });
-      }
+            if (!existing.exists) data.createdAt = Timestamp.now();
+            await ref.set(data, { merge: true });
+            return existing.exists ? 'updated' : 'added';
+          })
+      );
+      eventsAdded += writeResults.filter(r => r.status === 'fulfilled' && r.value === 'added').length;
 
     } catch (err) {
       console.error(`[scraper] Fout bij ${source.name}:`, err.message);

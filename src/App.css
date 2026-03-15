@@ -273,7 +273,9 @@ a { color: inherit; text-decoration: none; }
   border-radius: 20px;
 }
 
-.card-date { font-size: .82rem; color: var(--gray-600); font-weight: 600; }
+.card-date { font-size: .82rem; color: var(--gray-600); font-weight: 600; display: flex; align-items: center; gap: .4rem; flex-wrap: wrap; }
+.card-multiday-badge { background: var(--primary); color: var(--white); font-size: .72rem; font-weight: 700; padding: .15rem .5rem; border-radius: 20px; white-space: nowrap; }
+.event-card--multiday { border-left: 3px solid var(--primary); }
 .card-title { font-family: var(--font-head); font-size: 1.1rem; color: var(--gray-900); line-height: 1.3; }
 .card-location, .card-duration { font-size: .88rem; color: var(--gray-600); }
 .card-desc { font-size: .9rem; color: var(--gray-600); line-height: 1.5; flex: 1; }
