@@ -71,6 +71,7 @@ export default function AdminPage({ lang, tr }) {
   // Activities
   const [newActivity, setNewActivity] = useState(EMPTY_ACTIVITY);
   const [syncingActivities, setSyncingActivities] = useState(false);
+  const [syncingDT, setSyncingDT] = useState(false);
   const [syncMsg, setSyncMsg] = useState('');
   const [activitySyncs, setActivitySyncs] = useState([]);
 
@@ -258,7 +259,7 @@ export default function AdminPage({ lang, tr }) {
     try {
       const res = await fetch('/.netlify/functions/sync-activities-background', { method: 'POST' });
       if (res.status === 202 || res.ok) {
-        setSyncMsg('✅ Synchronisatie gestart! Activiteiten verschijnen over 2–5 minuten.');
+        setSyncMsg('✅ OpenStreetMap sync gestart! Activiteiten verschijnen over 2–5 minuten.');
       } else {
         setSyncMsg(`⚠️ Status ${res.status}`);
       }
@@ -267,6 +268,24 @@ export default function AdminPage({ lang, tr }) {
       setSyncMsg('Fout: ' + err.message);
     } finally {
       setSyncingActivities(false);
+    }
+  }
+
+  async function handleSyncDT() {
+    setSyncingDT(true);
+    setSyncMsg('');
+    try {
+      const res = await fetch('/.netlify/functions/sync-datatourisme-background', { method: 'POST' });
+      if (res.status === 202 || res.ok) {
+        setSyncMsg('✅ DataTourisme sync gestart! Dit kan 5–10 minuten duren — alle activiteiten in de Nièvre worden geladen.');
+      } else {
+        setSyncMsg(`⚠️ Status ${res.status}`);
+      }
+      setTimeout(() => loadData(), 300000);
+    } catch (err) {
+      setSyncMsg('Fout: ' + err.message);
+    } finally {
+      setSyncingDT(false);
     }
   }
 
@@ -526,8 +545,18 @@ export default function AdminPage({ lang, tr }) {
 
           <div className="sync-box">
             <div>
-              <strong>OpenStreetMap synchronisatie</strong>
-              <p className="admin-hint">Haalt automatisch bezienswaardigheden, zwemplekken, kastelen en meer op voor de Nièvre.</p>
+              <strong>DataTourisme</strong>
+              <p className="admin-hint">Officiële Franse toeristische data voor de Nièvre — inclusief beschrijvingen, foto's, openingstijden, adressen en postcodes.</p>
+            </div>
+            <button className="btn btn-primary" onClick={handleSyncDT} disabled={syncingDT}>
+              {syncingDT ? a.syncing : '🇫🇷 Sync DataTourisme'}
+            </button>
+          </div>
+
+          <div className="sync-box">
+            <div>
+              <strong>OpenStreetMap</strong>
+              <p className="admin-hint">Extra POIs (kastelen, uitzichtpunten, zwemplekken) uit OpenStreetMap.</p>
             </div>
             <button className="btn btn-outline" onClick={handleSyncActivities} disabled={syncingActivities}>
               {syncingActivities ? a.syncing : a.syncActivities}

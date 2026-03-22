@@ -8,14 +8,31 @@ const CATS = ['all', 'wandelen', 'fietsen', 'water', 'kastelen', 'eten', 'overig
 export default function ActivitiesPage({ lang, tr }) {
   const [activeCat, setActiveCat] = useState('all');
   const [search, setSearch] = useState('');
+  const [sortBy, setSortBy] = useState('name');
   const { activities, loading } = useActivities(activeCat);
 
-  const filtered = activities.filter(a => {
-    if (!search) return true;
-    const q = search.toLowerCase();
-    const title = (a.title?.[lang] || a.title?.fr || '').toLowerCase();
-    return title.includes(q);
-  });
+  const SORT_OPTIONS = [
+    { value: 'name',           label: lang === 'fr' ? 'Nom (A–Z)' : lang === 'nl' ? 'Naam (A–Z)' : 'Name (A–Z)' },
+    { value: 'postcode_asc',   label: lang === 'fr' ? 'Code postal ↑' : lang === 'nl' ? 'Postcode ↑' : 'Postcode ↑' },
+    { value: 'postcode_desc',  label: lang === 'fr' ? 'Code postal ↓' : lang === 'nl' ? 'Postcode ↓' : 'Postcode ↓' },
+  ];
+
+  const filtered = activities
+    .filter(a => {
+      if (!search) return true;
+      const q = search.toLowerCase();
+      const title = (a.title?.[lang] || a.title?.fr || '').toLowerCase();
+      const loc = (a.location || '').toLowerCase();
+      const pc = (a.postcode || '').toLowerCase();
+      return title.includes(q) || loc.includes(q) || pc.includes(q);
+    })
+    .sort((a, b) => {
+      if (sortBy === 'postcode_asc')  return (a.postcode || '').localeCompare(b.postcode || '');
+      if (sortBy === 'postcode_desc') return (b.postcode || '').localeCompare(a.postcode || '');
+      const ta = a.title?.[lang] || a.title?.fr || '';
+      const tb = b.title?.[lang] || b.title?.fr || '';
+      return ta.localeCompare(tb, 'fr');
+    });
 
   const renderWithAds = () => {
     const items = [];
@@ -55,13 +72,24 @@ export default function ActivitiesPage({ lang, tr }) {
             </button>
           ))}
         </div>
-        <input
-          className="search-input"
-          type="search"
-          placeholder="🔍 Zoeken / Rechercher / Search"
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-        />
+        <div className="filters-right">
+          <input
+            className="search-input"
+            type="search"
+            placeholder="🔍 Zoeken / Rechercher / Search"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+          />
+          <select
+            className="sort-select"
+            value={sortBy}
+            onChange={e => setSortBy(e.target.value)}
+          >
+            {SORT_OPTIONS.map(o => (
+              <option key={o.value} value={o.value}>{o.label}</option>
+            ))}
+          </select>
+        </div>
       </div>
 
       {loading ? (
