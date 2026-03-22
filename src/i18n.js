@@ -197,11 +197,11 @@ export const t = {
 
   nl: {
     siteTitle: 'Nièvre & Morvan',
-    tagline: 'Uw gids voor de Nièvre en het Morvan',
+    tagline: 'Uw gids voor de Nièvre en de Morvan',
     nav: { home: 'Home', events: 'Evenementen', activities: 'Activiteiten', region: 'De regio', submit: 'Aanmelden', admin: 'Admin' },
     hero: {
-      title: 'Ontdek de Nièvre & het Morvan',
-      subtitle: 'Evenementen, activiteiten en tips in de Nièvre en het Morvan',
+      title: 'Ontdek de Nièvre & de Morvan',
+      subtitle: 'Evenementen, activiteiten en tips in de Nièvre en de Morvan',
       cta: 'Bekijk evenementen',
     },
     events: {
@@ -235,9 +235,9 @@ export const t = {
       noActivities: 'Geen activiteiten gevonden.',
       discover: 'Ontdekken',
     },
-    map: { title: 'Kaart van de regio', subtitle: 'Verken de bezienswaardigheden in de Nièvre en het Morvan' },
+    map: { title: 'Kaart van de regio', subtitle: 'Verken de bezienswaardigheden in de Nièvre en de Morvan' },
     region: {
-      title: 'De Nièvre & het Morvan',
+      title: 'De Nièvre & de Morvan',
       intro: 'Gelegen in het hart van Bourgondië bieden de Nièvre en het Regionaal Natuurpark Morvan ongerepte natuur, heldere meren en een opmerkelijk historisch erfgoed.',
     },
     footer: {
