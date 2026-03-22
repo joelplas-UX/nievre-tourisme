@@ -25,5 +25,18 @@ service cloud.firestore {
       allow read: if request.auth != null;
       allow write: if false;
     }
+
+    // Activity sync logs: admin mag lezen, schrijven alleen via Admin SDK
+    match /morvan/data/activity_syncs/{doc} {
+      allow read: if request.auth != null;
+      allow write: if false;
+    }
+
+    // Inzendingen: publiek aanmaken, admin mag lezen + verwijderen
+    match /morvan/data/submissions/{doc} {
+      allow create: if true;
+      allow read, delete: if request.auth != null;
+      allow update: if false;
+    }
   }
 }

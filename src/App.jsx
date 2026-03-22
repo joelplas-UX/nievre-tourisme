@@ -7,6 +7,7 @@ import EventsPage from './pages/EventsPage';
 import ActivitiesPage from './pages/ActivitiesPage';
 import RegionPage from './pages/RegionPage';
 import AdminPage from './pages/AdminPage';
+import SubmitPage from './pages/SubmitPage';
 import { t } from './i18n';
 import './App.css';
 
@@ -36,6 +37,7 @@ export default function App() {
           <Route path="/evenements" element={<EventsPage lang={lang} tr={tr} />} />
           <Route path="/activites" element={<ActivitiesPage lang={lang} tr={tr} />} />
           <Route path="/region" element={<RegionPage lang={lang} tr={tr} />} />
+          <Route path="/proposer" element={<SubmitPage lang={lang} tr={tr} />} />
           <Route path="/admin" element={<AdminPage lang={lang} tr={tr} />} />
         </Routes>
         <Footer tr={tr} />

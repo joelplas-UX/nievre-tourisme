@@ -13,6 +13,7 @@ export default function Footer({ tr }) {
           <Link to="/evenements">{tr.nav.events}</Link>
           <Link to="/activites">{tr.nav.activities}</Link>
           <Link to="/region">{tr.nav.region}</Link>
+          <Link to="/proposer" className="footer-link-highlight">{tr.nav.submit}</Link>
         </div>
         <div className="footer-meta">
           <p>✅ {tr.footer.updated}</p>
