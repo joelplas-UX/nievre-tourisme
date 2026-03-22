@@ -1,3 +1,5 @@
+import PlaceholderSVG from './PlaceholderSVG';
+
 const TYPE_ICONS = {
   festival: '🎪',
   markt: '🛒',
@@ -36,9 +38,10 @@ export default function EventCard({ event, lang, tr }) {
 
   return (
     <article className={`event-card${isMultiDay ? ' event-card--multiday' : ''}`}>
-      {event.imageUrl && (
-        <div className="card-img" style={{ backgroundImage: `url(${event.imageUrl})` }} />
-      )}
+      {event.imageUrl
+        ? <div className="card-img" style={{ backgroundImage: `url(${event.imageUrl})` }} />
+        : <PlaceholderSVG type={event.type || 'overig'} />
+      }
       <div className="card-body">
         <div className="card-meta">
           <span className="card-type">{TYPE_ICONS[event.type] || '📅'} {tr.events.filter[event.type] || event.type}</span>
