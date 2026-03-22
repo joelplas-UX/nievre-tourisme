@@ -31,7 +31,7 @@ const EMPTY_ACTIVITY = {
   category: 'wandelen', location: '', url: '', duration: '', imageUrl: '',
 };
 
-const EVENT_TYPES = ['festival', 'markt', 'sport', 'natuur', 'cultuur', 'overig'];
+const EVENT_TYPES = ['festival', 'muziek', 'markt', 'sport', 'natuur', 'cultuur', 'overig'];
 const ACTIVITY_CATEGORIES = ['wandelen', 'fietsen', 'water', 'kastelen', 'eten', 'overig'];
 
 function makeEventId(titleFr, dateStr) {

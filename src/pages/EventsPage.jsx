@@ -3,7 +3,7 @@ import EventCard from '../components/EventCard';
 import AdBanner from '../components/AdBanner';
 import { useEvents } from '../hooks/useEvents';
 
-const TYPES = ['all', 'festival', 'markt', 'sport', 'natuur', 'cultuur', 'overig'];
+const TYPES = ['all', 'festival', 'muziek', 'markt', 'sport', 'natuur', 'cultuur', 'overig'];
 
 export default function EventsPage({ lang, tr }) {
   const [activeType, setActiveType] = useState('all');

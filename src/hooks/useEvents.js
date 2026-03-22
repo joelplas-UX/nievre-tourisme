@@ -10,7 +10,14 @@ export function useEvents(typeFilter = 'all') {
     getDocs(collection(db, 'morvan', 'data', 'events'))
       .then(snap => {
         console.log('[useEvents] docs geladen:', snap.size);
-        let data = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        const now = new Date();
+        now.setHours(0, 0, 0, 0);
+        let data = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+          .filter(e => {
+            if (e.hidden) return false;
+            const relevant = e.endDate?.toDate?.() || e.date?.toDate?.();
+            return relevant ? relevant >= now : true;
+          });
         if (typeFilter !== 'all') {
           data = data.filter(e => e.type === typeFilter);
         }

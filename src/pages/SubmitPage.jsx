@@ -3,7 +3,7 @@ import { collection, addDoc, Timestamp } from 'firebase/firestore';
 import { db } from '../firebase';
 
 const ACTIVITY_CATEGORIES = ['wandelen', 'fietsen', 'water', 'kastelen', 'eten', 'overig'];
-const EVENT_TYPES = ['festival', 'markt', 'sport', 'natuur', 'cultuur', 'overig'];
+const EVENT_TYPES = ['festival', 'muziek', 'markt', 'sport', 'natuur', 'cultuur', 'overig'];
 
 const EMPTY_FORM = {
   type: 'event',

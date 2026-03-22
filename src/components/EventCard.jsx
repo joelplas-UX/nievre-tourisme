@@ -4,6 +4,7 @@ const TYPE_ICONS = {
   sport: '🏃',
   natuur: '🌿',
   cultuur: '🎭',
+  muziek: '🎵',
   overig: '📅',
 };
 

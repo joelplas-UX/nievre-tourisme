@@ -63,7 +63,7 @@ Return a JSON array. Each object must have (use null if unknown):
 - location: string (town/venue)
 - lat: number or null
 - lng: number or null
-- type: "festival"|"markt"|"sport"|"natuur"|"cultuur"|"overig"
+- type: "festival"|"muziek"|"markt"|"sport"|"natuur"|"cultuur"|"overig"
 - source_url: string
 - image_url: string or null
 
