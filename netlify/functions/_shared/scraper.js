@@ -93,6 +93,26 @@ export async function runScrape() {
   let eventsAdded = 0;
   const errors = [];
 
+  // ── Ruim verlopen events op ──────────────────────────────────────────────
+  let eventsDeleted = 0;
+  try {
+    const now = Timestamp.now();
+    const eventsCol = db.collection('morvan').doc('data').collection('events');
+    const allSnap = await eventsCol.get();
+    const deleteOps = allSnap.docs
+      .map(d => ({ ref: d.ref, data: d.data() }))
+      .filter(({ data }) => {
+        if (data.manuallyEdited) return false;
+        const relevantDate = data.endDate || data.date;
+        return relevantDate && relevantDate.toMillis() < now.toMillis();
+      });
+    await Promise.all(deleteOps.map(({ ref }) => ref.delete()));
+    eventsDeleted = deleteOps.length;
+    console.log(`[scraper] ${eventsDeleted} verlopen events verwijderd`);
+  } catch (err) {
+    console.warn('[scraper] Cleanup mislukt:', err.message);
+  }
+
   const sources = await loadSources(db);
   console.log(`[scraper] ${sources.length} bronnen geladen`);
 
@@ -172,6 +192,7 @@ export async function runScrape() {
     sourcesScraped: sources.length,
     eventsFound,
     eventsAdded,
+    eventsDeleted,
     errors,
     durationMs: Date.now() - startTime,
   });
