@@ -11,7 +11,7 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
 });
 
-// Saint-Sulpice (58270) coordinates
+// Nièvre / Morvan center
 const CENTER = [47.0217, 3.7153];
 
 const eventIcon = new L.Icon({

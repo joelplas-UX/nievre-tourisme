@@ -7,7 +7,7 @@ export const t = {
     nav: { home: 'Accueil', events: 'Événements', activities: 'Activités', region: 'La région', submit: 'Proposer', admin: 'Admin' },
     hero: {
       title: 'Découvrez la Nièvre & le Morvan',
-      subtitle: 'Événements, activités et bons plans autour de Saint-Sulpice (58270)',
+      subtitle: 'Événements, activités et bons plans en Nièvre et Morvan',
       cta: 'Voir les événements',
     },
     events: {
@@ -41,7 +41,7 @@ export const t = {
       noActivities: 'Aucune activité trouvée.',
       discover: 'Découvrir',
     },
-    map: { title: 'Carte de la région', subtitle: 'Explorez les lieux à visiter autour de Saint-Sulpice' },
+    map: { title: 'Carte de la région', subtitle: 'Explorez les lieux à visiter en Nièvre et Morvan' },
     region: {
       title: 'La Nièvre & le Morvan',
       intro: 'Nichée au cœur de la Bourgogne, la Nièvre et le Parc Naturel Régional du Morvan offrent une nature préservée, des lacs aux eaux claires et un patrimoine historique remarquable.',
@@ -104,7 +104,7 @@ export const t = {
     nav: { home: 'Home', events: 'Events', activities: 'Activities', region: 'The region', submit: 'Suggest', admin: 'Admin' },
     hero: {
       title: 'Discover the Nièvre & Morvan',
-      subtitle: 'Events, activities and tips around Saint-Sulpice (58270)',
+      subtitle: 'Events, activities and tips in the Nièvre and Morvan',
       cta: 'See events',
     },
     events: {
@@ -138,7 +138,7 @@ export const t = {
       noActivities: 'No activities found.',
       discover: 'Discover',
     },
-    map: { title: 'Map of the region', subtitle: 'Explore places to visit around Saint-Sulpice' },
+    map: { title: 'Map of the region', subtitle: 'Explore places to visit in the Nièvre and Morvan' },
     region: {
       title: 'The Nièvre & Morvan',
       intro: 'Nestled in the heart of Burgundy, the Nièvre and the Morvan Regional Natural Park offer unspoilt nature, clear lakes and remarkable historic heritage.',
@@ -201,7 +201,7 @@ export const t = {
     nav: { home: 'Home', events: 'Evenementen', activities: 'Activiteiten', region: 'De regio', submit: 'Aanmelden', admin: 'Admin' },
     hero: {
       title: 'Ontdek de Nièvre & het Morvan',
-      subtitle: 'Evenementen, activiteiten en tips rond Saint-Sulpice (58270)',
+      subtitle: 'Evenementen, activiteiten en tips in de Nièvre en het Morvan',
       cta: 'Bekijk evenementen',
     },
     events: {
@@ -235,7 +235,7 @@ export const t = {
       noActivities: 'Geen activiteiten gevonden.',
       discover: 'Ontdekken',
     },
-    map: { title: 'Kaart van de regio', subtitle: 'Verken de bezienswaardigheden rond Saint-Sulpice' },
+    map: { title: 'Kaart van de regio', subtitle: 'Verken de bezienswaardigheden in de Nièvre en het Morvan' },
     region: {
       title: 'De Nièvre & het Morvan',
       intro: 'Gelegen in het hart van Bourgondië bieden de Nièvre en het Regionaal Natuurpark Morvan ongerepte natuur, heldere meren en een opmerkelijk historisch erfgoed.',
