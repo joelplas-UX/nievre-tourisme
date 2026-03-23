@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import ActivityCard from '../components/ActivityCard';
 import AdBanner from '../components/AdBanner';
 import { useActivities } from '../hooks/useActivities';
+import { haversineKm, geocodePostcode } from '../utils/geo';
 
 const CATS = ['all', 'wandelen', 'fietsen', 'water', 'kastelen', 'eten', 'overig'];
 
@@ -9,13 +10,49 @@ export default function ActivitiesPage({ lang, tr }) {
   const [activeCat, setActiveCat] = useState('all');
   const [search, setSearch] = useState('');
   const [sortBy, setSortBy] = useState('name');
+  const [userPostcode, setUserPostcode] = useState('');
+  const [userCoords, setUserCoords] = useState(null);
+  const [geocoding, setGeocoding] = useState(false);
   const { activities, loading } = useActivities(activeCat);
 
+  useEffect(() => {
+    const clean = userPostcode.replace(/\s/g, '');
+    if (clean.length === 5) {
+      setGeocoding(true);
+      geocodePostcode(clean)
+        .then(coords => {
+          setUserCoords(coords);
+          if (coords) setSortBy('nearby');
+        })
+        .catch(() => setUserCoords(null))
+        .finally(() => setGeocoding(false));
+    } else {
+      setUserCoords(null);
+      if (sortBy === 'nearby') setSortBy('name');
+    }
+  }, [userPostcode]);
+
+  const postcodeLabel =
+    lang === 'fr' ? '📍 Votre code postal' :
+    lang === 'nl' ? '📍 Uw postcode' :
+    '📍 Your postcode';
+
   const SORT_OPTIONS = [
-    { value: 'name',           label: lang === 'fr' ? 'Nom (A–Z)' : lang === 'nl' ? 'Naam (A–Z)' : 'Name (A–Z)' },
-    { value: 'postcode_asc',   label: lang === 'fr' ? 'Code postal ↑' : lang === 'nl' ? 'Postcode ↑' : 'Postcode ↑' },
-    { value: 'postcode_desc',  label: lang === 'fr' ? 'Code postal ↓' : lang === 'nl' ? 'Postcode ↓' : 'Postcode ↓' },
+    { value: 'name',          label: lang === 'fr' ? 'Nom (A–Z)' : lang === 'nl' ? 'Naam (A–Z)' : 'Name (A–Z)' },
+    { value: 'postcode_asc',  label: lang === 'fr' ? 'Code postal ↑' : lang === 'nl' ? 'Postcode ↑' : 'Postcode ↑' },
+    { value: 'postcode_desc', label: lang === 'fr' ? 'Code postal ↓' : lang === 'nl' ? 'Postcode ↓' : 'Postcode ↓' },
+    ...(userCoords ? [{
+      value: 'nearby',
+      label: lang === 'fr' ? 'Les plus proches' : lang === 'nl' ? 'Dichtstbij' : 'Nearest first',
+    }] : []),
   ];
+
+  const getDistance = (a) => {
+    if (sortBy === 'nearby' && userCoords && a.lat && a.lng) {
+      return haversineKm(userCoords.lat, userCoords.lng, a.lat, a.lng);
+    }
+    return null;
+  };
 
   const filtered = activities
     .filter(a => {
@@ -27,6 +64,11 @@ export default function ActivitiesPage({ lang, tr }) {
       return title.includes(q) || loc.includes(q) || pc.includes(q);
     })
     .sort((a, b) => {
+      if (sortBy === 'nearby' && userCoords) {
+        const da = (a.lat && a.lng) ? haversineKm(userCoords.lat, userCoords.lng, a.lat, a.lng) : Infinity;
+        const db = (b.lat && b.lng) ? haversineKm(userCoords.lat, userCoords.lng, b.lat, b.lng) : Infinity;
+        return da - db;
+      }
       if (sortBy === 'postcode_asc')  return (a.postcode || '').localeCompare(b.postcode || '');
       if (sortBy === 'postcode_desc') return (b.postcode || '').localeCompare(a.postcode || '');
       const ta = a.title?.[lang] || a.title?.fr || '';
@@ -37,7 +79,8 @@ export default function ActivitiesPage({ lang, tr }) {
   const renderWithAds = () => {
     const items = [];
     filtered.forEach((a, i) => {
-      items.push(<ActivityCard key={a.id} activity={a} lang={lang} tr={tr} />);
+      const distanceKm = getDistance(a);
+      items.push(<ActivityCard key={a.id} activity={a} lang={lang} tr={tr} distanceKm={distanceKm} />);
       if ((i + 1) % 8 === 0) {
         items.push(
           <div key={`ad-${i}`} className="grid-ad">
@@ -73,6 +116,20 @@ export default function ActivitiesPage({ lang, tr }) {
           ))}
         </div>
         <div className="filters-right">
+          <div className="postcode-wrap">
+            <input
+              className="search-input postcode-input"
+              type="text"
+              inputMode="numeric"
+              maxLength={5}
+              placeholder={postcodeLabel}
+              value={userPostcode}
+              onChange={e => setUserPostcode(e.target.value.replace(/\D/g, '').slice(0, 5))}
+            />
+            {geocoding && <span className="postcode-status">⏳</span>}
+            {!geocoding && userCoords && <span className="postcode-status postcode-ok">✓</span>}
+            {!geocoding && userPostcode.length === 5 && !userCoords && <span className="postcode-status postcode-err">✗</span>}
+          </div>
           <input
             className="search-input"
             type="search"

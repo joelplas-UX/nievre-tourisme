@@ -22,7 +22,7 @@ function isSameDay(a, b) {
     a.getDate() === b.getDate();
 }
 
-export default function EventCard({ event, lang, tr }) {
+export default function EventCard({ event, lang, tr, distanceKm }) {
   const title = event.title?.[lang] || event.title?.fr || '';
   const desc = event.description?.[lang] || event.description?.fr || '';
   const date = event.date?.toDate?.() || (event.date ? new Date(event.date) : null);
@@ -45,9 +45,16 @@ export default function EventCard({ event, lang, tr }) {
       <div className="card-body">
         <div className="card-meta">
           <span className="card-type">{TYPE_ICONS[event.type] || '📅'} {tr.events.filter[event.type] || event.type}</span>
-          <span className="card-date">
-            {isMultiDay && <span className="card-multiday-badge">meerdere dagen</span>}
-            {dateStr}
+          <span className="card-meta-right">
+            {distanceKm != null && (
+              <span className="card-distance">
+                {distanceKm < 1 ? '<1 km' : `${Math.round(distanceKm)} km`}
+              </span>
+            )}
+            <span className="card-date">
+              {isMultiDay && <span className="card-multiday-badge">meerdere dagen</span>}
+              {dateStr}
+            </span>
           </span>
         </div>
         <h3 className="card-title">{title}</h3>

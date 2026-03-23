@@ -9,7 +9,7 @@ const CAT_ICONS = {
   overig: '✨',
 };
 
-export default function ActivityCard({ activity, lang, tr }) {
+export default function ActivityCard({ activity, lang, tr, distanceKm }) {
   const title = activity.title?.[lang] || activity.title?.fr || '';
   const desc = activity.description?.[lang] || activity.description?.fr || '';
 
@@ -24,9 +24,16 @@ export default function ActivityCard({ activity, lang, tr }) {
           <span className="card-type">
             {CAT_ICONS[activity.category] || '✨'} {tr.activities.filter[activity.category] || activity.category}
           </span>
-          {activity.postcode && (
-            <span className="card-postcode">{activity.postcode}</span>
-          )}
+          <span className="card-meta-right">
+            {distanceKm != null && (
+              <span className="card-distance">
+                {distanceKm < 1 ? '<1 km' : `${Math.round(distanceKm)} km`}
+              </span>
+            )}
+            {activity.postcode && (
+              <span className="card-postcode">{activity.postcode}</span>
+            )}
+          </span>
         </div>
 
         <h3 className="card-title">{title}</h3>
