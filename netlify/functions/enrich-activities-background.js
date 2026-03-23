@@ -3,7 +3,7 @@
  * 1. Claude Haiku — genereert FR/EN/NL titel + beschrijving op basis van POI-type en locatie
  * 2. Wikimedia Commons — zoekt een vrije afbeelding op basis van naam + locatie
  *
- * Vereiste env vars: FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, FIREBASE_PRIVATE_KEY, ANTHROPIC_API_KEY
+ * Vereiste env vars: FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, FIREBASE_PRIVATE_KEY, CLAUDE_API_KEY
  * Max activiteiten per run: 200 (background function limiet ~15 min)
  */
 
@@ -36,7 +36,7 @@ async function callClaude(prompt) {
   const res = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {
-      'x-api-key': process.env.ANTHROPIC_API_KEY,
+      'x-api-key': process.env.CLAUDE_API_KEY || process.env.ANTHROPIC_API_KEY,
       'anthropic-version': '2023-06-01',
       'content-type': 'application/json',
     },
@@ -126,8 +126,8 @@ async function searchWikimediaImage(query) {
 }
 
 export const handler = async () => {
-  if (!process.env.ANTHROPIC_API_KEY) {
-    console.error('[enrich] ANTHROPIC_API_KEY niet ingesteld');
+  if (!process.env.CLAUDE_API_KEY) {
+    console.error('[enrich] CLAUDE_API_KEY niet ingesteld');
     return;
   }
 
