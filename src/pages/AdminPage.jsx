@@ -203,6 +203,11 @@ export default function AdminPage({ lang, tr }) {
     setEvents(ev => ev.map(e => e.id === id ? { ...e, hidden: !hidden } : e));
   }
 
+  async function togglePromoted(id, promoted) {
+    await updateDoc(doc(db, 'morvan', 'data', 'events', id), { promoted: !promoted });
+    setEvents(ev => ev.map(e => e.id === id ? { ...e, promoted: !promoted } : e));
+  }
+
   async function saveEvent(e) {
     e.preventDefault();
     setSavingEvent(true);
@@ -304,6 +309,7 @@ export default function AdminPage({ lang, tr }) {
       sourceName: 'Inzending',
       imageUrl: sub.imageUrl || null,
       featured: false, hidden: false,
+      promoted: sub.promoted === true,
       manuallyEdited: true,
       submittedBy: sub.email || '',
       createdAt: Timestamp.now(),
@@ -324,6 +330,7 @@ export default function AdminPage({ lang, tr }) {
       url: sub.website || '',
       imageUrl: sub.imageUrl || null,
       permanent: true,
+      promoted: sub.promoted === true,
       manuallyEdited: true,
       submittedBy: sub.email || '',
       createdAt: Timestamp.now(),
@@ -516,7 +523,7 @@ export default function AdminPage({ lang, tr }) {
           <p className="admin-hint">Klik op het oog-icoon om een evenement te verbergen of weer zichtbaar te maken.</p>
           <table className="admin-table">
             <thead>
-              <tr><th>Datum</th><th>Titel</th><th>Locatie</th><th>Bron</th><th>Zichtbaar</th></tr>
+              <tr><th>Datum</th><th>Titel</th><th>Locatie</th><th>Bron</th><th>Gepromoot</th><th>Zichtbaar</th></tr>
             </thead>
             <tbody>
               {events.map(e => (
@@ -525,6 +532,11 @@ export default function AdminPage({ lang, tr }) {
                   <td>{e.title?.fr || '–'}{e.manuallyEdited ? ' ✏️' : ''}</td>
                   <td>{e.location || '–'}</td>
                   <td>{e.sourceName || '–'}</td>
+                  <td>
+                    <button className={`promoted-toggle${e.promoted ? ' active' : ''}`} onClick={() => togglePromoted(e.id, e.promoted)}>
+                      {e.promoted ? '⭐ Ja' : '☆ Nee'}
+                    </button>
+                  </td>
                   <td>
                     <button className={`toggle-btn ${e.hidden ? 'off' : 'on'}`} onClick={() => toggleEvent(e.id, e.hidden)}>
                       {e.hidden ? '🙈' : '👁️'}
@@ -619,11 +631,14 @@ export default function AdminPage({ lang, tr }) {
             <p className="admin-hint">{a.noSubmissions}</p>
           )}
           {submissions.map(sub => (
-            <div key={sub.id} className="submission-card">
+            <div key={sub.id} className={`submission-card${sub.promoted ? ' promoted' : ''}`}>
               <div className="submission-meta">
                 <span className={`submission-type ${sub.type}`}>
                   {sub.type === 'event' ? '📅 Evenement' : '🥾 Activiteit'}
                 </span>
+                {sub.promoted && (
+                  <span className="submission-promoted">⭐ Gepromoot — betaling {sub.paymentStatus === 'paid' ? '✅' : '⏳ in afwachting'}</span>
+                )}
                 <span className="submission-date">
                   {sub.submittedAt?.toDate?.().toLocaleDateString('nl-NL') || '–'}
                 </span>

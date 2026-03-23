@@ -29,6 +29,7 @@ export default function EventCard({ event, lang, tr, distanceKm }) {
   const endDate = event.endDate?.toDate?.() || (event.endDate ? new Date(event.endDate) : null);
 
   const isMultiDay = date && endDate && !isSameDay(date, endDate);
+  const isPromoted = event.promoted === true;
 
   const dateStr = date
     ? isMultiDay
@@ -37,7 +38,7 @@ export default function EventCard({ event, lang, tr, distanceKm }) {
     : '';
 
   return (
-    <article className={`event-card${isMultiDay ? ' event-card--multiday' : ''}`}>
+    <article className={`event-card${isMultiDay ? ' event-card--multiday' : ''}${isPromoted ? ' promoted' : ''}`}>
       {event.imageUrl
         ? <div className="card-img" style={{ backgroundImage: `url(${event.imageUrl})` }} />
         : <PlaceholderSVG type={event.type || 'overig'} />
@@ -46,6 +47,7 @@ export default function EventCard({ event, lang, tr, distanceKm }) {
         <div className="card-meta">
           <span className="card-type">{TYPE_ICONS[event.type] || '📅'} {tr.events.filter[event.type] || event.type}</span>
           <span className="card-meta-right">
+            {isPromoted && <span className="card-promoted-badge">⭐ Gepromoot</span>}
             {distanceKm != null && (
               <span className="card-distance">
                 {distanceKm < 1 ? '<1 km' : `${Math.round(distanceKm)} km`}

@@ -13,8 +13,10 @@ export default function ActivityCard({ activity, lang, tr, distanceKm }) {
   const title = activity.title?.[lang] || activity.title?.fr || '';
   const desc = activity.description?.[lang] || activity.description?.fr || '';
 
+  const isPromoted = activity.promoted === true;
+
   return (
-    <article className="activity-card">
+    <article className={`activity-card${isPromoted ? ' promoted' : ''}`}>
       {activity.imageUrl
         ? <div className="card-img" style={{ backgroundImage: `url(${activity.imageUrl})` }} />
         : <PlaceholderSVG type={activity.category || 'overig'} />
@@ -25,6 +27,7 @@ export default function ActivityCard({ activity, lang, tr, distanceKm }) {
             {CAT_ICONS[activity.category] || '✨'} {tr.activities.filter[activity.category] || activity.category}
           </span>
           <span className="card-meta-right">
+            {isPromoted && <span className="card-promoted-badge">⭐ Gepromoot</span>}
             {distanceKm != null && (
               <span className="card-distance">
                 {distanceKm < 1 ? '<1 km' : `${Math.round(distanceKm)} km`}

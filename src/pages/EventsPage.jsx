@@ -65,6 +65,10 @@ export default function EventsPage({ lang, tr }) {
       if (!da) return 1;
       if (!db) return -1;
       return da - db;
+    })
+    .sort((a, b) => {
+      if (sortBy === 'nearby') return 0;
+      return (b.promoted ? 1 : 0) - (a.promoted ? 1 : 0);
     });
 
   const renderWithAds = () => {

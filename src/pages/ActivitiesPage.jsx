@@ -55,6 +55,7 @@ export default function ActivitiesPage({ lang, tr }) {
   };
 
   const filtered = activities
+    .filter(a => a.hidden !== true)
     .filter(a => {
       if (!search) return true;
       const q = search.toLowerCase();
@@ -74,6 +75,10 @@ export default function ActivitiesPage({ lang, tr }) {
       const ta = a.title?.[lang] || a.title?.fr || '';
       const tb = b.title?.[lang] || b.title?.fr || '';
       return ta.localeCompare(tb, 'fr');
+    })
+    .sort((a, b) => {
+      if (sortBy === 'nearby') return 0; // distance sort already handles promoted naturally
+      return (b.promoted ? 1 : 0) - (a.promoted ? 1 : 0);
     });
 
   const renderWithAds = () => {

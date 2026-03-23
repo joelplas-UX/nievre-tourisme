@@ -4,9 +4,12 @@ import { db } from '../firebase';
 
 const ACTIVITY_CATEGORIES = ['wandelen', 'fietsen', 'water', 'kastelen', 'eten', 'overig'];
 const EVENT_TYPES = ['festival', 'muziek', 'markt', 'sport', 'natuur', 'cultuur', 'overig'];
+const PROMOTED_PRICE = '29,95';
+const STRIPE_LINK = import.meta.env.VITE_STRIPE_PROMOTED_LINK;
 
 const EMPTY_FORM = {
   type: 'event',
+  promoted: false,
   firstName: '', lastName: '', email: '',
   titleFr: '', descriptionFr: '',
   dateStart: '', dateEnd: '',
@@ -20,26 +23,64 @@ export default function SubmitPage({ lang, tr }) {
   const [form, setForm] = useState(EMPTY_FORM);
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [promoted, setPromoted] = useState(false);
   const [error, setError] = useState('');
 
   function set(field, value) {
     setForm(f => ({ ...f, [field]: value }));
   }
 
+  const promotedLabel =
+    lang === 'fr' ? 'Mise en avant' :
+    lang === 'nl' ? 'Gepromoot plaatsen' :
+    'Featured placement';
+
+  const promotedDesc =
+    lang === 'fr'
+      ? 'Votre événement ou activité apparaît en premier avec un encadré doré et un badge « Mis en avant ».'
+      : lang === 'nl'
+      ? 'Uw evenement of activiteit verschijnt bovenaan met een gouden rand en "Gepromoot"-badge.'
+      : 'Your event or activity appears at the top with a gold border and "Featured" badge.';
+
+  const promotedPerks =
+    lang === 'fr'
+      ? ['⭐ Affiché en première position', '🏅 Badge « Mis en avant »', '📅 Visible pendant toute la durée']
+      : lang === 'nl'
+      ? ['⭐ Bovenaan de lijst', '🏅 "Gepromoot"-badge op de kaart', '📅 Zichtbaar gedurende de looptijd']
+      : ['⭐ Shown at the top of the list', '🏅 "Featured" badge on the card', '📅 Visible for the full duration'];
+
+  const freeLabel =
+    lang === 'fr' ? 'Inscription gratuite' :
+    lang === 'nl' ? 'Gratis plaatsing' :
+    'Free listing';
+
+  const freeDesc =
+    lang === 'fr' ? 'Nous examinerons votre proposition et la publierons si elle correspond à notre sélection.' :
+    lang === 'nl' ? 'We beoordelen uw aanmelding en plaatsen deze als het past bij ons aanbod.' :
+    'We will review your submission and publish it if it fits our selection.';
+
   async function handleSubmit(e) {
     e.preventDefault();
     setSubmitting(true);
     setError('');
     try {
-      await addDoc(collection(db, 'morvan', 'data', 'submissions'), {
+      const docRef = await addDoc(collection(db, 'morvan', 'data', 'submissions'), {
         ...form,
+        promoted,
+        paymentStatus: promoted ? 'pending' : null,
         status: 'pending',
         submittedAt: Timestamp.now(),
       });
-      setSuccess(true);
+
+      if (promoted && STRIPE_LINK) {
+        // Redirect to Stripe with submission ID as client_reference_id
+        const stripeUrl = `${STRIPE_LINK}?client_reference_id=${docRef.id}&prefilled_email=${encodeURIComponent(form.email)}`;
+        window.location.href = stripeUrl;
+      } else {
+        setSuccess(true);
+      }
     } catch (err) {
       setError(err.message);
-    } finally {
       setSubmitting(false);
     }
   }
@@ -51,7 +92,7 @@ export default function SubmitPage({ lang, tr }) {
           <div className="success-icon">✅</div>
           <h1>{s.successTitle}</h1>
           <p>{s.successMsg}</p>
-          <button className="btn btn-primary" onClick={() => { setSuccess(false); setForm(EMPTY_FORM); }}>
+          <button className="btn btn-primary" onClick={() => { setSuccess(false); setForm(EMPTY_FORM); setPromoted(false); }}>
             {s.newSubmit}
           </button>
         </div>
@@ -79,6 +120,35 @@ export default function SubmitPage({ lang, tr }) {
             <label className={`radio-option${form.type === 'activity' ? ' selected' : ''}`}>
               <input type="radio" name="type" value="activity" checked={form.type === 'activity'} onChange={() => set('type', 'activity')} />
               🥾 {s.typeActivity}
+            </label>
+          </div>
+        </fieldset>
+
+        {/* Promoted option */}
+        <fieldset className="form-fieldset">
+          <legend>
+            {lang === 'fr' ? 'Type de publication' : lang === 'nl' ? 'Type plaatsing' : 'Listing type'}
+          </legend>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            <label className={`promote-option${!promoted ? ' selected' : ''}`} onClick={() => setPromoted(false)}>
+              <input type="radio" name="promoted" checked={!promoted} onChange={() => setPromoted(false)} />
+              <div className="promote-option-body">
+                <div className="promote-option-title">🆓 {freeLabel}</div>
+                <div className="promote-option-desc">{freeDesc}</div>
+              </div>
+            </label>
+            <label className={`promote-option${promoted ? ' selected' : ''}`} onClick={() => setPromoted(true)}>
+              <input type="radio" name="promoted" checked={promoted} onChange={() => setPromoted(true)} />
+              <div className="promote-option-body">
+                <div className="promote-option-title">
+                  ⭐ {promotedLabel}
+                  <span className="promote-price-badge">€ {PROMOTED_PRICE}</span>
+                </div>
+                <div className="promote-option-desc">{promotedDesc}</div>
+                <ul className="promote-option-perks">
+                  {promotedPerks.map((p, i) => <li key={i}>{p}</li>)}
+                </ul>
+              </div>
             </label>
           </div>
         </fieldset>
@@ -154,8 +224,15 @@ export default function SubmitPage({ lang, tr }) {
         {error && <p className="form-error">{error}</p>}
 
         <button type="submit" className="btn btn-primary btn-lg" disabled={submitting}>
-          {submitting ? s.submitting : s.submit}
+          {submitting ? s.submitting : promoted ? `⭐ ${s.submit} — € ${PROMOTED_PRICE}` : s.submit}
         </button>
+        {promoted && (
+          <p style={{ fontSize: '.82rem', color: 'var(--gray-600)', textAlign: 'center', marginTop: 8 }}>
+            {lang === 'fr' ? 'Vous serez redirigé vers la page de paiement sécurisé Stripe.' :
+             lang === 'nl' ? 'U wordt doorgestuurd naar de beveiligde betaalpagina van Stripe.' :
+             'You will be redirected to the secure Stripe payment page.'}
+          </p>
+        )}
       </form>
     </main>
   );
