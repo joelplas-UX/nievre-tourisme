@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, query, where, limit } from 'firebase/firestore';
 import { db } from '../firebase';
 
 export function useActivities(categoryFilter = 'all') {
@@ -7,12 +7,13 @@ export function useActivities(categoryFilter = 'all') {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getDocs(collection(db, 'morvan', 'data', 'activities'))
+    const col = collection(db, 'morvan', 'data', 'activities');
+    const q = categoryFilter === 'all'
+      ? query(col, limit(2000))
+      : query(col, where('category', '==', categoryFilter), limit(500));
+    getDocs(q)
       .then(snap => {
-        let data = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-        if (categoryFilter !== 'all') {
-          data = data.filter(a => a.category === categoryFilter);
-        }
+        const data = snap.docs.map(d => ({ id: d.id, ...d.data() }));
         data.sort((a, b) => {
           const ta = a.title?.fr || a.title?.nl || '';
           const tb = b.title?.fr || b.title?.nl || '';

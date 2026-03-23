@@ -121,11 +121,17 @@ function mapCategory(types) {
 export const handler = async () => {
   const db = getDb();
   const startTime = Date.now();
-  let added = 0;
-  let updated = 0;
+  let written = 0;
+  let skipped = 0;
   const errors = [];
 
   try {
+    // Haal alle handmatig bewerkte IDs op in één query (geen read per POI nodig)
+    const col = db.collection('morvan').doc('data').collection('activities');
+    const manualSnap = await col.where('manuallyEdited', '==', true).get();
+    const manualIds = new Set(manualSnap.docs.map(d => d.id));
+    console.log(`[sync-dt] ${manualIds.size} handmatig bewerkte activiteiten worden overgeslagen`);
+
     let page = 1;
     let hasMore = true;
 
@@ -153,20 +159,20 @@ export const handler = async () => {
 
       if (objects.length === 0 || !json.meta?.next) hasMore = false;
 
-      await Promise.allSettled(objects.map(async poi => {
-        try {
-          const id = `dt_${poi.uuid}`;
-          const ref = db.collection('morvan').doc('data').collection('activities').doc(id);
-          const existing = await ref.get();
-          if (existing.exists && existing.data().manuallyEdited) return;
+      // Schrijf in batches van 500 (Firestore limiet)
+      const batch = db.batch();
+      let batchCount = 0;
 
+      for (const poi of objects) {
+        const id = `dt_${poi.uuid}`;
+        if (manualIds.has(id)) { skipped++; continue; }
+
+        try {
           const types = poi['@type'] || [];
           const location = extractLocation(poi);
           const contact = extractContact(poi);
-          const imageUrl = extractPhoto(poi);
-          const openingHours = extractOpeningHours(poi);
 
-          const data = {
+          batch.set(col.doc(id), {
             title:        extractText(poi['rdfs:label']),
             description:  extractText(poi['dc:description']),
             category:     mapCategory(types),
@@ -178,28 +184,28 @@ export const handler = async () => {
             phone:        contact.phone,
             email:        contact.email,
             url:          contact.website,
-            imageUrl,
-            openingHours,
+            imageUrl:     extractPhoto(poi),
+            openingHours: extractOpeningHours(poi),
             source:       'datatourisme',
             dtId:         poi.uuid,
             dtTypes:      types.slice(0, 5),
             permanent:    true,
             updatedAt:    Timestamp.now(),
-          };
+          }, { merge: true });
 
-          if (!existing.exists) {
-            data.createdAt = Timestamp.now();
-            added++;
-          } else {
-            updated++;
+          batchCount++;
+          written++;
+
+          if (batchCount === 499) {
+            await batch.commit();
+            batchCount = 0;
           }
-
-          await ref.set(data, { merge: true });
         } catch (err) {
           errors.push(`${poi.uuid}: ${err.message}`);
         }
-      }));
+      }
 
+      if (batchCount > 0) await batch.commit();
       page++;
     }
   } catch (err) {
@@ -210,11 +216,12 @@ export const handler = async () => {
   await getDb().collection('morvan').doc('data').collection('activity_syncs').add({
     timestamp:  Timestamp.now(),
     source:     'datatourisme',
-    added,
-    updated,
+    added:      written,
+    updated:    0,
+    skipped,
     errors:     errors.slice(0, 20),
     durationMs: Date.now() - startTime,
   });
 
-  console.log(`[sync-dt] Klaar: ${added} nieuw, ${updated} bijgewerkt, ${errors.length} fouten`);
+  console.log(`[sync-dt] Klaar: ${written} geschreven, ${skipped} overgeslagen, ${errors.length} fouten`);
 };
