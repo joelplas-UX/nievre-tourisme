@@ -322,6 +322,11 @@ a { color: inherit; text-decoration: none; }
 .submission-promoted { display: inline-flex; align-items: center; gap: 4px; background: #fff8e1; border: 1px solid var(--gold); color: #7a5c00; font-size: .78rem; font-weight: 700; padding: .15rem .5rem; border-radius: 20px; }
 .promoted-toggle { background: none; border: 2px solid var(--gold); color: var(--gold); border-radius: 20px; font-size: .78rem; font-weight: 700; padding: .15rem .6rem; cursor: pointer; }
 .promoted-toggle.active { background: var(--gold); color: var(--white); }
+.card-expand-btn { background: none; border: none; color: var(--green); font-size: .82rem; font-weight: 700; cursor: pointer; padding: 0 0 0 4px; text-decoration: underline; }
+.lazy-sentinel { display: flex; justify-content: center; padding: 32px; }
+.lazy-loading-indicator { font-size: 1.5rem; animation: spin 1s linear infinite; display: inline-block; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.lazy-end { text-align: center; color: var(--gray-600); font-size: .85rem; padding: 24px 0 40px; }
 .card-multiday-badge { background: var(--primary); color: var(--white); font-size: .72rem; font-weight: 700; padding: .15rem .5rem; border-radius: 20px; white-space: nowrap; }
 .event-card--multiday { border-left: 3px solid var(--primary); }
 .card-title { font-family: var(--font-head); font-size: 1.1rem; color: var(--gray-900); line-height: 1.3; }

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import ActivityCard from '../components/ActivityCard';
 import AdBanner from '../components/AdBanner';
 import { useActivities } from '../hooks/useActivities';
@@ -13,7 +13,24 @@ export default function ActivitiesPage({ lang, tr }) {
   const [userPostcode, setUserPostcode] = useState('');
   const [userCoords, setUserCoords] = useState(null);
   const [geocoding, setGeocoding] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(24);
+  const sentinelRef = useRef(null);
   const { activities, loading } = useActivities(activeCat);
+
+  // Reset visible count when filters change
+  useEffect(() => { setVisibleCount(24); }, [activeCat, search, sortBy, userCoords]);
+
+  // Infinite scroll sentinel
+  const observerRef = useRef(null);
+  const sentinelCallback = useCallback(node => {
+    if (observerRef.current) observerRef.current.disconnect();
+    sentinelRef.current = node;
+    if (!node) return;
+    observerRef.current = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting) setVisibleCount(c => c + 24);
+    }, { threshold: 0.1 });
+    observerRef.current.observe(node);
+  }, []);
 
   useEffect(() => {
     const clean = userPostcode.replace(/\s/g, '');
@@ -81,9 +98,12 @@ export default function ActivitiesPage({ lang, tr }) {
       return (b.promoted ? 1 : 0) - (a.promoted ? 1 : 0);
     });
 
+  const visible = filtered.slice(0, visibleCount);
+  const hasMore = visibleCount < filtered.length;
+
   const renderWithAds = () => {
     const items = [];
-    filtered.forEach((a, i) => {
+    visible.forEach((a, i) => {
       const distanceKm = getDistance(a);
       items.push(<ActivityCard key={a.id} activity={a} lang={lang} tr={tr} distanceKm={distanceKm} />);
       if ((i + 1) % 8 === 0) {
@@ -157,10 +177,24 @@ export default function ActivitiesPage({ lang, tr }) {
       {loading ? (
         <div className="loading">⏳</div>
       ) : (
-        <div className="cards-grid">
-          {renderWithAds()}
-          {filtered.length === 0 && <p className="empty">{tr.activities.noActivities}</p>}
-        </div>
+        <>
+          <div className="cards-grid">
+            {renderWithAds()}
+            {filtered.length === 0 && <p className="empty">{tr.activities.noActivities}</p>}
+          </div>
+          {hasMore && (
+            <div ref={sentinelCallback} className="lazy-sentinel">
+              <span className="lazy-loading-indicator">⏳</span>
+            </div>
+          )}
+          {!hasMore && filtered.length > 0 && (
+            <p className="lazy-end">
+              {lang === 'fr' ? `${filtered.length} activités affichées` :
+               lang === 'nl' ? `${filtered.length} activiteiten geladen` :
+               `${filtered.length} activities loaded`}
+            </p>
+          )}
+        </>
       )}
     </main>
   );
