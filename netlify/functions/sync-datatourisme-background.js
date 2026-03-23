@@ -222,13 +222,16 @@ function extractOpeningHours(poi) {
 }
 
 function mapCategory(types) {
-  const t = types.join(' ').toLowerCase();
-  if (/pool|beach|swimming|bathing|baignade|lac|plage/.test(t)) return 'water';
-  if (/restaurant|food|wine|gastronomy|eatery|repas|cuisine/.test(t)) return 'eten';
-  if (/cycling|bicycle|veloroute|velo|cycle/.test(t)) return 'fietsen';
-  if (/castle|museum|cultural|heritage|religious|monument|memorial|chateau|eglise|chapel|abbaye/.test(t)) return 'kastelen';
-  if (/walk|trek|hiking|natural|waterfall|peak|randonnee|nature|forest|foret/.test(t)) return 'wandelen';
-  if (/sport|leisure|outdoor|loisir/.test(t)) return 'wandelen';
+  // Extraheer URI-fragmenten (bv. "#Museum" → "museum") en combineer met volledige string
+  const frags = types.map(t => t.split('#').pop().split('/').pop().toLowerCase());
+  const t = [...frags, ...types.map(s => s.toLowerCase())].join(' ');
+
+  if (/pool|aquatic|swimming|bathing|baignade|plage|lac\b|swimmingpool|piscine/.test(t)) return 'water';
+  if (/restaurant|food|gastronomy|eatery|repas|cuisine|winebar|foodestablishment|cafeteria|brasserie|winery|vineyard|cellar|cave/.test(t)) return 'eten';
+  if (/cycling|bicycle|veloroute|velo|cycle|bikepath|cycleway/.test(t)) return 'fietsen';
+  if (/castle|museum|cultural|heritage|religious|monument|memorial|chateau|eglise|chapel|abbaye|culturalsite|historicmonument|sacredsite|abbey|priory|ruin/.test(t)) return 'kastelen';
+  if (/walk|trek|hiking|natural|waterfall|peak|randonnee|nature|forest|foret|naturalheritage|parkandgarden|garden|park|landscape/.test(t)) return 'wandelen';
+  if (/sport|leisure|outdoor|loisir|sportsandleisure|activit/.test(t)) return 'wandelen';
   return 'overig';
 }
 

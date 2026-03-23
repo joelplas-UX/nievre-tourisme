@@ -72,6 +72,7 @@ export default function AdminPage({ lang, tr }) {
   const [newActivity, setNewActivity] = useState(EMPTY_ACTIVITY);
   const [syncingActivities, setSyncingActivities] = useState(false);
   const [syncingDT, setSyncingDT] = useState(false);
+  const [enriching, setEnriching] = useState(false);
   const [syncMsg, setSyncMsg] = useState('');
   const [activitySyncs, setActivitySyncs] = useState([]);
 
@@ -291,6 +292,24 @@ export default function AdminPage({ lang, tr }) {
       setSyncMsg('Fout: ' + err.message);
     } finally {
       setSyncingDT(false);
+    }
+  }
+
+  async function handleEnrich() {
+    setEnriching(true);
+    setSyncMsg('');
+    try {
+      const res = await fetch('/.netlify/functions/enrich-activities-background', { method: 'POST' });
+      if (res.status === 202 || res.ok) {
+        setSyncMsg('✨ AI-verrijking gestart! Titels, beschrijvingen en afbeeldingen worden gegenereerd. Ververs de log over 5–10 minuten.');
+      } else {
+        setSyncMsg(`⚠️ Status ${res.status}`);
+      }
+      setTimeout(() => loadData(), 360000);
+    } catch (err) {
+      setSyncMsg('Fout: ' + err.message);
+    } finally {
+      setEnriching(false);
     }
   }
 
@@ -574,6 +593,16 @@ export default function AdminPage({ lang, tr }) {
               {syncingActivities ? a.syncing : a.syncActivities}
             </button>
           </div>
+
+          <div className="sync-box">
+            <div>
+              <strong>✨ AI-verrijking</strong>
+              <p className="admin-hint">Genereert ontbrekende titels, beschrijvingen (FR/EN/NL) en zoekt vrije afbeeldingen via Wikimedia. Vereist: ANTHROPIC_API_KEY in Netlify.</p>
+            </div>
+            <button className="btn btn-outline" onClick={handleEnrich} disabled={enriching}>
+              {enriching ? '⏳ Bezig…' : '✨ Verrijk met AI'}
+            </button>
+          </div>
           {syncMsg && <p className="scrape-msg">{syncMsg}</p>}
 
           <h3>📋 Synchronisatiehistorie <button className="btn btn-outline" style={{fontSize:'.8rem',padding:'4px 10px',marginLeft:8}} onClick={loadData}>↻ Ververs</button></h3>
@@ -585,8 +614,8 @@ export default function AdminPage({ lang, tr }) {
                   <tr>
                     <th>Datum</th>
                     <th>Bron</th>
-                    <th>Geschreven</th>
-                    <th>Overgeslagen</th>
+                    <th>Verrijkt/Geschreven</th>
+                    <th>Afb./Overgeslagen</th>
                     <th>Duur</th>
                     <th>Fouten</th>
                   </tr>
@@ -594,7 +623,7 @@ export default function AdminPage({ lang, tr }) {
                 <tbody>
                   {activitySyncs.map(s => {
                     const duurSec = s.durationMs ? `${Math.round(s.durationMs / 1000)}s` : '–';
-                    const bron = s.source === 'datatourisme' ? '🇫🇷 DataTourisme' : '🗺️ OpenStreetMap';
+                    const bron = s.source === 'datatourisme' ? '🇫🇷 DataTourisme' : s.source === 'claude-enrich' ? '✨ AI-verrijking' : '🗺️ OpenStreetMap';
                     const foutCount = s.errors?.length || 0;
                     return (
                       <tr key={s.id}>
