@@ -489,17 +489,19 @@ a { color: inherit; text-decoration: none; }
 
 .activity-form { display: flex; flex-direction: column; gap: 16px; }
 .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
-.activity-form label, .form-row label {
+.activity-form label, .submit-form label, .form-row label {
   display: flex; flex-direction: column; gap: 6px; font-size: .88rem; font-weight: 700;
 }
 .activity-form label:has(input[type="radio"]),
-.activity-form label:has(input[type="checkbox"]) { flex-direction: row; align-items: center; font-weight: 400; }
+.activity-form label:has(input[type="checkbox"]),
+.submit-form label:has(input[type="radio"]) { flex-direction: row; align-items: center; font-weight: 400; }
 .activity-form input, .activity-form textarea, .activity-form select,
+.submit-form input:not([type="radio"]), .submit-form textarea, .submit-form select,
 .form-row input, .form-row select {
   padding: 9px 12px; border: 2px solid var(--gray-100); border-radius: 8px;
   font-family: var(--font-body); font-size: .95rem; width: 100%;
 }
-.activity-form textarea { resize: vertical; min-height: 80px; }
+.activity-form textarea, .submit-form textarea { resize: vertical; min-height: 90px; }
 .form-hint { font-weight: 400; font-size: .8rem; color: var(--gray-600); margin-left: 6px; }
 
 /* Admin tabs */
