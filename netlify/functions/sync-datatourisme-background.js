@@ -29,16 +29,37 @@ const MAX_PAGES = 20; // veiligheidsgrens (5000 records)
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
+/**
+ * Extraheert een string uit een DataTourisme taalveld.
+ * Ondersteunt drie formaten:
+ *   1. {"fr":"...", "en":"..."}          — eenvoudig object
+ *   2. [{"@language":"fr","@value":"..."}]  — JSON-LD taal-getagde array
+ *   3. "plain string"                     — enkelvoudige string
+ */
 function extractLang(obj, lang) {
   if (!obj) return '';
+
+  // Formaat 2: array van @language-getagde objecten
+  if (Array.isArray(obj)) {
+    const match = obj.find(v => v?.['@language'] === lang);
+    const fallback = obj.find(v => v?.['@language'] === 'fr') || obj[0];
+    const item = match || fallback;
+    if (!item) return '';
+    if (typeof item === 'string') return item;
+    return item['@value'] || '';
+  }
+
+  // Formaat 1: {fr: ..., en: ...}
   const val = obj[lang] || obj['fr'] || '';
   if (Array.isArray(val)) {
     const first = val[0];
     if (typeof first === 'string') return first;
-    if (first && typeof first === 'object') return first['@value'] || '';
+    if (first?.['@value']) return first['@value'];
     return '';
   }
-  return typeof val === 'string' ? val : '';
+  if (typeof val === 'string') return val;
+  if (val?.['@value']) return val['@value'];
+  return '';
 }
 
 function extractText(obj) {
@@ -48,6 +69,29 @@ function extractText(obj) {
     en: extractLang(obj, 'en') || extractLang(obj, 'fr'),
     nl: extractLang(obj, 'nl') || extractLang(obj, 'fr'),
   };
+}
+
+/**
+ * Haalt beschrijving op. DataTourisme plaatst deze soms direct in
+ * dc:description, soms genest in hasDescription[].dc:description.
+ */
+function extractDescription(poi) {
+  // Directe velden
+  const direct = poi['dc:description'] || poi['schema:description'] || poi['rdfs:comment'];
+  if (direct) {
+    const t = extractText(direct);
+    if (t.fr) return t;
+  }
+  // Genest in hasDescription array
+  const descs = poi.hasDescription || poi['schema:description'] || [];
+  for (const d of (Array.isArray(descs) ? descs : [descs])) {
+    const nested = d?.['dc:description'] || d?.['schema:description'];
+    if (nested) {
+      const t = extractText(nested);
+      if (t.fr) return t;
+    }
+  }
+  return { fr: '', en: '', nl: '' };
 }
 
 function extractPhoto(poi) {
@@ -84,24 +128,62 @@ function extractLocation(poi) {
   };
 }
 
+function scalar(v) {
+  if (!v) return '';
+  if (Array.isArray(v)) return v[0] || '';
+  return String(v);
+}
+
 function extractContact(poi) {
   const contacts = poi.hasContact || [];
   const c = contacts[0] || {};
   return {
-    phone:   c['schema:telephone'] || c.telephone || '',
-    email:   c['schema:email']     || c.email     || '',
-    website: Array.isArray(c['foaf:homepage'])
-               ? c['foaf:homepage'][0]
-               : (c['foaf:homepage'] || c.website || ''),
+    phone:   scalar(c['schema:telephone'] || c.telephone),
+    email:   scalar(c['schema:email']     || c.email),
+    website: scalar(c['foaf:homepage']    || c['schema:url'] || c.website),
   };
 }
+
+const DAY_LABELS = {
+  Monday: 'ma', Tuesday: 'di', Wednesday: 'wo', Thursday: 'do',
+  Friday: 'vr', Saturday: 'za', Sunday: 'zo',
+};
 
 function extractOpeningHours(poi) {
   const specs = poi.openingHoursSpecification || poi.hasOpeningHoursSpecification || [];
   if (!specs.length) return '';
+
   const first = specs[0];
-  const desc = first['schema:description'] || first.description;
-  if (desc) return extractLang(desc, 'fr');
+
+  // Probeer tekst-beschrijving (FR)
+  const desc = first['schema:description'] || first.description || first['rdfs:comment'];
+  if (desc) {
+    const text = extractLang(desc, 'fr');
+    if (text) return text;
+  }
+
+  // Bouw uit gestructureerde data: validFrom → validThrough of dagen + tijden
+  try {
+    const parts = [];
+    for (const spec of specs.slice(0, 4)) {
+      const from  = spec['schema:validFrom']  || spec.validFrom;
+      const to    = spec['schema:validThrough'] || spec.validThrough;
+      const opens  = spec['schema:opens']  || spec.opens;
+      const closes = spec['schema:closes'] || spec.closes;
+      const days   = spec['schema:dayOfWeek'] || spec.dayOfWeek || [];
+
+      const dayStr = [].concat(days)
+        .map(d => DAY_LABELS[d.split('/').pop()] || d.split('/').pop())
+        .join(', ');
+
+      let part = '';
+      if (from && to) part += `${from.slice(0, 10)} – ${to.slice(0, 10)}`;
+      if (dayStr) part += (part ? ' · ' : '') + dayStr;
+      if (opens && closes) part += ` ${opens.slice(0, 5)}–${closes.slice(0, 5)}`;
+      if (part) parts.push(part);
+    }
+    return parts.join(' | ');
+  } catch {}
   return '';
 }
 
@@ -174,7 +256,7 @@ export const handler = async () => {
 
           batch.set(col.doc(id), {
             title:        extractText(poi['rdfs:label']),
-            description:  extractText(poi['dc:description']),
+            description:  extractDescription(poi),
             category:     mapCategory(types),
             location:     location.city,
             postcode:     location.postcode,
