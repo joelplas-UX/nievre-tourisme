@@ -39,18 +39,30 @@ const MAX_PAGES = 20; // veiligheidsgrens (5000 records)
 function extractLang(obj, lang) {
   if (!obj) return '';
 
-  // Formaat 2: array van @language-getagde objecten
+  // Formaat 3: plain string
+  if (typeof obj === 'string') return obj;
+
+  // Formaat 2: array van @language-getagde objecten of strings
   if (Array.isArray(obj)) {
-    const match = obj.find(v => v?.['@language'] === lang);
-    const fallback = obj.find(v => v?.['@language'] === 'fr') || obj[0];
-    const item = match || fallback;
-    if (!item) return '';
-    if (typeof item === 'string') return item;
-    return item['@value'] || '';
+    // Array van {"@language":"fr","@value":"..."} objecten
+    const hasLangTag = obj.some(v => v?.['@language']);
+    if (hasLangTag) {
+      const match = obj.find(v => v?.['@language'] === lang);
+      const fallback = obj.find(v => v?.['@language'] === 'fr') || obj[0];
+      const item = match || fallback;
+      if (!item) return '';
+      if (typeof item === 'string') return item;
+      return item['@value'] || '';
+    }
+    // Array van plain strings
+    const first = obj[0];
+    if (typeof first === 'string') return first;
+    if (first?.['@value']) return first['@value'];
+    return '';
   }
 
   // Formaat 1: {fr: ..., en: ...}
-  const val = obj[lang] || obj['fr'] || '';
+  const val = obj[lang] || obj['fr'] || Object.values(obj)[0] || '';
   if (Array.isArray(val)) {
     const first = val[0];
     if (typeof first === 'string') return first;
@@ -73,22 +85,38 @@ function extractText(obj) {
 
 /**
  * Haalt beschrijving op. DataTourisme plaatst deze soms direct in
- * dc:description, soms genest in hasDescription[].dc:description.
+ * dc:description, soms genest in hasDescription[].dc:description,
+ * soms als shortDescription of summary.
  */
 function extractDescription(poi) {
-  // Directe velden
-  const direct = poi['dc:description'] || poi['schema:description'] || poi['rdfs:comment'];
-  if (direct) {
-    const t = extractText(direct);
-    if (t.fr) return t;
+  // Probeer alle bekende velden op het root-niveau
+  const candidates = [
+    poi['dc:description'],
+    poi['schema:description'],
+    poi['rdfs:comment'],
+    poi['shortDescription'],
+    poi['summary'],
+  ];
+  for (const c of candidates) {
+    if (!c) continue;
+    const t = extractText(c);
+    if (t.fr || t.en) return t;
   }
+
   // Genest in hasDescription array
-  const descs = poi.hasDescription || poi['schema:description'] || [];
+  const descs = poi.hasDescription || [];
   for (const d of (Array.isArray(descs) ? descs : [descs])) {
-    const nested = d?.['dc:description'] || d?.['schema:description'];
-    if (nested) {
-      const t = extractText(nested);
-      if (t.fr) return t;
+    if (!d) continue;
+    const nestedCandidates = [
+      d['dc:description'],
+      d['schema:description'],
+      d['rdfs:comment'],
+      d['shortDescription'],
+    ];
+    for (const nc of nestedCandidates) {
+      if (!nc) continue;
+      const t = extractText(nc);
+      if (t.fr || t.en) return t;
     }
   }
   return { fr: '', en: '', nl: '' };
@@ -137,10 +165,16 @@ function scalar(v) {
 function extractContact(poi) {
   const contacts = poi.hasContact || [];
   const c = contacts[0] || {};
+
+  // Website: ook op root-niveau zoeken
+  const website =
+    scalar(c['foaf:homepage'] || c['schema:url'] || c.website || c.url) ||
+    scalar(poi['foaf:homepage'] || poi['schema:url'] || poi.url);
+
   return {
-    phone:   scalar(c['schema:telephone'] || c.telephone),
+    phone:   scalar(c['schema:telephone'] || c.telephone || c.phone),
     email:   scalar(c['schema:email']     || c.email),
-    website: scalar(c['foaf:homepage']    || c['schema:url'] || c.website),
+    website,
   };
 }
 
@@ -238,6 +272,21 @@ export const handler = async () => {
       const json = await res.json();
       const objects = json.objects || [];
       console.log(`[sync-dt] Pagina ${page}: ${objects.length} POIs (totaal: ${json.meta?.totalCount})`);
+
+      // Debug: log structuur van eerste POI op pagina 1
+      if (page === 1 && objects.length > 0) {
+        const sample = objects[0];
+        console.log('[sync-dt] Sample POI root keys:', Object.keys(sample).join(', '));
+        console.log('[sync-dt] rdfs:label:', JSON.stringify(sample['rdfs:label'])?.slice(0, 200));
+        console.log('[sync-dt] dc:description:', JSON.stringify(sample['dc:description'])?.slice(0, 200));
+        console.log('[sync-dt] hasDescription:', JSON.stringify(sample.hasDescription)?.slice(0, 300));
+        console.log('[sync-dt] hasContact:', JSON.stringify(sample.hasContact)?.slice(0, 300));
+        console.log('[sync-dt] @type:', JSON.stringify(sample['@type']));
+        // Extracted waarden
+        console.log('[sync-dt] title extracted:', JSON.stringify(extractText(sample['rdfs:label'])));
+        console.log('[sync-dt] desc extracted:', JSON.stringify(extractDescription(sample)));
+        console.log('[sync-dt] contact extracted:', JSON.stringify(extractContact(sample)));
+      }
 
       if (objects.length === 0 || !json.meta?.next) hasMore = false;
 

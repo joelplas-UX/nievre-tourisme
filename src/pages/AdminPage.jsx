@@ -576,7 +576,7 @@ export default function AdminPage({ lang, tr }) {
           </div>
           {syncMsg && <p className="scrape-msg">{syncMsg}</p>}
 
-          <h3>📋 Synchronisatiehistorie</h3>
+          <h3>📋 Synchronisatiehistorie <button className="btn btn-outline" style={{fontSize:'.8rem',padding:'4px 10px',marginLeft:8}} onClick={loadData}>↻ Ververs</button></h3>
           {activitySyncs.length === 0
             ? <p className="admin-hint">Nog geen synchronisaties uitgevoerd.</p>
             : (
