@@ -112,7 +112,7 @@ export default function AdminPage({ lang, tr }) {
 
     const syncsSnap = await getDocs(query(
       collection(db, 'morvan', 'data', 'activity_syncs'),
-      orderBy('timestamp', 'desc'), limit(3)
+      orderBy('timestamp', 'desc'), limit(10)
     ));
     setActivitySyncs(syncsSnap.docs.map(d => ({ id: d.id, ...d.data() })));
   }
@@ -576,23 +576,46 @@ export default function AdminPage({ lang, tr }) {
           </div>
           {syncMsg && <p className="scrape-msg">{syncMsg}</p>}
 
-          {activitySyncs.length > 0 && (
-            <table className="admin-table" style={{ marginBottom: 24 }}>
-              <thead>
-                <tr><th>Laatste sync</th><th>Nieuw</th><th>Bijgewerkt</th><th>Fouten</th></tr>
-              </thead>
-              <tbody>
-                {activitySyncs.map(s => (
-                  <tr key={s.id}>
-                    <td>{s.timestamp?.toDate?.().toLocaleString('nl-NL') || '–'}</td>
-                    <td>{s.added}</td>
-                    <td>{s.updated}</td>
-                    <td style={{ color: s.errors?.length ? '#e63946' : 'inherit' }}>{s.errors?.length || 0}</td>
+          <h3>📋 Synchronisatiehistorie</h3>
+          {activitySyncs.length === 0
+            ? <p className="admin-hint">Nog geen synchronisaties uitgevoerd.</p>
+            : (
+              <table className="admin-table" style={{ marginBottom: 24 }}>
+                <thead>
+                  <tr>
+                    <th>Datum</th>
+                    <th>Bron</th>
+                    <th>Geschreven</th>
+                    <th>Overgeslagen</th>
+                    <th>Duur</th>
+                    <th>Fouten</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
+                </thead>
+                <tbody>
+                  {activitySyncs.map(s => {
+                    const duurSec = s.durationMs ? `${Math.round(s.durationMs / 1000)}s` : '–';
+                    const bron = s.source === 'datatourisme' ? '🇫🇷 DataTourisme' : '🗺️ OpenStreetMap';
+                    const foutCount = s.errors?.length || 0;
+                    return (
+                      <tr key={s.id}>
+                        <td>{s.timestamp?.toDate?.().toLocaleString('nl-NL') || '–'}</td>
+                        <td>{bron}</td>
+                        <td>{s.added ?? '–'}</td>
+                        <td>{s.skipped ?? '–'}</td>
+                        <td>{duurSec}</td>
+                        <td style={{ color: foutCount ? '#e63946' : 'inherit' }}>
+                          {foutCount}
+                          {foutCount > 0 && (
+                            <span title={s.errors.join('\n')} style={{ marginLeft: 4, cursor: 'help' }}>⚠️</span>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            )
+          }
 
           <h3>➕ {a.addActivity}</h3>
           <form onSubmit={addActivity} className="activity-form">
