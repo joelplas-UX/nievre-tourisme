@@ -126,11 +126,6 @@ async function searchWikimediaImage(query) {
 }
 
 export const handler = async () => {
-  if (!process.env.CLAUDE_API_KEY) {
-    console.error('[enrich] CLAUDE_API_KEY niet ingesteld');
-    return;
-  }
-
   const db = getDb();
   const col = db.collection('morvan').doc('data').collection('activities');
   const startTime = Date.now();
@@ -138,16 +133,30 @@ export const handler = async () => {
   let imaged = 0;
   const errors = [];
 
+  if (!process.env.CLAUDE_API_KEY) {
+    console.error('[enrich] CLAUDE_API_KEY niet ingesteld');
+    errors.push('CLAUDE_API_KEY niet ingesteld');
+    await db.collection('morvan').doc('data').collection('activity_syncs').add({
+      timestamp: Timestamp.now(), source: 'claude-enrich',
+      added: 0, updated: 0, skipped: 0, errors, durationMs: 0,
+    });
+    return;
+  }
+
   try {
-    // Haal activiteiten op zonder titel (lege FR titel)
-    const snap = await col
-      .where('title.fr', '==', '')
-      .limit(200)
-      .get();
+    // Haal activiteiten op die nog niet verrijkt zijn (geen enrichedBy veld)
+    // We halen 300 op en filteren in code (Firestore ondersteunt geen "field bestaat niet" query)
+    const snap = await col.limit(300).get();
+    const toEnrich = snap.docs.filter(d => {
+      const data = d.data();
+      return !data.enrichedBy && (!data.title?.fr || data.title.fr.trim() === '');
+    });
+
+    console.log(`[enrich] ${snap.size} geladen, ${toEnrich.length} te verrijken`);
 
     console.log(`[enrich] ${snap.size} activiteiten te verrijken`);
 
-    for (const docSnap of snap.docs) {
+    for (const docSnap of toEnrich) {
       const activity = { id: docSnap.id, ...docSnap.data() };
       const updates = {};
 
@@ -189,15 +198,18 @@ export const handler = async () => {
       }
     }
 
-    // Log ook activiteiten met lege beschrijving maar bestaande titel
-    const withTitleSnap = await col
-      .where('description.fr', '==', '')
-      .limit(100)
-      .get();
+    // Verrijk activiteiten met titel maar zonder beschrijving
+    const descSnap = await col.limit(300).get();
+    const needDesc = descSnap.docs.filter(d => {
+      const data = d.data();
+      return data.title?.fr && data.title.fr.trim() !== ''
+        && (!data.description?.fr || data.description.fr.trim() === '')
+        && data.enrichedBy !== 'claude-haiku';
+    });
 
-    for (const docSnap of withTitleSnap.docs) {
+    for (const docSnap of needDesc) {
       const activity = { id: docSnap.id, ...docSnap.data() };
-      if (!activity.title?.fr) continue; // al behandeld
+      if (!activity.title?.fr) continue;
       const updates = {};
 
       try {

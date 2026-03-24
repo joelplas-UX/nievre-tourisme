@@ -113,7 +113,7 @@ export default function AdminPage({ lang, tr }) {
 
     const syncsSnap = await getDocs(query(
       collection(db, 'morvan', 'data', 'activity_syncs'),
-      orderBy('timestamp', 'desc'), limit(10)
+      orderBy('timestamp', 'desc'), limit(25)
     ));
     setActivitySyncs(syncsSnap.docs.map(d => ({ id: d.id, ...d.data() })));
   }
