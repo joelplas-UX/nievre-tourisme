@@ -126,20 +126,44 @@ async function searchWikimediaImage(query) {
 }
 
 export const handler = async () => {
-  const db = getDb();
-  const col = db.collection('morvan').doc('data').collection('activities');
   const startTime = Date.now();
+  let db;
   let enriched = 0;
   let imaged = 0;
   const errors = [];
 
+  const writeLog = async () => {
+    if (!db) return;
+    try {
+      await db.collection('morvan').doc('data').collection('activity_syncs').add({
+        timestamp: Timestamp.now(),
+        source: 'claude-enrich',
+        added: enriched,
+        updated: imaged,
+        skipped: 0,
+        errors: errors.slice(0, 20),
+        durationMs: Date.now() - startTime,
+      });
+    } catch (e) {
+      console.error('[enrich] Log schrijven mislukt:', e.message);
+    }
+  };
+
+  try {
+    db = getDb();
+  } catch (e) {
+    console.error('[enrich] Firebase Admin init mislukt:', e.message);
+    errors.push('Firebase init: ' + e.message);
+    // kan geen log schrijven zonder db
+    return;
+  }
+
+  const col = db.collection('morvan').doc('data').collection('activities');
+
   if (!process.env.CLAUDE_API_KEY) {
     console.error('[enrich] CLAUDE_API_KEY niet ingesteld');
     errors.push('CLAUDE_API_KEY niet ingesteld');
-    await db.collection('morvan').doc('data').collection('activity_syncs').add({
-      timestamp: Timestamp.now(), source: 'claude-enrich',
-      added: 0, updated: 0, skipped: 0, errors, durationMs: 0,
-    });
+    await writeLog();
     return;
   }
 
@@ -153,8 +177,6 @@ export const handler = async () => {
     });
 
     console.log(`[enrich] ${snap.size} geladen, ${toEnrich.length} te verrijken`);
-
-    console.log(`[enrich] ${snap.size} activiteiten te verrijken`);
 
     for (const docSnap of toEnrich) {
       const activity = { id: docSnap.id, ...docSnap.data() };
@@ -238,16 +260,6 @@ export const handler = async () => {
     errors.push(err.message);
   }
 
-  // Sla log op
-  await db.collection('morvan').doc('data').collection('activity_syncs').add({
-    timestamp:  Timestamp.now(),
-    source:     'claude-enrich',
-    added:      enriched,
-    updated:    imaged,
-    skipped:    0,
-    errors:     errors.slice(0, 20),
-    durationMs: Date.now() - startTime,
-  });
-
+  await writeLog();
   console.log(`[enrich] Klaar: ${enriched} verrijkt, ${imaged} afbeeldingen, ${errors.length} fouten`);
 };
