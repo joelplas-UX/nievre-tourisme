@@ -15,6 +15,6 @@
 [functions]
   node_bundler = "esbuild"
 
-# Scheduled scraper — elke maandag 06:00 UTC
+# Scheduled scraper — elke donderdag 06:00 UTC
 [functions."scrape-events"]
-  schedule = "0 6 * * 1"
+  schedule = "0 6 * * 4"

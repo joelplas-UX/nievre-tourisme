@@ -118,12 +118,21 @@ export default function EventsPage({ lang, tr }) {
         const db = (b.lat && b.lng) ? haversineKm(userCoords.lat, userCoords.lng, b.lat, b.lng) : Infinity;
         return da - db;
       }
-      const da = a.date?.toDate?.() || (a.date ? new Date(a.date) : null);
-      const db = b.date?.toDate?.() || (b.date ? new Date(b.date) : null);
-      if (!da && !db) return 0;
-      if (!da) return 1;
-      if (!db) return -1;
-      return da - db;
+      const today = new Date(); today.setHours(0,0,0,0);
+      const startA = a.date?.toDate?.() || (a.date ? new Date(a.date) : null);
+      const startB = b.date?.toDate?.() || (b.date ? new Date(b.date) : null);
+      const endA = a.endDate?.toDate?.() || startA;
+      const endB = b.endDate?.toDate?.() || startB;
+      // Lopend meerdaags (gestart vóór vandaag, eindigt na vandaag) → na toekomstige events
+      const ongoingA = startA && startA < today && endA >= today;
+      const ongoingB = startB && startB < today && endB >= today;
+      if (ongoingA && !ongoingB) return 1;
+      if (ongoingB && !ongoingA) return -1;
+      if (ongoingA && ongoingB) return endA - endB;
+      if (!startA && !startB) return 0;
+      if (!startA) return 1;
+      if (!startB) return -1;
+      return startA - startB;
     })
     .sort((a, b) => {
       if (sortBy === 'nearby') return 0;
