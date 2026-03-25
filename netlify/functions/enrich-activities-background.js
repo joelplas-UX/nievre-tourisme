@@ -278,6 +278,32 @@ export const handler = async () => {
         errors.push(`${activity.id}: ${err.message}`);
       }
     }
+    // ── Herindelen: activiteiten met overnachting-types die verkeerd zijn gecategoriseerd ──
+    const STAY_TYPES = /accommodation|hotel|bnb|bedandbreakfast|gite|gîte|chambre|camping|hostel|lodging|logement|hebergement|hébergement|résidence|residence|apartment|appartement|meuble|meublé|cottage|villa|chalet/i;
+    const STAY_TITLE = /chambre|gîte|gite|hôtel|hotel|bnb|b&b|camping|hébergement|hebergement|logement|location|séjour|séjour|résidence|appartement/i;
+
+    const recatSnap = await col.limit(2000).get();
+    let recategorized = 0;
+
+    for (const docSnap of recatSnap.docs) {
+      const data = docSnap.data();
+      if (data.category === 'overnachting') continue;
+
+      const types = (data.dtTypes || []).join(' ');
+      const titleFr = data.title?.fr || '';
+
+      if (STAY_TYPES.test(types) || STAY_TITLE.test(titleFr)) {
+        try {
+          await docSnap.ref.update({ category: 'overnachting' });
+          recategorized++;
+        } catch (err) {
+          errors.push(`recat ${docSnap.id}: ${err.message}`);
+        }
+      }
+    }
+    console.log(`[enrich] ${recategorized} activiteiten herindeling → overnachting`);
+    enriched += recategorized;
+
   } catch (err) {
     console.error('[enrich] Fatale fout:', err.message);
     errors.push(err.message);
