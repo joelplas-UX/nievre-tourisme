@@ -83,46 +83,70 @@ Génère un JSON avec ces champs (réponds UNIQUEMENT avec le JSON, sans markdow
   return JSON.parse(jsonMatch[0]);
 }
 
-async function searchWikimediaImage(query) {
+const FETCH_OPTS = { headers: { 'User-Agent': 'nievre-morvan-tourisme/1.0 (contact@example.com)' }, signal: AbortSignal.timeout(8000) };
+
+/** Zoekt hoofdafbeelding via Wikipedia-artikel (beste kwaliteit voor bekende plaatsen) */
+async function searchWikipediaImage(title, lang = 'fr') {
+  try {
+    const url = `https://${lang}.wikipedia.org/w/api.php?` + new URLSearchParams({
+      action: 'query', titles: title, prop: 'pageimages',
+      pithumbsize: '800', format: 'json', origin: '*',
+    });
+    const json = await (await fetch(url, FETCH_OPTS)).json();
+    const page = Object.values(json.query?.pages || {})[0];
+    return page?.thumbnail?.source?.replace(/\/\d+px-/, '/800px-') || null;
+  } catch { return null; }
+}
+
+/** Zoekt afbeeldingsbestand op Wikimedia Commons en geeft directe URL terug */
+async function searchCommonsImage(query) {
   try {
     const searchUrl = `https://commons.wikimedia.org/w/api.php?` + new URLSearchParams({
-      action: 'query',
-      list: 'search',
-      srsearch: query,
-      srnamespace: '6',
-      srlimit: '3',
-      format: 'json',
-      origin: '*',
+      action: 'query', list: 'search', srsearch: query,
+      srnamespace: '6', srlimit: '5', format: 'json', origin: '*',
     });
-    const res = await fetch(searchUrl, {
-      headers: { 'User-Agent': 'nievre-morvan-tourisme/1.0 (contact@example.com)' },
-      signal: AbortSignal.timeout(8000),
-    });
-    const json = await res.json();
-    const hits = json.query?.search || [];
-    if (!hits.length) return null;
-
-    // Haal de directe URL op van het eerste resultaat
-    const title = hits[0].title; // bv. "File:Château de Bazois.jpg"
+    const hits = (await (await fetch(searchUrl, FETCH_OPTS)).json()).query?.search || [];
+    // Sla bestanden over die geen foto zijn (svg, map, icon, logo)
+    const photoHit = hits.find(h => /\.(jpg|jpeg|png|webp)$/i.test(h.title) &&
+      !/map|karte|plan|icon|logo|coat|wapen|blason|flag|vlag/i.test(h.title));
+    if (!photoHit) return null;
     const infoUrl = `https://commons.wikimedia.org/w/api.php?` + new URLSearchParams({
-      action: 'query',
-      titles: title,
-      prop: 'imageinfo',
-      iiprop: 'url',
-      format: 'json',
-      origin: '*',
+      action: 'query', titles: photoHit.title, prop: 'imageinfo',
+      iiprop: 'url', iiurlwidth: '800', format: 'json', origin: '*',
     });
-    const infoRes = await fetch(infoUrl, {
-      headers: { 'User-Agent': 'nievre-morvan-tourisme/1.0 (contact@example.com)' },
-      signal: AbortSignal.timeout(8000),
-    });
-    const infoJson = await infoRes.json();
-    const pages = Object.values(infoJson.query?.pages || {});
-    const url = pages[0]?.imageinfo?.[0]?.url;
-    return url || null;
-  } catch {
-    return null;
+    const pages = Object.values((await (await fetch(infoUrl, FETCH_OPTS)).json()).query?.pages || {});
+    return pages[0]?.imageinfo?.[0]?.thumburl || pages[0]?.imageinfo?.[0]?.url || null;
+  } catch { return null; }
+}
+
+/**
+ * Zoekt een passende foto in drie stappen:
+ * 1. Wikipedia FR-artikel op naam (hoge kwaliteit voor bekende plekken)
+ * 2. Wikipedia FR-artikel met stad
+ * 3. Wikimedia Commons tekstzoekopdracht
+ */
+async function findPhoto(titleFr, city, category) {
+  // Stap 1: Wikipedia op exacte naam
+  const wpImg = await searchWikipediaImage(titleFr);
+  if (wpImg) return { url: wpImg, source: 'wikipedia' };
+
+  // Stap 2: Wikipedia met stadsnaam
+  if (city) {
+    const wpImg2 = await searchWikipediaImage(`${titleFr} ${city}`);
+    if (wpImg2) return { url: wpImg2, source: 'wikipedia' };
   }
+
+  // Stap 3: Commons — probeer naam + stad, dan categorie + stad
+  const queries = [
+    `${titleFr} ${city || 'Nièvre'} France`,
+    city ? `${city} Nièvre ${category || ''}` : null,
+  ].filter(Boolean);
+
+  for (const q of queries) {
+    const commonsImg = await searchCommonsImage(q);
+    if (commonsImg) return { url: commonsImg, source: 'wikimedia' };
+  }
+  return null;
 }
 
 export const handler = async () => {
@@ -199,11 +223,10 @@ export const handler = async () => {
 
         // Afbeelding zoeken als er nog geen is
         if (!activity.imageUrl && ai.title_fr) {
-          const imageQuery = `${ai.title_fr} ${activity.location || 'Nièvre'} France`;
-          const imageUrl = await searchWikimediaImage(imageQuery);
-          if (imageUrl) {
-            updates.imageUrl = imageUrl;
-            updates.imageSource = 'wikimedia';
+          const photo = await findPhoto(ai.title_fr, activity.location, activity.category);
+          if (photo) {
+            updates.imageUrl = photo.url;
+            updates.imageSource = photo.source;
             imaged++;
           }
         }
