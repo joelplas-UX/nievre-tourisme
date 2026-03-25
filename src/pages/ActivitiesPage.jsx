@@ -4,7 +4,8 @@ import AdBanner from '../components/AdBanner';
 import { useActivities } from '../hooks/useActivities';
 import { haversineKm, geocodePostcode } from '../utils/geo';
 
-const CATS = ['all', 'wandelen', 'fietsen', 'water', 'kastelen', 'eten', 'overig'];
+const CATS = ['all', 'wandelen', 'fietsen', 'water', 'kastelen', 'eten', 'overnachting', 'overig'];
+const RADIUS_OPTIONS = [5, 10, 25, 50, 100];
 
 export default function ActivitiesPage({ lang, tr }) {
   const [activeCat, setActiveCat] = useState('all');
@@ -13,18 +14,15 @@ export default function ActivitiesPage({ lang, tr }) {
   const [userPostcode, setUserPostcode] = useState('');
   const [userCoords, setUserCoords] = useState(null);
   const [geocoding, setGeocoding] = useState(false);
+  const [maxKm, setMaxKm] = useState(null);
   const [visibleCount, setVisibleCount] = useState(24);
-  const sentinelRef = useRef(null);
+  const observerRef = useRef(null);
   const { activities, loading } = useActivities(activeCat);
 
-  // Reset visible count when filters change
-  useEffect(() => { setVisibleCount(24); }, [activeCat, search, sortBy, userCoords]);
+  useEffect(() => { setVisibleCount(24); }, [activeCat, search, sortBy, userCoords, maxKm]);
 
-  // Infinite scroll sentinel
-  const observerRef = useRef(null);
   const sentinelCallback = useCallback(node => {
     if (observerRef.current) observerRef.current.disconnect();
-    sentinelRef.current = node;
     if (!node) return;
     observerRef.current = new IntersectionObserver(entries => {
       if (entries[0].isIntersecting) setVisibleCount(c => c + 24);
@@ -45,34 +43,32 @@ export default function ActivitiesPage({ lang, tr }) {
         .finally(() => setGeocoding(false));
     } else {
       setUserCoords(null);
+      setMaxKm(null);
       if (sortBy === 'nearby') setSortBy('name');
     }
   }, [userPostcode]);
 
   const postcodeLabel =
-    lang === 'fr' ? '📍 Votre code postal' :
-    lang === 'nl' ? '📍 Uw postcode' :
-    '📍 Your postcode';
+    lang === 'fr' ? '📍 Code postal' :
+    lang === 'nl' ? '📍 Postcode' :
+    '📍 Postcode';
 
   const SORT_OPTIONS = [
     { value: 'name',          label: lang === 'fr' ? 'Nom (A–Z)' : lang === 'nl' ? 'Naam (A–Z)' : 'Name (A–Z)' },
     { value: 'postcode_asc',  label: lang === 'fr' ? 'Code postal ↑' : lang === 'nl' ? 'Postcode ↑' : 'Postcode ↑' },
     { value: 'postcode_desc', label: lang === 'fr' ? 'Code postal ↓' : lang === 'nl' ? 'Postcode ↓' : 'Postcode ↓' },
-    ...(userCoords ? [{
-      value: 'nearby',
-      label: lang === 'fr' ? 'Les plus proches' : lang === 'nl' ? 'Dichtstbij' : 'Nearest first',
-    }] : []),
+    ...(userCoords ? [{ value: 'nearby', label: lang === 'fr' ? 'Les plus proches' : lang === 'nl' ? 'Dichtstbij' : 'Nearest first' }] : []),
   ];
 
   const getDistance = (a) => {
-    if (sortBy === 'nearby' && userCoords && a.lat && a.lng) {
+    if (userCoords && a.lat && a.lng)
       return haversineKm(userCoords.lat, userCoords.lng, a.lat, a.lng);
-    }
     return null;
   };
 
   const filtered = activities
     .filter(a => a.hidden !== true)
+    .filter(a => !!(a.title?.[lang] || a.title?.fr))
     .filter(a => {
       if (!search) return true;
       const q = search.toLowerCase();
@@ -80,6 +76,11 @@ export default function ActivitiesPage({ lang, tr }) {
       const loc = (a.location || '').toLowerCase();
       const pc = (a.postcode || '').toLowerCase();
       return title.includes(q) || loc.includes(q) || pc.includes(q);
+    })
+    .filter(a => {
+      if (!maxKm || !userCoords) return true;
+      if (!a.lat || !a.lng) return false;
+      return haversineKm(userCoords.lat, userCoords.lng, a.lat, a.lng) <= maxKm;
     })
     .sort((a, b) => {
       if (sortBy === 'nearby' && userCoords) {
@@ -94,7 +95,7 @@ export default function ActivitiesPage({ lang, tr }) {
       return ta.localeCompare(tb, 'fr');
     })
     .sort((a, b) => {
-      if (sortBy === 'nearby') return 0; // distance sort already handles promoted naturally
+      if (sortBy === 'nearby') return 0;
       return (b.promoted ? 1 : 0) - (a.promoted ? 1 : 0);
     });
 
@@ -155,6 +156,16 @@ export default function ActivitiesPage({ lang, tr }) {
             {!geocoding && userCoords && <span className="postcode-status postcode-ok">✓</span>}
             {!geocoding && userPostcode.length === 5 && !userCoords && <span className="postcode-status postcode-err">✗</span>}
           </div>
+          {userCoords && (
+            <select
+              className="sort-select"
+              value={maxKm ?? ''}
+              onChange={e => setMaxKm(e.target.value ? Number(e.target.value) : null)}
+            >
+              <option value="">{lang === 'fr' ? 'Toute distance' : lang === 'nl' ? 'Alle afstanden' : 'Any distance'}</option>
+              {RADIUS_OPTIONS.map(km => <option key={km} value={km}>≤ {km} km</option>)}
+            </select>
+          )}
           <input
             className="search-input"
             type="search"

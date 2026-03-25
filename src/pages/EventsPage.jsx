@@ -5,15 +5,68 @@ import { useEvents } from '../hooks/useEvents';
 import { haversineKm, geocodePostcode } from '../utils/geo';
 
 const TYPES = ['all', 'festival', 'muziek', 'markt', 'sport', 'natuur', 'cultuur', 'overig'];
+const RADIUS_OPTIONS = [5, 10, 25, 50, 100];
+
+function getTimeFilters(lang) {
+  const now = new Date();
+  const today = new Date(now); today.setHours(0,0,0,0);
+  const tomorrow = new Date(today); tomorrow.setDate(today.getDate() + 1);
+  const dayAfter = new Date(today); dayAfter.setDate(today.getDate() + 2);
+
+  // Dit weekend: aankomende za/zo
+  const dow = today.getDay(); // 0=zo,6=za
+  const daysToSat = dow === 6 ? 0 : (6 - dow);
+  const sat = new Date(today); sat.setDate(today.getDate() + daysToSat);
+  const sun = new Date(sat); sun.setDate(sat.getDate() + 1);
+
+  // Deze week: ma t/m zo
+  const daysToMon = dow === 0 ? -6 : 1 - dow;
+  const weekStart = new Date(today); weekStart.setDate(today.getDate() + daysToMon);
+  const weekEnd = new Date(weekStart); weekEnd.setDate(weekStart.getDate() + 6);
+
+  const labels = {
+    fr: { all: 'Tous', today: "Aujourd'hui", tomorrow: 'Demain', dayafter: 'Après-demain', weekend: 'Ce week-end', week: 'Cette semaine' },
+    en: { all: 'All', today: 'Today', tomorrow: 'Tomorrow', dayafter: 'Day after tomorrow', weekend: 'This weekend', week: 'This week' },
+    nl: { all: 'Alles', today: 'Vandaag', tomorrow: 'Morgen', dayafter: 'Overmorgen', weekend: 'Dit weekend', week: 'Deze week' },
+  };
+  const l = labels[lang] || labels.en;
+
+  return [
+    { value: 'all',      label: l.all,      from: null,     to: null },
+    { value: 'today',    label: l.today,    from: today,    to: today },
+    { value: 'tomorrow', label: l.tomorrow, from: tomorrow, to: tomorrow },
+    { value: 'dayafter', label: l.dayafter, from: dayAfter, to: dayAfter },
+    { value: 'weekend',  label: l.weekend,  from: sat,      to: sun },
+    { value: 'week',     label: l.week,     from: weekStart,to: weekEnd },
+  ];
+}
+
+function eventMatchesTime(event, timeFilter) {
+  if (!timeFilter || timeFilter.value === 'all') return true;
+  const eDate = event.date?.toDate?.() || (event.date ? new Date(event.date) : null);
+  const eEnd  = event.endDate?.toDate?.() || eDate;
+  if (!eDate) return false;
+  const eStart = new Date(eDate); eStart.setHours(0,0,0,0);
+  const eEndDay = new Date(eEnd); eEndDay.setHours(0,0,0,0);
+  const from = timeFilter.from;
+  const to   = timeFilter.to;
+  // Event overlapt met het gevraagde tijdvak
+  return eStart <= to && eEndDay >= from;
+}
 
 export default function EventsPage({ lang, tr }) {
   const [activeType, setActiveType] = useState('all');
+  const [timeKey, setTimeKey] = useState('all');
   const [search, setSearch] = useState('');
   const [sortBy, setSortBy] = useState('date');
   const [userPostcode, setUserPostcode] = useState('');
   const [userCoords, setUserCoords] = useState(null);
   const [geocoding, setGeocoding] = useState(false);
+  const [maxKm, setMaxKm] = useState(null);
   const { events, loading } = useEvents(activeType);
+
+  const timeFilters = getTimeFilters(lang);
+  const activeTimeFilter = timeFilters.find(f => f.value === timeKey);
 
   useEffect(() => {
     const clean = userPostcode.replace(/\s/g, '');
@@ -28,23 +81,24 @@ export default function EventsPage({ lang, tr }) {
         .finally(() => setGeocoding(false));
     } else {
       setUserCoords(null);
+      setMaxKm(null);
       if (sortBy === 'nearby') setSortBy('date');
     }
   }, [userPostcode]);
 
   const postcodeLabel =
-    lang === 'fr' ? '📍 Votre code postal' :
-    lang === 'nl' ? '📍 Uw postcode' :
-    '📍 Your postcode';
+    lang === 'fr' ? '📍 Code postal' :
+    lang === 'nl' ? '📍 Postcode' :
+    '📍 Postcode';
 
   const getDistance = (e) => {
-    if (sortBy === 'nearby' && userCoords && e.lat && e.lng) {
+    if (userCoords && e.lat && e.lng)
       return haversineKm(userCoords.lat, userCoords.lng, e.lat, e.lng);
-    }
     return null;
   };
 
   const filtered = events
+    .filter(e => !!(e.title?.[lang] || e.title?.fr))
     .filter(e => {
       if (!search) return true;
       const q = search.toLowerCase();
@@ -52,13 +106,18 @@ export default function EventsPage({ lang, tr }) {
       const loc = (e.location || '').toLowerCase();
       return title.includes(q) || loc.includes(q);
     })
+    .filter(e => eventMatchesTime(e, activeTimeFilter))
+    .filter(e => {
+      if (!maxKm || !userCoords) return true;
+      if (!e.lat || !e.lng) return false;
+      return haversineKm(userCoords.lat, userCoords.lng, e.lat, e.lng) <= maxKm;
+    })
     .sort((a, b) => {
       if (sortBy === 'nearby' && userCoords) {
         const da = (a.lat && a.lng) ? haversineKm(userCoords.lat, userCoords.lng, a.lat, a.lng) : Infinity;
         const db = (b.lat && b.lng) ? haversineKm(userCoords.lat, userCoords.lng, b.lat, b.lng) : Infinity;
         return da - db;
       }
-      // default: sort by date ascending
       const da = a.date?.toDate?.() || (a.date ? new Date(a.date) : null);
       const db = b.date?.toDate?.() || (b.date ? new Date(b.date) : null);
       if (!da && !db) return 0;
@@ -110,6 +169,17 @@ export default function EventsPage({ lang, tr }) {
             </button>
           ))}
         </div>
+        <div className="filter-chips" style={{ marginTop: 8 }}>
+          {timeFilters.map(f => (
+            <button
+              key={f.value}
+              className={`chip chip--time${timeKey === f.value ? ' active' : ''}`}
+              onClick={() => setTimeKey(f.value)}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
         <div className="filters-right">
           <div className="postcode-wrap">
             <input
@@ -125,6 +195,16 @@ export default function EventsPage({ lang, tr }) {
             {!geocoding && userCoords && <span className="postcode-status postcode-ok">✓</span>}
             {!geocoding && userPostcode.length === 5 && !userCoords && <span className="postcode-status postcode-err">✗</span>}
           </div>
+          {userCoords && (
+            <select
+              className="sort-select"
+              value={maxKm ?? ''}
+              onChange={e => setMaxKm(e.target.value ? Number(e.target.value) : null)}
+            >
+              <option value="">{lang === 'fr' ? 'Toute distance' : lang === 'nl' ? 'Alle afstanden' : 'Any distance'}</option>
+              {RADIUS_OPTIONS.map(km => <option key={km} value={km}>≤ {km} km</option>)}
+            </select>
+          )}
           <input
             className="search-input"
             type="search"

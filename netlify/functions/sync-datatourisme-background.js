@@ -208,6 +208,7 @@ function mapCategory(types) {
   if (/castle|museum|cultural|heritage|religious|monument|memorial|chateau|eglise|chapel|abbaye|culturalsite|historicmonument|sacredsite|abbey|priory|ruin/.test(t)) return 'kastelen';
   if (/walk|trek|hiking|natural|waterfall|peak|randonnee|nature|forest|foret|naturalheritage|parkandgarden|garden|park|landscape/.test(t)) return 'wandelen';
   if (/sport|leisure|outdoor|loisir|sportsandleisure|activit/.test(t)) return 'wandelen';
+  if (/accommodation|hotel|bnb|bedandbreakfast|gite|gîte|chambre|camping|hostel|lodging|logement|hebergement|hébergement/.test(t)) return 'overnachting';
   return 'overig';
 }
 

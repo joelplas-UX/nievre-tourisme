@@ -7,6 +7,7 @@ const CAT_ICONS = {
   water: '🏊',
   kastelen: '🏰',
   eten: '🍷',
+  overnachting: '🛏',
   overig: '✨',
 };
 
