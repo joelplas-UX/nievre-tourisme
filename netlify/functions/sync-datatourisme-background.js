@@ -31,47 +31,35 @@ const MAX_PAGES = 20; // veiligheidsgrens (5000 records)
 
 /**
  * Extraheert een string uit een DataTourisme taalveld.
- * Ondersteunt drie formaten:
- *   1. {"fr":"...", "en":"..."}          — eenvoudig object
- *   2. [{"@language":"fr","@value":"..."}]  — JSON-LD taal-getagde array
- *   3. "plain string"                     — enkelvoudige string
+ * De DataTourisme v1 API gebruikt {"@fr":"...", "@en":"..."} (met @-prefix).
+ * Valt terug op {"fr":"..."}, JSON-LD arrays en plain strings.
  */
 function extractLang(obj, lang) {
   if (!obj) return '';
-
-  // Formaat 3: plain string
   if (typeof obj === 'string') return obj;
 
-  // Formaat 2: array van @language-getagde objecten of strings
   if (Array.isArray(obj)) {
-    // Array van {"@language":"fr","@value":"..."} objecten
+    // [{"@language":"fr","@value":"..."}] formaat
     const hasLangTag = obj.some(v => v?.['@language']);
     if (hasLangTag) {
-      const match = obj.find(v => v?.['@language'] === lang);
-      const fallback = obj.find(v => v?.['@language'] === 'fr') || obj[0];
-      const item = match || fallback;
+      const item = obj.find(v => v?.['@language'] === lang)
+                || obj.find(v => v?.['@language'] === 'fr')
+                || obj[0];
       if (!item) return '';
-      if (typeof item === 'string') return item;
-      return item['@value'] || '';
+      return typeof item === 'string' ? item : (item['@value'] || '');
     }
-    // Array van plain strings
     const first = obj[0];
-    if (typeof first === 'string') return first;
-    if (first?.['@value']) return first['@value'];
-    return '';
+    return typeof first === 'string' ? first : (first?.['@value'] || '');
   }
 
-  // Formaat 1: {fr: ..., en: ...}
-  const val = obj[lang] || obj['fr'] || Object.values(obj)[0] || '';
+  // Object: probeer @fr/@en (DataTourisme v1), dan fr/en (oud formaat)
+  const val = obj[`@${lang}`] || obj[lang] || obj['@fr'] || obj['fr']
+           || Object.values(obj)[0] || '';
   if (Array.isArray(val)) {
     const first = val[0];
-    if (typeof first === 'string') return first;
-    if (first?.['@value']) return first['@value'];
-    return '';
+    return typeof first === 'string' ? first : (first?.['@value'] || '');
   }
-  if (typeof val === 'string') return val;
-  if (val?.['@value']) return val['@value'];
-  return '';
+  return typeof val === 'string' ? val : (val?.['@value'] || '');
 }
 
 function extractText(obj) {
@@ -84,41 +72,30 @@ function extractText(obj) {
 }
 
 /**
- * Haalt beschrijving op. DataTourisme plaatst deze soms direct in
- * dc:description, soms genest in hasDescription[].dc:description,
- * soms als shortDescription of summary.
+ * Haalt beschrijving op uit DataTourisme v1 response.
+ * Primair: hasDescription[].description en hasDescription[].shortDescription
+ * Fallback: root-niveau velden
  */
 function extractDescription(poi) {
-  // Probeer alle bekende velden op het root-niveau
-  const candidates = [
-    poi['dc:description'],
-    poi['schema:description'],
-    poi['rdfs:comment'],
-    poi['shortDescription'],
-    poi['summary'],
-  ];
-  for (const c of candidates) {
-    if (!c) continue;
-    const t = extractText(c);
-    if (t.fr || t.en) return t;
-  }
-
-  // Genest in hasDescription array
+  // DataTourisme v1: hasDescription[0].description of .shortDescription
   const descs = poi.hasDescription || [];
   for (const d of (Array.isArray(descs) ? descs : [descs])) {
     if (!d) continue;
-    const nestedCandidates = [
-      d['dc:description'],
-      d['schema:description'],
-      d['rdfs:comment'],
-      d['shortDescription'],
-    ];
-    for (const nc of nestedCandidates) {
-      if (!nc) continue;
-      const t = extractText(nc);
+    // Voorkeur: volledige beschrijving
+    for (const field of ['description', 'shortDescription', 'dc:description', 'schema:description', 'rdfs:comment']) {
+      if (!d[field]) continue;
+      const t = extractText(d[field]);
       if (t.fr || t.en) return t;
     }
   }
+
+  // Fallback: root-niveau
+  for (const field of ['description', 'dc:description', 'schema:description', 'rdfs:comment', 'shortDescription', 'summary']) {
+    if (!poi[field]) continue;
+    const t = extractText(poi[field]);
+    if (t.fr || t.en) return t;
+  }
+
   return { fr: '', en: '', nl: '' };
 }
 
@@ -138,21 +115,23 @@ function extractPhoto(poi) {
 }
 
 function extractLocation(poi) {
-  const locs = poi.isLocatedAt || [];
-  const loc = locs[0] || {};
-  const addrs = loc.address || loc['schema:address'] || [];
-  const addr = addrs[0] || {};
-  const geos = loc.geo || loc['schema:geo'] || [];
-  const geo = geos[0] || {};
+  const loc = (poi.isLocatedAt || [])[0] || {};
+  const addr = (loc.address || [])[0] || {};
+  // Stad: voorkeur hasAddressCity.label, fallback addressLocality
+  const cityLabel = addr.hasAddressCity?.label;
+  const city = (cityLabel ? extractLang(cityLabel, 'fr') : '')
+             || addr.addressLocality || addr['schema:addressLocality'] || '';
+  const street = Array.isArray(addr.streetAddress)
+    ? addr.streetAddress[0]
+    : (addr.streetAddress || addr['schema:streetAddress'] || '');
+  const geo = loc.geo || {};
 
   return {
-    city:     addr['schema:addressLocality'] || addr.addressLocality || '',
-    postcode: addr['schema:postalCode']      || addr.postalCode      || '',
-    street:   Array.isArray(addr['schema:streetAddress'])
-                ? addr['schema:streetAddress'][0]
-                : (addr['schema:streetAddress'] || addr.streetAddress || ''),
-    lat: parseFloat(geo['schema:latitude']  || geo.latitude)  || null,
-    lng: parseFloat(geo['schema:longitude'] || geo.longitude) || null,
+    city,
+    postcode: addr.postalCode || addr['schema:postalCode'] || '',
+    street,
+    lat: parseFloat(geo.latitude  || geo['schema:latitude'])  || null,
+    lng: parseFloat(geo.longitude || geo['schema:longitude']) || null,
   };
 }
 
@@ -163,17 +142,14 @@ function scalar(v) {
 }
 
 function extractContact(poi) {
-  const contacts = poi.hasContact || [];
-  const c = contacts[0] || {};
-
-  // Website: ook op root-niveau zoeken
+  const c = (poi.hasContact || [])[0] || {};
   const website =
-    scalar(c['foaf:homepage'] || c['schema:url'] || c.website || c.url) ||
+    scalar(c.homepage || c['foaf:homepage'] || c['schema:url'] || c.website || c.url) ||
     scalar(poi['foaf:homepage'] || poi['schema:url'] || poi.url);
 
   return {
-    phone:   scalar(c['schema:telephone'] || c.telephone || c.phone),
-    email:   scalar(c['schema:email']     || c.email),
+    phone:   scalar(c.telephone || c['schema:telephone'] || c.phone),
+    email:   scalar(c.email     || c['schema:email']),
     website,
   };
 }
@@ -279,15 +255,12 @@ export const handler = async () => {
       // Debug: log structuur van eerste POI op pagina 1
       if (page === 1 && objects.length > 0) {
         const sample = objects[0];
-        console.log('[sync-dt] Sample POI root keys:', Object.keys(sample).join(', '));
-        console.log('[sync-dt] rdfs:label:', JSON.stringify(sample['rdfs:label'])?.slice(0, 200));
-        console.log('[sync-dt] dc:description:', JSON.stringify(sample['dc:description'])?.slice(0, 200));
-        console.log('[sync-dt] hasDescription:', JSON.stringify(sample.hasDescription)?.slice(0, 300));
-        console.log('[sync-dt] hasContact:', JSON.stringify(sample.hasContact)?.slice(0, 300));
-        console.log('[sync-dt] @type:', JSON.stringify(sample['@type']));
-        // Extracted waarden
-        console.log('[sync-dt] title extracted:', JSON.stringify(extractText(sample['rdfs:label'])));
+        console.log('[sync-dt] Sample POI keys:', Object.keys(sample).join(', '));
+        console.log('[sync-dt] label:', JSON.stringify(sample['label'])?.slice(0, 200));
+        console.log('[sync-dt] type:', JSON.stringify(sample['type']));
+        console.log('[sync-dt] title extracted:', JSON.stringify(extractText(sample['label'] || sample['rdfs:label'])));
         console.log('[sync-dt] desc extracted:', JSON.stringify(extractDescription(sample)));
+        console.log('[sync-dt] location extracted:', JSON.stringify(extractLocation(sample)));
         console.log('[sync-dt] contact extracted:', JSON.stringify(extractContact(sample)));
       }
 
@@ -302,12 +275,12 @@ export const handler = async () => {
         if (manualIds.has(id)) { skipped++; continue; }
 
         try {
-          const types = poi['@type'] || [];
+          const types = poi['type'] || poi['@type'] || [];
           const location = extractLocation(poi);
           const contact = extractContact(poi);
 
           batch.set(col.doc(id), {
-            title:        extractText(poi['rdfs:label']),
+            title:        extractText(poi['label'] || poi['rdfs:label']),
             description:  extractDescription(poi),
             category:     mapCategory(types),
             location:     location.city,
@@ -322,7 +295,7 @@ export const handler = async () => {
             openingHours: extractOpeningHours(poi),
             source:       'datatourisme',
             dtId:         poi.uuid,
-            dtTypes:      types.slice(0, 5),
+            dtTypes:      (poi['type'] || poi['@type'] || []).slice(0, 5),
             permanent:    true,
             updatedAt:    Timestamp.now(),
           }, { merge: true });
