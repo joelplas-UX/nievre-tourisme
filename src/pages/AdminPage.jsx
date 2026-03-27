@@ -72,7 +72,10 @@ export default function AdminPage({ lang, tr }) {
   const [newActivity, setNewActivity] = useState(EMPTY_ACTIVITY);
   const [syncingActivities, setSyncingActivities] = useState(false);
   const [syncingDT, setSyncingDT] = useState(false);
+  const [syncingOAG, setSyncingOAG] = useState(false);
+  const [syncingVisorando, setSyncingVisorando] = useState(false);
   const [enriching, setEnriching] = useState(false);
+  const [enrichingPhotos, setEnrichingPhotos] = useState(false);
   const [syncMsg, setSyncMsg] = useState('');
   const [activitySyncs, setActivitySyncs] = useState([]);
 
@@ -313,6 +316,60 @@ export default function AdminPage({ lang, tr }) {
     }
   }
 
+  async function handleEnrichPhotos() {
+    setEnrichingPhotos(true);
+    setSyncMsg('');
+    try {
+      const res = await fetch('/.netlify/functions/enrich-events-background', { method: 'POST' });
+      if (res.status === 202 || res.ok) {
+        setSyncMsg('🖼️ Foto-verrijking gestart! Wikipedia & Wikimedia Commons worden doorzocht voor evenementen én activiteiten. Ververs de log over 5–10 minuten.');
+      } else {
+        setSyncMsg(`⚠️ Status ${res.status}`);
+      }
+      setTimeout(() => loadData(), 360000);
+    } catch (err) {
+      setSyncMsg('Fout: ' + err.message);
+    } finally {
+      setEnrichingPhotos(false);
+    }
+  }
+
+  async function handleSyncOAG() {
+    setSyncingOAG(true);
+    setSyncMsg('');
+    try {
+      const res = await fetch('/.netlify/functions/sync-openagenda-background', { method: 'POST' });
+      if (res.status === 202 || res.ok) {
+        setSyncMsg('✅ OpenAgenda sync gestart! Evenementen met foto\'s worden geladen. Ververs de log over 2–5 minuten.');
+      } else {
+        setSyncMsg(`⚠️ Status ${res.status}`);
+      }
+      setTimeout(() => loadData(), 120000);
+    } catch (err) {
+      setSyncMsg('Fout: ' + err.message);
+    } finally {
+      setSyncingOAG(false);
+    }
+  }
+
+  async function handleSyncVisorando() {
+    setSyncingVisorando(true);
+    setSyncMsg('');
+    try {
+      const res = await fetch('/.netlify/functions/sync-visorando-background', { method: 'POST' });
+      if (res.status === 202 || res.ok) {
+        setSyncMsg('✅ Visorando sync gestart! Wandelroutes worden opgehaald en vertaald. Ververs de log over 3–5 minuten.');
+      } else {
+        setSyncMsg(`⚠️ Status ${res.status}`);
+      }
+      setTimeout(() => loadData(), 300000);
+    } catch (err) {
+      setSyncMsg('Fout: ' + err.message);
+    } finally {
+      setSyncingVisorando(false);
+    }
+  }
+
   // ── Submissions ───────────────────────────────────────────────────────────
   async function approveAsEvent(sub) {
     const id = makeEventId(sub.titleFr, sub.dateStart);
@@ -416,12 +473,17 @@ export default function AdminPage({ lang, tr }) {
         <section className="admin-section">
           <h2>🕷️ Scraping uitvoeren</h2>
           <p className="admin-hint">
-            De scraper haalt automatisch elke maandag om 06:00 UTC nieuwe evenementen op.
+            De scraper haalt automatisch elke donderdag om 06:00 UTC nieuwe evenementen op.
             Je kunt ook handmatig triggeren:
           </p>
-          <button className="btn btn-primary" onClick={handleScrape} disabled={scraping} style={{ marginTop: 16 }}>
-            {scraping ? a.scraping : a.scrape}
-          </button>
+          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginTop: 16 }}>
+            <button className="btn btn-primary" onClick={handleScrape} disabled={scraping}>
+              {scraping ? a.scraping : a.scrape}
+            </button>
+            <button className="btn btn-outline" onClick={handleSyncOAG} disabled={syncingOAG}>
+              {syncingOAG ? a.syncing : '📅 Sync OpenAgenda'}
+            </button>
+          </div>
           {scrapeMsg && <p className="scrape-msg">{scrapeMsg}</p>}
 
           <h3>{a.lastRun}</h3>
@@ -587,7 +649,7 @@ export default function AdminPage({ lang, tr }) {
           <div className="sync-box">
             <div>
               <strong>OpenStreetMap</strong>
-              <p className="admin-hint">Extra POIs (kastelen, uitzichtpunten, zwemplekken) uit OpenStreetMap.</p>
+              <p className="admin-hint">POIs + wandelroutes (GR, PR) uit OpenStreetMap via Overpass API.</p>
             </div>
             <button className="btn btn-outline" onClick={handleSyncActivities} disabled={syncingActivities}>
               {syncingActivities ? a.syncing : a.syncActivities}
@@ -596,11 +658,31 @@ export default function AdminPage({ lang, tr }) {
 
           <div className="sync-box">
             <div>
+              <strong>🥾 Visorando</strong>
+              <p className="admin-hint">Gedetailleerde wandelroutes voor de Nièvre & Morvan met afstand, hoogteprofiel en beschrijving.</p>
+            </div>
+            <button className="btn btn-outline" onClick={handleSyncVisorando} disabled={syncingVisorando}>
+              {syncingVisorando ? a.syncing : '🥾 Sync Visorando'}
+            </button>
+          </div>
+
+          <div className="sync-box">
+            <div>
               <strong>✨ AI-verrijking</strong>
-              <p className="admin-hint">Genereert ontbrekende titels, beschrijvingen (FR/EN/NL) en zoekt vrije afbeeldingen via Wikimedia. Vereist: ANTHROPIC_API_KEY in Netlify.</p>
+              <p className="admin-hint">Genereert ontbrekende titels en beschrijvingen (FR/EN/NL). Vereist: CLAUDE_API_KEY in Netlify.</p>
             </div>
             <button className="btn btn-outline" onClick={handleEnrich} disabled={enriching}>
               {enriching ? '⏳ Bezig…' : '✨ Verrijk met AI'}
+            </button>
+          </div>
+
+          <div className="sync-box">
+            <div>
+              <strong>🖼️ Foto-verrijking</strong>
+              <p className="admin-hint">Zoekt ontbrekende foto's voor evenementen én activiteiten via Wikipedia, Wikimedia Commons en de bronpagina's.</p>
+            </div>
+            <button className="btn btn-outline" onClick={handleEnrichPhotos} disabled={enrichingPhotos}>
+              {enrichingPhotos ? '⏳ Bezig…' : '🖼️ Zoek foto\'s'}
             </button>
           </div>
           {syncMsg && <p className="scrape-msg">{syncMsg}</p>}
@@ -623,7 +705,14 @@ export default function AdminPage({ lang, tr }) {
                 <tbody>
                   {activitySyncs.map(s => {
                     const duurSec = s.durationMs ? `${Math.round(s.durationMs / 1000)}s` : '–';
-                    const bron = s.source === 'datatourisme' ? '🇫🇷 DataTourisme' : s.source === 'claude-enrich' ? '✨ AI-verrijking' : '🗺️ OpenStreetMap';
+                    const bronMap = {
+                      datatourisme: '🇫🇷 DataTourisme',
+                      'claude-enrich': '✨ AI-verrijking',
+                      openstreetmap: '🗺️ OpenStreetMap',
+                      visorando: '🥾 Visorando',
+                      'photo-enrich': '🖼️ Foto-verrijking',
+                    };
+                    const bron = bronMap[s.source] || s.source || '–';
                     const foutCount = s.errors?.length || 0;
                     return (
                       <tr key={s.id}>

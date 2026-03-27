@@ -65,13 +65,14 @@ Return a JSON array. Each object must have (use null if unknown):
 - lng: number or null
 - type: "festival"|"muziek"|"markt"|"sport"|"natuur"|"cultuur"|"overig"
 - source_url: string
-- image_url: string or null
+- image_url: string or null (check og:image meta tag, twitter:image, article/event main image — use absolute URL)
 
 Rules:
 - Translate to English and Dutch
 - Fill coordinates for well-known Nièvre/Morvan towns
 - Return [] if no events found
 - Return ONLY valid JSON, no markdown
+- For image_url: look for <meta property="og:image" content="...">, <meta name="twitter:image" ...>, or the main event/article photo — always return an absolute URL starting with http
 
 HTML:
 ${html.slice(0, 40000)}`;
