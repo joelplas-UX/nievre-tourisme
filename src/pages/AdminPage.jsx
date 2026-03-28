@@ -83,6 +83,19 @@ export default function AdminPage({ lang, tr }) {
   const [submissions, setSubmissions] = useState([]);
   const [submissionsLoading, setSubmissionsLoading] = useState(false);
 
+  // Foto upload
+  const [photoFile, setPhotoFile] = useState(null);
+  const [photoPreview, setPhotoPreview] = useState(null);
+  const [photoUploading, setPhotoUploading] = useState(false);
+  const [photoMsg, setPhotoMsg] = useState('');
+  const [photoTitle, setPhotoTitle] = useState('');
+  const [photoLocation, setPhotoLocation] = useState('');
+  const [photoCategory, setPhotoCategory] = useState('overig');
+  const [photoAssignType, setPhotoAssignType] = useState('activity'); // 'activity' | 'event' | 'standalone'
+  const [photoAssignId, setPhotoAssignId] = useState('');
+  const [photoSearchQuery, setPhotoSearchQuery] = useState('');
+  const [newsletters, setNewsletters] = useState([]);
+
   // Tab
   const [tab, setTab] = useState('scraping');
 
@@ -119,6 +132,14 @@ export default function AdminPage({ lang, tr }) {
       orderBy('timestamp', 'desc'), limit(25)
     ));
     setActivitySyncs(syncsSnap.docs.map(d => ({ id: d.id, ...d.data() })));
+
+    try {
+      const nlSnap = await getDocs(query(
+        collection(db, 'morvan', 'data', 'newsletter_runs'),
+        orderBy('timestamp', 'desc'), limit(10)
+      ));
+      setNewsletters(nlSnap.docs.map(d => ({ id: d.id, ...d.data() })));
+    } catch { /* collectie bestaat nog niet */ }
   }
 
   async function loadSources() {
@@ -370,6 +391,89 @@ export default function AdminPage({ lang, tr }) {
     }
   }
 
+  // ── Foto upload ───────────────────────────────────────────────────────────
+  function handlePhotoSelect(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    setPhotoFile(file);
+    setPhotoPreview(URL.createObjectURL(file));
+    setPhotoMsg('');
+  }
+
+  async function handlePhotoUpload(e) {
+    e.preventDefault();
+    if (!photoFile) return;
+    setPhotoUploading(true);
+    setPhotoMsg('');
+
+    try {
+      const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+      const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
+
+      if (!cloudName || !uploadPreset) {
+        setPhotoMsg('⚠️ VITE_CLOUDINARY_CLOUD_NAME of VITE_CLOUDINARY_UPLOAD_PRESET ontbreekt in .env');
+        return;
+      }
+
+      // Upload naar Cloudinary
+      const formData = new FormData();
+      formData.append('file', photoFile);
+      formData.append('upload_preset', uploadPreset);
+      formData.append('folder', 'nievre-admin');
+      if (photoTitle) formData.append('context', `caption=${photoTitle}|location=${photoLocation}`);
+
+      const res = await fetch(
+        `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+        { method: 'POST', body: formData }
+      );
+      if (!res.ok) throw new Error(`Cloudinary ${res.status}`);
+      const data = await res.json();
+      const imageUrl = data.secure_url;
+
+      // Wijs foto toe
+      if (photoAssignType === 'activity' && photoAssignId) {
+        await setDoc(doc(db, 'morvan', 'data', 'activities', photoAssignId),
+          { imageUrl, imageSource: 'admin-upload', updatedAt: Timestamp.now() },
+          { merge: true }
+        );
+        setPhotoMsg(`✅ Foto gekoppeld aan activiteit!`);
+      } else if (photoAssignType === 'event' && photoAssignId) {
+        await setDoc(doc(db, 'morvan', 'data', 'events', photoAssignId),
+          { imageUrl, imageSource: 'admin-upload', updatedAt: Timestamp.now() },
+          { merge: true }
+        );
+        setPhotoMsg(`✅ Foto gekoppeld aan evenement!`);
+      } else {
+        // Standalone foto (nieuwe activiteit)
+        await addDoc(collection(db, 'morvan', 'data', 'activities'), {
+          title: { fr: photoTitle || 'Photo', en: photoTitle || 'Photo', nl: photoTitle || 'Foto' },
+          description: { fr: '', en: '', nl: '' },
+          category: photoCategory,
+          location: photoLocation || '',
+          imageUrl,
+          imageSource: 'admin-upload',
+          permanent: true,
+          manuallyEdited: true,
+          createdAt: Timestamp.now(),
+          updatedAt: Timestamp.now(),
+        });
+        setPhotoMsg(`✅ Foto opgeslagen als nieuwe activiteit!`);
+      }
+
+      // Reset
+      setPhotoFile(null);
+      setPhotoPreview(null);
+      setPhotoTitle('');
+      setPhotoLocation('');
+      setPhotoAssignId('');
+      await loadData();
+    } catch (err) {
+      setPhotoMsg('❌ Fout: ' + err.message);
+    } finally {
+      setPhotoUploading(false);
+    }
+  }
+
   // ── Submissions ───────────────────────────────────────────────────────────
   async function approveAsEvent(sub) {
     const id = makeEventId(sub.titleFr, sub.dateStart);
@@ -456,6 +560,8 @@ export default function AdminPage({ lang, tr }) {
           { key: 'sources',     label: '🌐 Scrapebronnen' },
           { key: 'events',      label: '📅 Evenementen' },
           { key: 'activities',  label: '🥾 Activiteiten' },
+          { key: 'photos',      label: '📸 Foto\'s' },
+          { key: 'newsletter',  label: '✉️ Nieuwsbrief' },
           { key: 'submissions', label: `📬 ${a.submissions}${pendingCount ? ` (${pendingCount})` : ''}` },
         ].map(t => (
           <button
@@ -760,6 +866,200 @@ export default function AdminPage({ lang, tr }) {
             </div>
             <button type="submit" className="btn btn-primary">Opslaan</button>
           </form>
+        </section>
+      )}
+
+      {/* ── Foto's ── */}
+      {tab === 'photos' && (
+        <section className="admin-section">
+          <h2>📸 Foto's uploaden</h2>
+          <p className="admin-hint">
+            Maak een foto met je smartphone of kies een bestand. De foto wordt via Cloudinary opgeslagen
+            en gekoppeld aan een activiteit, evenement of als zelfstandige activiteit opgeslagen.
+          </p>
+          <p className="admin-hint">
+            Vereist: <code>VITE_CLOUDINARY_CLOUD_NAME</code> en <code>VITE_CLOUDINARY_UPLOAD_PRESET</code> in Netlify.
+          </p>
+
+          <form onSubmit={handlePhotoUpload} className="photo-upload-form">
+
+            {/* Camera / bestand kiezen */}
+            <div className="photo-input-area">
+              <label className="photo-file-label">
+                <input
+                  type="file"
+                  accept="image/*"
+                  capture="environment"
+                  onChange={handlePhotoSelect}
+                  style={{ display: 'none' }}
+                />
+                {photoPreview
+                  ? <img src={photoPreview} alt="Preview" className="photo-preview" />
+                  : (
+                    <div className="photo-placeholder">
+                      <span style={{ fontSize: 40 }}>📸</span>
+                      <span>Tik om foto te maken of te kiezen</span>
+                    </div>
+                  )
+                }
+              </label>
+            </div>
+
+            {photoPreview && (
+              <>
+                {/* Titel & locatie */}
+                <div className="form-row">
+                  <label>Titel
+                    <input
+                      value={photoTitle}
+                      onChange={e => setPhotoTitle(e.target.value)}
+                      placeholder="bv. Lac des Settons zonsondergang"
+                    />
+                  </label>
+                  <label>Locatie
+                    <input
+                      value={photoLocation}
+                      onChange={e => setPhotoLocation(e.target.value)}
+                      placeholder="bv. Montsauche-les-Settons"
+                    />
+                  </label>
+                </div>
+
+                {/* Toewijzing */}
+                <div className="form-row" style={{ marginBottom: 8 }}>
+                  <label>Koppelen aan
+                    <select value={photoAssignType} onChange={e => { setPhotoAssignType(e.target.value); setPhotoAssignId(''); }}>
+                      <option value="standalone">Nieuwe activiteit aanmaken</option>
+                      <option value="activity">Bestaande activiteit</option>
+                      <option value="event">Bestaand evenement</option>
+                    </select>
+                  </label>
+                  {photoAssignType === 'standalone' && (
+                    <label>Categorie
+                      <select value={photoCategory} onChange={e => setPhotoCategory(e.target.value)}>
+                        {['wandelen','fietsen','water','kastelen','eten','overnachting','overig'].map(c => (
+                          <option key={c} value={c}>{c}</option>
+                        ))}
+                      </select>
+                    </label>
+                  )}
+                </div>
+
+                {(photoAssignType === 'activity' || photoAssignType === 'event') && (
+                  <div style={{ marginBottom: 12 }}>
+                    <input
+                      value={photoSearchQuery}
+                      onChange={e => setPhotoSearchQuery(e.target.value)}
+                      placeholder={`Zoek ${photoAssignType === 'activity' ? 'activiteit' : 'evenement'} op naam…`}
+                      className="photo-search-input"
+                    />
+                    {photoSearchQuery.length > 1 && (
+                      <div className="photo-search-results">
+                        {(photoAssignType === 'activity' ? [] : events)
+                          .concat(photoAssignType === 'activity' ? [] : [])
+                          /* Laad activiteiten/events inline via filter op bestaande state */
+                          .filter(item => {
+                            const t = item.title?.fr || item.title?.nl || '';
+                            return t.toLowerCase().includes(photoSearchQuery.toLowerCase());
+                          })
+                          .slice(0, 8)
+                          .map(item => (
+                            <button
+                              key={item.id}
+                              type="button"
+                              className={`photo-search-item${photoAssignId === item.id ? ' selected' : ''}`}
+                              onClick={() => { setPhotoAssignId(item.id); setPhotoSearchQuery(item.title?.fr || ''); }}
+                            >
+                              {item.title?.fr || item.id}
+                              {item.imageUrl && <span className="has-photo">📷</span>}
+                            </button>
+                          ))
+                        }
+                        {photoAssignType === 'event' && events
+                          .filter(ev => (ev.title?.fr || '').toLowerCase().includes(photoSearchQuery.toLowerCase()))
+                          .slice(0, 8)
+                          .map(ev => (
+                            <button
+                              key={ev.id}
+                              type="button"
+                              className={`photo-search-item${photoAssignId === ev.id ? ' selected' : ''}`}
+                              onClick={() => { setPhotoAssignId(ev.id); setPhotoSearchQuery(ev.title?.fr || ''); }}
+                            >
+                              {ev.title?.fr || ev.id} {ev.date?.toDate?.()?.toLocaleDateString('nl-NL') || ''}
+                              {ev.imageUrl && <span className="has-photo">📷</span>}
+                            </button>
+                          ))
+                        }
+                      </div>
+                    )}
+                    {photoAssignId && <p style={{ fontSize: '.82rem', color: '#3a7d44', marginTop: 4 }}>✓ ID: {photoAssignId}</p>}
+                  </div>
+                )}
+
+                {photoMsg && <p className="scrape-msg">{photoMsg}</p>}
+
+                <button
+                  type="submit"
+                  className="btn btn-primary"
+                  disabled={photoUploading || (photoAssignType !== 'standalone' && !photoAssignId)}
+                >
+                  {photoUploading ? '⏳ Uploaden…' : '☁️ Uploaden & opslaan'}
+                </button>
+              </>
+            )}
+            {!photoPreview && photoMsg && <p className="scrape-msg">{photoMsg}</p>}
+          </form>
+        </section>
+      )}
+
+      {/* ── Nieuwsbrief ── */}
+      {tab === 'newsletter' && (
+        <section className="admin-section">
+          <h2>✉️ Nieuwsbrief</h2>
+          <p className="admin-hint">
+            De nieuwsbrief wordt automatisch elke donderdag om 07:00 UTC verstuurd naar alle actieve abonnees.
+            Je kunt ook handmatig versturen.
+          </p>
+          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginTop: 8 }}>
+            <button
+              className="btn btn-primary"
+              onClick={async () => {
+                const r = await fetch('/.netlify/functions/send-newsletter-background', { method: 'POST' });
+                alert(r.status === 202 || r.ok ? '✅ Nieuwsbrief wordt verstuurd!' : `⚠️ Status ${r.status}`);
+                setTimeout(loadData, 30000);
+              }}
+            >
+              ✉️ Nu versturen
+            </button>
+          </div>
+
+          <h3 style={{ marginTop: 24 }}>📋 Verzendgeschiedenis <button className="btn btn-outline" style={{ fontSize: '.8rem', padding: '4px 10px', marginLeft: 8 }} onClick={loadData}>↻ Ververs</button></h3>
+          {newsletters.length === 0
+            ? <p className="admin-hint">Nog geen nieuwsbrieven verstuurd.</p>
+            : (
+              <table className="admin-table">
+                <thead>
+                  <tr><th>Datum</th><th>Abonnees</th><th>Verstuurd</th><th>Overgeslagen</th><th>Fouten</th></tr>
+                </thead>
+                <tbody>
+                  {newsletters.map(n => (
+                    <tr key={n.id}>
+                      <td>{n.timestamp?.toDate?.().toLocaleString('nl-NL') || '–'}</td>
+                      <td>{n.subscribers ?? '–'}</td>
+                      <td>{n.sent ?? '–'}</td>
+                      <td>{n.skipped ?? '–'}</td>
+                      <td style={{ color: n.errors?.length ? '#e63946' : 'inherit' }}>
+                        {n.errors?.length || 0}
+                        {n.errors?.length > 0 && (
+                          <span title={n.errors.join('\n')} style={{ marginLeft: 4, cursor: 'help' }}>⚠️</span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )
+          }
         </section>
       )}
 

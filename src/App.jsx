@@ -40,7 +40,7 @@ export default function App() {
           <Route path="/proposer" element={<SubmitPage lang={lang} tr={tr} />} />
           <Route path="/admin" element={<AdminPage lang={lang} tr={tr} />} />
         </Routes>
-        <Footer tr={tr} />
+        <Footer tr={tr} lang={lang} />
       </div>
     </BrowserRouter>
   );

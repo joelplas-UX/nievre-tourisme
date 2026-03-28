@@ -18,3 +18,7 @@
 # Scheduled scraper — elke donderdag 06:00 UTC
 [functions."scrape-events"]
   schedule = "0 6 * * 4"
+
+# Wekelijkse nieuwsbrief — elke donderdag 07:00 UTC (na scraping)
+[functions."schedule-newsletter"]
+  schedule = "0 7 * * 4"

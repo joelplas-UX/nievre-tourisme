@@ -1,8 +1,12 @@
 import { Link } from 'react-router-dom';
+import NewsletterSignup from './NewsletterSignup';
 
-export default function Footer({ tr }) {
+export default function Footer({ tr, lang }) {
   return (
     <footer className="footer">
+      <div className="footer-newsletter">
+        <NewsletterSignup lang={lang} />
+      </div>
       <div className="footer-inner">
         <div className="footer-brand">
           <span className="logo-icon">🌿</span>
