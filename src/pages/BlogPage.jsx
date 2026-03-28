@@ -32,7 +32,7 @@ function formatDate(dateStr, lang) {
   return d.toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' });
 }
 
-export default function BlogPage({ lang }) {
+export default function BlogPage({ lang, tr }) {
   usePageTitle(tr?.pageTitles?.blog);
   const c = COPY[lang] || COPY.fr;
   const { posts, loading } = useBlogPosts({ publishedOnly: true });

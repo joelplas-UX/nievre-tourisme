@@ -66,7 +66,7 @@ const COPY = {
   },
 };
 
-export default function ContactPage({ lang }) {
+export default function ContactPage({ lang, tr }) {
   usePageTitle(tr?.pageTitles?.contact);
   const c = COPY[lang] || COPY.fr;
   const [form, setForm] = useState({ name: '', email: '', subject: c.subjects[0], message: '' });

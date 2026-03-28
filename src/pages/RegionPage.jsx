@@ -116,7 +116,7 @@ const HEADINGS = {
   nl:  { highlights: 'Onmisbare plekken', seasons: 'De regio door de seizoenen', numbers: 'De Nièvre in cijfers', cta: 'Klaar om te ontdekken?', ctaEvents: 'Evenementen', ctaActivities: 'Activiteiten', ctaBlog: 'Ons blog lezen' },
 };
 
-export default function RegionPage({ lang }) {
+export default function RegionPage({ lang, tr }) {
   usePageTitle(tr?.pageTitles?.region);
   const h  = HEADINGS[lang]  || HEADINGS.fr;
   const ss = SEASONS[lang]   || SEASONS.fr;

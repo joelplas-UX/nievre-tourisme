@@ -64,7 +64,7 @@ Nous ne sommes affiliés à aucun office de tourisme ni à aucune organisation c
   },
 };
 
-export default function AboutPage({ lang }) {
+export default function AboutPage({ lang, tr }) {
   usePageTitle(tr?.pageTitles?.about);
   const c = CONTENT[lang] || CONTENT.fr;
   return (

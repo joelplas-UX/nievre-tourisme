@@ -89,7 +89,7 @@ Pour exercer ces droits, contactez-nous via le <a href="/contact">formulaire de 
   },
 };
 
-export default function PrivacyPage({ lang }) {
+export default function PrivacyPage({ lang, tr }) {
   usePageTitle(tr?.pageTitles?.privacy);
   const c = CONTENT[lang] || CONTENT.fr;
   return (
