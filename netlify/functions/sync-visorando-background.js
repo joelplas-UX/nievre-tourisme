@@ -25,10 +25,10 @@ function getDb() {
 }
 
 // Pagina's om te scrapen (Nièvre wandelroutes)
+// URL-patroon: /randonnee-[locatie].html  (geen trailing slash)
 const VISORANDO_PAGES = [
-  'https://www.visorando.com/randonnee-nievre/',
-  'https://www.visorando.com/randonnee-nievre/?p=2',
-  'https://www.visorando.com/randonnee-morvan/',
+  'https://www.visorando.com/randonnee-nievre.html',
+  'https://www.visorando.com/randonnee-morvan.html',
 ];
 
 const FETCH_OPTS = {
@@ -45,7 +45,7 @@ function buildExtractionPrompt(html, pageUrl) {
 
 Extrais TOUTES les randonnées/itinéraires listés sur cette page.
 Retourne un tableau JSON UNIQUEMENT (pas de markdown), chaque objet doit avoir :
-- slug: string (extrait du href de la page de détail, ex: "randonnee-lac-des-settons")
+- slug: string (extrait du href de la page de détail, ex: "randonnee-tour-du-lac-des-settons-2" — sans slash ni domaine)
 - name_fr: string (nom de la randonnée en français)
 - distance_km: number or null (distance en km)
 - duration_h: number or null (durée estimée en heures)
