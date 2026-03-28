@@ -1,98 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
-  <url>
-    <loc>https://nievremorvan.com/</loc>
-    <changefreq>daily</changefreq>
-    <priority>1.0</priority>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://nievremorvan.com/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://nievremorvan.com/"/>
-    <xhtml:link rel="alternate" hreflang="nl" href="https://nievremorvan.com/"/>
-  </url>
+  <url><loc>https://nievremorvan.com/</loc><changefreq>daily</changefreq><priority>1.0</priority></url>
+  <url><loc>https://nievremorvan.com/evenements</loc><changefreq>daily</changefreq><priority>0.9</priority></url>
+  <url><loc>https://nievremorvan.com/activites</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://nievremorvan.com/blog</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://nievremorvan.com/region</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
 
-  <url>
-    <loc>https://nievremorvan.com/evenements</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.9</priority>
-  </url>
+  <!-- Blog: wandelen -->
+  <url><loc>https://nievremorvan.com/blog/top-5-randonnees-morvan</loc><changefreq>monthly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://nievremorvan.com/blog/randonner-enfants-nievre</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <!-- Blog: nieuws -->
+  <url><loc>https://nievremorvan.com/blog/crues-nievre-mars-2026</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <!-- Blog: gidsen -->
+  <url><loc>https://nievremorvan.com/blog/guide-nevers-que-faire</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://nievremorvan.com/blog/canal-du-nivernais-guide</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://nievremorvan.com/blog/ete-nievre-morvan-activites</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>
+  <!-- Blog: Pasen -->
+  <url><loc>https://nievremorvan.com/blog/guide-week-end-paques-morvan</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://nievremorvan.com/blog/balades-paques-morvan</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://nievremorvan.com/blog/activites-famille-paques-nievre</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://nievremorvan.com/blog/gastronomie-paques-bourgogne</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
 
-  <url>
-    <loc>https://nievremorvan.com/activites</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-  </url>
-
-  <url>
-    <loc>https://nievremorvan.com/blog</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
-    <loc>https://nievremorvan.com/blog/guide-week-end-paques-morvan</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
-    <loc>https://nievremorvan.com/blog/balades-paques-morvan</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-
-  <url>
-    <loc>https://nievremorvan.com/blog/activites-famille-paques-nievre</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-
-  <url>
-    <loc>https://nievremorvan.com/blog/gastronomie-paques-bourgogne</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-
-  <url>
-    <loc>https://nievremorvan.com/blog/guide-nevers-que-faire</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-
-  <url>
-    <loc>https://nievremorvan.com/blog/canal-du-nivernais</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-
-  <url>
-    <loc>https://nievremorvan.com/blog/ete-morvan-activites</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-
-  <url>
-    <loc>https://nievremorvan.com/region</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-
-  <url>
-    <loc>https://nievremorvan.com/over</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-
-  <url>
-    <loc>https://nievremorvan.com/contact</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-
-  <url>
-    <loc>https://nievremorvan.com/privacy</loc>
-    <changefreq>yearly</changefreq>
-    <priority>0.3</priority>
-  </url>
+  <url><loc>https://nievremorvan.com/over</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://nievremorvan.com/contact</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://nievremorvan.com/privacy</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
 
 </urlset>

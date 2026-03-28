@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { usePageTitle } from '../hooks/usePageTitle';
 import EventCard from '../components/EventCard';
 import AdBanner from '../components/AdBanner';
 import { useEvents } from '../hooks/useEvents';
@@ -55,6 +56,7 @@ function eventMatchesTime(event, timeFilter) {
 }
 
 export default function EventsPage({ lang, tr }) {
+  usePageTitle(tr?.pageTitles?.events);
   const [activeType, setActiveType] = useState('all');
   const [timeKey, setTimeKey] = useState('all');
   const [search, setSearch] = useState('');

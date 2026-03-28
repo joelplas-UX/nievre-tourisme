@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useBlogPosts } from '../hooks/useBlogPosts';
+import { usePageTitle } from '../hooks/usePageTitle';
 
 const COPY = {
   fr: {
@@ -32,6 +33,7 @@ function formatDate(dateStr, lang) {
 }
 
 export default function BlogPage({ lang }) {
+  usePageTitle(tr?.pageTitles?.blog);
   const c = COPY[lang] || COPY.fr;
   const { posts, loading } = useBlogPosts({ publishedOnly: true });
 

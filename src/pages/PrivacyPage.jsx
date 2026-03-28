@@ -1,3 +1,5 @@
+import { usePageTitle } from '../hooks/usePageTitle';
+
 const CONTENT = {
   fr: {
     title: 'Politique de confidentialité',
@@ -88,6 +90,7 @@ Pour exercer ces droits, contactez-nous via le <a href="/contact">formulaire de 
 };
 
 export default function PrivacyPage({ lang }) {
+  usePageTitle(tr?.pageTitles?.privacy);
   const c = CONTENT[lang] || CONTENT.fr;
   return (
     <main className="page">

@@ -4,6 +4,386 @@
  */
 
 export const POSTS = [
+
+  // ─── Hoge waterstanden Nièvre maart 2026 ─────────────────────
+  {
+    slug: 'crues-nievre-mars-2026',
+    date: '2026-03-27',
+    category: { fr: 'Actualité', en: 'News', nl: 'Nieuws' },
+    readTime: 5,
+    image: 'https://images.unsplash.com/photo-1547683905-f686c993aae5?w=1200&q=80',
+    title: {
+      fr: 'Crues en Nièvre : ce que vous devez savoir (mars 2026)',
+      en: 'Flooding in the Nièvre: what you need to know (March 2026)',
+      nl: 'Hoogwater in de Nièvre: wat u moet weten (maart 2026)',
+    },
+    excerpt: {
+      fr: 'Après plusieurs semaines de pluies intenses et de fonte des neiges, la Loire, la Nièvre et leurs affluents sont en crue. Noah fait le point sur la situation et vous propose des alternatives pour profiter de la région malgré tout.',
+      en: 'After weeks of heavy rain and snowmelt, the Loire, the Nièvre river and their tributaries are flooding. Noah takes stock of the situation and suggests alternatives to still enjoy the region.',
+      nl: 'Na weken van hevige regen en smeltwater staan de Loire, de Nièvre en hun zijrivieren hoog. Noah brengt de situatie in kaart en stelt alternatieven voor om toch van de regio te genieten.',
+    },
+    content: {
+      fr: `<p>Les semaines passées n'ont pas épargné la Nièvre. Depuis mi-mars 2026, des précipitations bien au-dessus des normales saisonnières conjuguées à une fonte tardive des neiges du Morvan ont provoqué une montée significative des eaux dans toute la région. La Loire a franchi plusieurs fois le seuil de vigilance orange à Nevers, et les affluents — la Nièvre, l'Aron, l'Yonne en amont — ont connu des niveaux record depuis plusieurs années.</p>
+
+<h2>Quelles zones sont affectées ?</h2>
+<p>Les secteurs les plus touchés sont les vals de Loire entre <strong>Nevers et Cosne-Cours-sur-Loire</strong>, ainsi que les basses vallées de l'Aron autour de <strong>Decize</strong> et de la Nièvre en aval de <strong>Guérigny</strong>. Le <strong>Canal du Nivernais</strong>, reliant Auxerre à Decize, a été temporairement fermé à la navigation entre le bief de Baye et Cercy-la-Tour en raison des niveaux d'eau trop élevés.</p>
+
+<p>Dans le massif du <strong>Morvan</strong>, plusieurs chemins de randonnée longeant les ruisseaux de tête de bassin sont impraticables. Les accès aux plages du <strong>Lac des Settons</strong> et du <strong>Lac de Chaumeçon</strong> sont partiellement fermés, les berges basses étant immergées.</p>
+
+<h2>Ce qui reste ouvert et accessible</h2>
+<p>La bonne nouvelle, c'est que la grande majorité des sites touristiques de la région restent pleinement accessibles. Les villages perchés, les châteaux et les hauts plateaux du Morvan ne sont pas affectés par les crues :</p>
+<ul>
+  <li><strong>Vézelay</strong> et sa basilique restent accessibles sans difficulté.</li>
+  <li>Les <strong>sentiers de crête du Morvan</strong> (Haut-Folin, signal d'Uchon, Mont Beuvray) sont praticables et offrent de magnifiques points de vue sur les vallées inondées — un spectacle impressionnant et rare.</li>
+  <li>Les musées de <strong>Nevers</strong> (Faïence, Beaux-Arts) et les sites religieux sont ouverts normalement.</li>
+  <li>Les <a href="/activites?cat=kastelen">châteaux et sites patrimoniaux</a> de la région n'ont pas été touchés.</li>
+</ul>
+
+<h2>Des activités adaptées à la saison</h2>
+<p>Une crue, c'est aussi un spectacle naturel peu ordinaire. Quelques idées pour en profiter intelligemment :</p>
+<ul>
+  <li><strong>Randonnée sur les hauteurs :</strong> Les <a href="/activites?cat=wandelen">sentiers en altitude du Morvan</a> sont dégagés et la vue sur les vallées depuis les points hauts est saisissante. Le GR13, dans sa partie haute, est accessible.</li>
+  <li><strong>Observation de la faune :</strong> Les crues déplacent la faune vers les hauteurs. Bécassines, hérons cendrés et parfois des balbuzards sont observables depuis les levées de Loire.</li>
+  <li><strong>Visites intérieures :</strong> Profitez-en pour découvrir les <a href="/activites?cat=kastelen">sites patrimoniaux</a> couverts : cave du musée de la Faïence à Nevers, ateliers de faïenciers, distillerie artisanale de Corbigny.</li>
+  <li><strong>Gastronomie :</strong> Un temps pluvieux est l'occasion parfaite pour s'attabler dans un restaurant local autour d'un bœuf bourguignon ou d'une potée nivernaise.</li>
+</ul>
+
+<h2>Quand la situation va-t-elle se normaliser ?</h2>
+<p>Selon Météo-France et Vigicrues, les niveaux devraient commencer à baisser d'ici fin mars 2026, sous réserve d'une accalmie pluviométrique. La décrue est généralement plus lente que la montée : comptez 10 à 15 jours après la fin des pluies pour que les vallées retrouvent leur aspect habituel.</p>
+
+<p>Les <a href="/evenements">événements de printemps</a> prévus dans la région — notamment les marchés de Pâques et les randonnées organisées — se maintiennent pour la plupart. Renseignez-vous auprès de l'office de tourisme de votre destination avant de partir.</p>
+
+<h2>Restez informés</h2>
+<p>Pour suivre la situation en temps réel :</p>
+<ul>
+  <li><strong>Vigicrues</strong> : vigicrues.gouv.fr — niveaux des cours d'eau en direct</li>
+  <li><strong>Météo-France</strong> : vigilance météo département 58 (Nièvre)</li>
+  <li><strong>Préfecture de la Nièvre</strong> : prefecture58.gouv.fr</li>
+</ul>
+
+<p>Bonne découverte malgré tout — le Morvan reste une destination magnifique en toute saison, et une crue de la Loire est un spectacle naturel que peu de visiteurs ont l'occasion de voir !</p>`,
+      en: `<p>The past weeks have been challenging for the Nièvre. Since mid-March 2026, above-average rainfall combined with late snowmelt from the Morvan massif has caused significant flooding across the region. The Loire has repeatedly crossed the orange alert threshold at Nevers, and its tributaries — the Nièvre, the Aron, the upper Yonne — have reached levels not seen for several years.</p>
+
+<h2>Which areas are affected?</h2>
+<p>The most affected areas are the Loire valleys between <strong>Nevers and Cosne-Cours-sur-Loire</strong>, the low-lying Aron valley around <strong>Decize</strong>, and the Nièvre river downstream from <strong>Guérigny</strong>. The <strong>Canal du Nivernais</strong> has been temporarily closed to boat traffic between Baye and Cercy-la-Tour due to high water levels.</p>
+
+<p>In the <strong>Morvan</strong> massif, several hiking trails along streams are temporarily impassable. Access to beaches at <strong>Lac des Settons</strong> and <strong>Lac de Chaumeçon</strong> is partially restricted.</p>
+
+<h2>What remains open and accessible</h2>
+<p>The good news is that the vast majority of the region's tourist sites remain fully accessible. Hilltop villages, châteaux and the higher Morvan plateaus are not affected:</p>
+<ul>
+  <li><strong>Vézelay</strong> and its basilica are fully accessible.</li>
+  <li>The <strong>Morvan ridge trails</strong> (Haut-Folin, signal d'Uchon, Mont Beuvray) offer spectacular views over flooded valleys.</li>
+  <li>Museums in <strong>Nevers</strong> are open as normal.</li>
+  <li>The region's <a href="/activites?cat=kastelen">châteaux and heritage sites</a> are unaffected.</li>
+</ul>
+
+<h2>Adapted activities for the season</h2>
+<ul>
+  <li><strong>High-altitude hiking:</strong> <a href="/activites?cat=wandelen">Morvan ridge trails</a> are clear and offer dramatic views of the flooded valleys below.</li>
+  <li><strong>Wildlife watching:</strong> Flooding pushes wildlife uphill. Grey herons, snipe and even ospreys can be spotted from the Loire embankments.</li>
+  <li><strong>Indoor heritage:</strong> Visit <a href="/activites?cat=kastelen">covered heritage sites</a> — the Faïence museum in Nevers, pottery workshops, artisan distilleries.</li>
+  <li><strong>Gastronomy:</strong> Rainy weather is the perfect excuse for a bœuf bourguignon at a local restaurant.</li>
+</ul>
+
+<p>Check <a href="/evenements">upcoming events</a> — most Easter markets and organised hikes are going ahead as planned.</p>`,
+      nl: `<p>De afgelopen weken waren niet gemakkelijk voor de Nièvre. Sinds half maart 2026 zorgen bovengemiddelde regenval en late sneeuwsmelt vanuit het Morvan-massief voor significante overstromingen in de hele regio. De Loire heeft bij Nevers herhaaldelijk de oranje alarmdrempel overschreden.</p>
+
+<h2>Welke gebieden zijn getroffen?</h2>
+<p>De meest getroffen gebieden zijn de Loire-valleien tussen <strong>Nevers en Cosne-Cours-sur-Loire</strong>, de lage Aron-vallei rond <strong>Decize</strong> en de Nièvre-rivier stroomafwaarts van <strong>Guérigny</strong>. Het <strong>Canal du Nivernais</strong> is tijdelijk gesloten voor scheepvaart.</p>
+
+<p>In het <strong>Morvan</strong>-massief zijn meerdere wandelpaden langs beken tijdelijk onbegaanbaar. De toegang tot stranden bij <strong>Lac des Settons</strong> en <strong>Lac de Chaumeçon</strong> is gedeeltelijk beperkt.</p>
+
+<h2>Wat is nog toegankelijk?</h2>
+<p>Het goede nieuws is dat de meeste toeristische bezienswaardigheden volledig toegankelijk blijven:</p>
+<ul>
+  <li><strong>Vézelay</strong> en de basiliek zijn normaal toegankelijk.</li>
+  <li>De <strong>hoge wandelroutes van het Morvan</strong> bieden spectaculaire uitzichten over de overstroomde valleien.</li>
+  <li>De musea in <strong>Nevers</strong> zijn gewoon open.</li>
+  <li>De <a href="/activites?cat=kastelen">kastelen en erfgoedsites</a> zijn niet getroffen.</li>
+</ul>
+
+<h2>Aangepaste activiteiten</h2>
+<ul>
+  <li><strong>Wandelen op hoogte:</strong> De <a href="/activites?cat=wandelen">Morvan-kamwegen</a> zijn vrij en bieden spectaculaire uitzichten.</li>
+  <li><strong>Wildwaarneming:</strong> Hoogwater drijft fauna naar hogere gronden. Reigers en soms visarenden zijn te zien langs de Loire-dijken.</li>
+  <li><strong>Binnen erfgoed:</strong> Bezoek het Faïence-museum in Nevers of ambachtelijke ateliers.</li>
+</ul>
+
+<p>Bekijk de <a href="/evenements">aankomende evenementen</a> — de meeste paasfestivals en georganiseerde wandelingen gaan door zoals gepland.</p>`,
+    },
+  },
+
+  // ─── Top 5 wandelingen in het Morvan ──────────────────────────
+  {
+    slug: 'top-5-randonnees-morvan',
+    date: '2026-03-25',
+    category: { fr: 'Randonnée', en: 'Hiking', nl: 'Wandelen' },
+    readTime: 7,
+    image: 'https://images.unsplash.com/photo-1519904981063-b0cf448d047a?w=1200&q=80',
+    title: {
+      fr: 'Top 5 des randonnées incontournables dans le Morvan',
+      en: 'Top 5 must-do hikes in the Morvan',
+      nl: 'Top 5 wandelingen die je niet mag missen in het Morvan',
+    },
+    excerpt: {
+      fr: 'Forêts profondes, lacs sauvages, sommets panoramiques : le Morvan est l'un des meilleurs terrains de randonnée de France. Noah vous guide à travers ses cinq itinéraires préférés pour tous les niveaux.',
+      en: 'Deep forests, wild lakes, panoramic summits: the Morvan is one of France's finest hiking destinations. Noah guides you through his five favourite routes for all levels.',
+      nl: 'Diepe bossen, wilde meren, panoramische toppen: het Morvan is een van de beste wandelgebieden van Frankrijk. Noah begeleidt je langs zijn vijf favoriete routes voor alle niveaus.',
+    },
+    content: {
+      fr: `<p>Le Morvan est fait pour la randonnée. Ce massif granitique au cœur de la Bourgogne offre plus de <strong>600 km de sentiers balisés</strong>, des lacs de retenue aux eaux sombres, des forêts de hêtres centenaires et des sommets qui culminent à plus de 900 mètres. Que vous soyez marcheur occasionnel ou randonneur aguerri, voici mes cinq randonnées favorites.</p>
+
+<p>Toutes ces randonnées sont accessibles depuis les activités référencées sur le site — retrouvez-les dans la section <a href="/activites?cat=wandelen">Randonnée</a>.</p>
+
+<h2>1. Le Tour du lac des Settons (14 km — facile)</h2>
+<p>C'est la randonnée iconique du Morvan. Le <strong>lac des Settons</strong>, retenue artificielle créée au XIXe siècle pour alimenter les flotteurs de la Loire, est entouré d'une pinède aux senteurs résineuses. Le tour complet (14 km) longe les deux rives avec des points de vue à couper le souffle sur l'eau sombre et les collines boisées.</p>
+<ul>
+  <li><strong>Départ :</strong> parking principal des Settons (Montsauche-les-Settons)</li>
+  <li><strong>Durée :</strong> 3h30 à 4h</li>
+  <li><strong>Dénivelé :</strong> +180m</li>
+  <li><strong>Idéal pour :</strong> familles, premiers randonneurs</li>
+</ul>
+<p>Conseil de Noah : faites-le en début de matinée pour profiter du lac dans la brume. En été, les plages du lac accueillent baigneurs et kayakistes.</p>
+
+<h2>2. Le Haut-Folin (8 km — modéré)</h2>
+<p>À 901 mètres, le <strong>Haut-Folin</strong> est le point culminant du Morvan et le toit de la Bourgogne. La randonnée depuis Saint-Prix traverse une magnifique forêt de résineux avant d'atteindre le sommet dégagé d'où le panorama par temps clair s'étend jusqu'aux Alpes.</p>
+<ul>
+  <li><strong>Départ :</strong> parking de la Maison forestière, Saint-Prix</li>
+  <li><strong>Durée :</strong> 2h30 à 3h</li>
+  <li><strong>Dénivelé :</strong> +320m</li>
+  <li><strong>Idéal pour :</strong> panoramas et couchers de soleil</li>
+</ul>
+<p>Conseil de Noah : apportez des jumelles — les conditions atmosphériques du Morvan offrent des panoramas rares. Le sommet est enneigé de novembre à mars.</p>
+
+<h2>3. Le Mont Beuvray et Bibracte (6 km — facile)</h2>
+<p>Le <strong>Mont Beuvray</strong> (821 m) est l'un des sites archéologiques les plus importants de la Gaule : c'est ici que se trouvait <strong>Bibracte</strong>, la capitale des Éduens, là où Vercingétorix aurait été élu chef des Gaulois avant la bataille d'Alésia. La randonnée fait le tour du plateau sommital en passant par les vestiges des remparts et le musée de site.</p>
+<ul>
+  <li><strong>Départ :</strong> parking du musée de Bibracte (Saint-Léger-sous-Beuvray)</li>
+  <li><strong>Durée :</strong> 2h à 2h30</li>
+  <li><strong>Dénivelé :</strong> +180m</li>
+  <li><strong>Idéal pour :</strong> histoire et archéologie, familles</li>
+</ul>
+<p>Conseil de Noah : visitez le musée de Bibracte avant ou après la rando — il est l'un des mieux conçus de France pour la préhistoire gauloise.</p>
+
+<h2>4. La Cure en forêt (12 km — modéré)</h2>
+<p>La rivière <strong>Cure</strong> est l'une des plus belles rivières du Morvan — claire, vive, parsemée de cascades et de vasques naturelles. Cette randonnée en boucle depuis <strong>Quarré-les-Tombes</strong> descend jusqu'au fond du val pour longer la rivière sur plusieurs kilomètres avant de remonter par les crêtes forestières.</p>
+<ul>
+  <li><strong>Départ :</strong> place de l'église, Quarré-les-Tombes</li>
+  <li><strong>Durée :</strong> 4h à 4h30</li>
+  <li><strong>Dénivelé :</strong> +380m</li>
+  <li><strong>Idéal pour :</strong> amoureux des rivières, photographes</li>
+</ul>
+<p>Conseil de Noah : prenez un pique-nique et arrêtez-vous au bord de la Cure — les vasques au fond du val sont parfaites pour piquer les pieds en été.</p>
+
+<h2>5. Le Signal d'Uchon (10 km — modéré)</h2>
+<p>Moins connu que le Haut-Folin, le <strong>Signal d'Uchon</strong> (681 m) est un chaos granitique spectaculaire qui offre un panorama à 360° sur le Morvan, le Charolais et par temps clair jusqu'au Mont-Blanc. La randonnée depuis le village d'Uchon traverse des landes de bruyère typiques du Morvan méridional.</p>
+<ul>
+  <li><strong>Départ :</strong> village d'Uchon (Saône-et-Loire, limite Morvan)</li>
+  <li><strong>Durée :</strong> 3h à 3h30</li>
+  <li><strong>Dénivelé :</strong> +260m</li>
+  <li><strong>Idéal pour :</strong> panoramas et géologie</li>
+</ul>
+<p>Conseil de Noah : les chaos granitiques en automne, couverts de mousse et baignés dans la lumière rasante, sont d'une beauté photographique rare.</p>
+
+<h2>Conseils pratiques pour randonner dans le Morvan</h2>
+<ul>
+  <li><strong>Équipement :</strong> Le Morvan est humide — même en été, prévoyez une veste imperméable.</li>
+  <li><strong>Cartes :</strong> Emportez les cartes IGN Top 25 (séries 2823OT, 2724OT) ou utilisez l'application Komoot.</li>
+  <li><strong>Refuges et ravitaillement :</strong> Les bourgs sont petits — prévoyez votre ravitaillement à l'avance.</li>
+  <li><strong>Période idéale :</strong> Avril–juin (verdure, pas de foule) et septembre–octobre (feuillage automnal).</li>
+</ul>
+
+<p>Retrouvez toutes les randonnées disponibles dans la région dans notre section <a href="/activites?cat=wandelen">activités Randonnée</a>, ou consultez l'<a href="/evenements">agenda des randonnées organisées</a> pour marcher en groupe.</p>`,
+      en: `<p>The Morvan is made for hiking. This granite massif in the heart of Burgundy offers more than <strong>600 km of marked trails</strong>, dark-watered lakes, ancient beech forests and summits reaching over 900 metres. Whether you're an occasional walker or seasoned hiker, here are my five favourite routes.</p>
+
+<p>All of these hikes are listed in our <a href="/activites?cat=wandelen">Hiking activities</a> section.</p>
+
+<h2>1. Lac des Settons circuit (14 km — easy)</h2>
+<p>The iconic Morvan hike. The <strong>Lac des Settons</strong> is surrounded by a pine forest and the full circuit (14 km) follows both shores with breathtaking views over the dark water.</p>
+<ul><li><strong>Start:</strong> Main car park, Montsauche-les-Settons</li><li><strong>Duration:</strong> 3.5–4 hours</li><li><strong>Elevation:</strong> +180m</li><li><strong>Best for:</strong> families, first-time hikers</li></ul>
+
+<h2>2. Haut-Folin summit (8 km — moderate)</h2>
+<p>At 901 metres, <strong>Haut-Folin</strong> is Burgundy's highest point. Clear-day views extend as far as the Alps.</p>
+<ul><li><strong>Duration:</strong> 2.5–3 hours</li><li><strong>Elevation:</strong> +320m</li></ul>
+
+<h2>3. Mont Beuvray and Bibracte (6 km — easy)</h2>
+<p>Archaeological walking at Bibracte, the ancient Gaulish capital where Vercingetorix was elected leader before the battle of Alesia.</p>
+<ul><li><strong>Duration:</strong> 2–2.5 hours</li><li><strong>Best for:</strong> history lovers, families</li></ul>
+
+<h2>4. La Cure river valley (12 km — moderate)</h2>
+<p>One of the Morvan's most beautiful rivers — clear, lively, with natural pools perfect for cooling your feet in summer.</p>
+<ul><li><strong>Start:</strong> Quarré-les-Tombes church square</li><li><strong>Duration:</strong> 4–4.5 hours</li><li><strong>Elevation:</strong> +380m</li></ul>
+
+<h2>5. Signal d'Uchon (10 km — moderate)</h2>
+<p>A spectacular granite chaos with 360° views over the Morvan and Charolais. One of the region's hidden gems.</p>
+<ul><li><strong>Duration:</strong> 3–3.5 hours</li></ul>
+
+<p>Find all available hikes in our <a href="/activites?cat=wandelen">Hiking activities</a> section, or check the <a href="/evenements">events calendar</a> for organised group walks.</p>`,
+      nl: `<p>Het Morvan is gemaakt voor wandelaars. Dit granietmassief biedt meer dan <strong>600 km gemarkeerde paden</strong>, donkere meren, eeuwenoude beukenbossen en toppen tot boven de 900 meter. Hier zijn mijn vijf favoriete routes.</p>
+
+<p>Al deze wandelingen zijn terug te vinden in onze sectie <a href="/activites?cat=wandelen">Wandelactiviteiten</a>.</p>
+
+<h2>1. Rondwandeling Lac des Settons (14 km — makkelijk)</h2>
+<p>De iconische Morvan-wandeling. Het <strong>Lac des Settons</strong> is omgeven door een dennenhos en de volledige rondwandeling volgt beide oevers met adembenemende uitzichten.</p>
+<ul><li><strong>Duur:</strong> 3,5–4 uur</li><li><strong>Hoogteverschil:</strong> +180m</li><li><strong>Ideaal voor:</strong> gezinnen, beginners</li></ul>
+
+<h2>2. Haut-Folin (8 km — gemiddeld)</h2>
+<p>Het hoogste punt van Bourgondië op 901 meter. Bij helder weer uitzicht tot de Alpen.</p>
+<ul><li><strong>Duur:</strong> 2,5–3 uur</li><li><strong>Hoogteverschil:</strong> +320m</li></ul>
+
+<h2>3. Mont Beuvray en Bibracte (6 km — makkelijk)</h2>
+<p>Wandelen over het Gallische oppidum Bibracte, waar Vercingetorix tot aanvoerder werd gekozen vóór de slag bij Alesia.</p>
+<ul><li><strong>Duur:</strong> 2–2,5 uur</li><li><strong>Ideaal voor:</strong> geschiedenisliefhebbers, gezinnen</li></ul>
+
+<h2>4. De Cure-rivier (12 km — gemiddeld)</h2>
+<p>Een van de mooiste rivieren van het Morvan — helder, levendig, met natuurlijke zwembadjes.</p>
+<ul><li><strong>Duur:</strong> 4–4,5 uur</li><li><strong>Hoogteverschil:</strong> +380m</li></ul>
+
+<h2>5. Signal d'Uchon (10 km — gemiddeld)</h2>
+<p>Een spectaculair granietchaos met panoramisch uitzicht over het Morvan en het Charolais.</p>
+<ul><li><strong>Duur:</strong> 3–3,5 uur</li></ul>
+
+<p>Vind alle beschikbare wandelingen in onze sectie <a href="/activites?cat=wandelen">Wandelactiviteiten</a>, of bekijk de <a href="/evenements">evenementenkalender</a> voor georganiseerde groepswandelingen.</p>`,
+    },
+  },
+
+  // ─── Wandelen met kinderen in de Nièvre ───────────────────────
+  {
+    slug: 'randonner-enfants-nievre',
+    date: '2026-03-22',
+    category: { fr: 'Randonnée', en: 'Hiking', nl: 'Wandelen' },
+    readTime: 5,
+    image: 'https://images.unsplash.com/photo-1551632811-561732d1e306?w=1200&q=80',
+    title: {
+      fr: 'Randonner avec des enfants dans la Nièvre : les meilleures balades',
+      en: 'Hiking with children in the Nièvre: the best family walks',
+      nl: 'Wandelen met kinderen in de Nièvre: de beste gezinswandelingen',
+    },
+    excerpt: {
+      fr: 'La Nièvre est une destination idéale pour les familles avec de jeunes enfants. Noah sélectionne les randonnées courtes, sécurisées et ludiques qui transformeront vos balades en véritables aventures pour les petits.',
+      en: 'The Nièvre is an ideal destination for families with young children. Noah selects the short, safe and fun hikes that will turn your walks into real adventures for the little ones.',
+      nl: 'De Nièvre is een ideale bestemming voor gezinnen met jonge kinderen. Noah selecteert de korte, veilige en speelse wandelingen die uw tochten tot echte avonturen voor de kleintjes maken.',
+    },
+    content: {
+      fr: `<p>Emmener des enfants en randonnée, c'est tout un art. Il faut des paysages qui les captivent, des objectifs concrets qui les motivent, et surtout des distances raisonnables. La Nièvre et le Morvan sont parfaits pour ça : la nature y est spectaculaire, les sentiers bien balisés, et il n'y a jamais loin vers un lac pour piquer-niquer ou une rivière pour se tremper les pieds.</p>
+
+<p>Découvrez toutes les <a href="/activites?cat=wandelen">randonnées disponibles</a> dans la région, adaptées à tous les niveaux.</p>
+
+<h2>La règle des 30 minutes par an d'âge</h2>
+<p>En pédiatrie de plein air, on parle de la règle des 30 minutes par an d'âge : un enfant de 4 ans peut marcher environ 2 heures, un enfant de 6 ans 3 heures, etc. Restez en dessous de ces limites et tout le monde rentrera content.</p>
+
+<h2>1. Le sentier des Loutres — Lac de Saint-Agnan (5 km)</h2>
+<p>Le <strong>lac de Saint-Agnan</strong> est l'un des lacs les plus accessibles du Morvan. Le sentier qui en fait le tour est plat, ombragé et parsemé de panneaux pédagogiques sur la faune locale — notamment les loutres qui ont recolonisé la rivière Cousin voisine. Idéal pour les 4–8 ans.</p>
+<ul>
+  <li><strong>Départ :</strong> aire de pique-nique du lac de Saint-Agnan (Chevigny)</li>
+  <li><strong>Distance :</strong> 5 km</li>
+  <li><strong>Durée :</strong> 1h30</li>
+  <li><strong>Point fort :</strong> plage avec baignade surveillée en été</li>
+</ul>
+
+<h2>2. La forêt des Fées — Pierre Écrite (3 km)</h2>
+<p>Entre <strong>Vézelay</strong> et <strong>Pierre-Perthuis</strong>, ce petit sentier traverse une forêt de hêtres aux allures de décor de conte. La Pierre Écrite, un rocher gravé de l'époque romaine, fascine les enfants qui adorent chercher les inscriptions cachées dans la mousse.</p>
+<ul>
+  <li><strong>Distance :</strong> 3 km</li>
+  <li><strong>Durée :</strong> 1h15</li>
+  <li><strong>Idéal pour :</strong> 3–7 ans</li>
+  <li><strong>Bonus :</strong> le pont de Pierre-Perthuis enjambe la Cure — spectaculaire !</li>
+</ul>
+
+<h2>3. Le village et les lavoirs de Bazoches (4 km)</h2>
+<p>Une boucle facile depuis le <strong>château de Bazoches</strong> (demeure du Maréchal Vauban) qui traverse les champs et longe les ruisseaux du village. Les lavoirs médiévaux fascinent les enfants, tout comme les chevaux et les vaches qui paissent dans les prés alentour.</p>
+<ul>
+  <li><strong>Distance :</strong> 4 km</li>
+  <li><strong>Durée :</strong> 1h30</li>
+  <li><strong>À combiner avec :</strong> la visite du château de Bazoches</li>
+</ul>
+
+<h2>4. Les cascades de la Canche (6 km)</h2>
+<p>Le long de la <strong>Canche</strong>, torrent du Morvan, une série de petites cascades et de vasques naturelles jalonnent le sentier. En été, les vasques sont parfaites pour barboter. Les enfants s'arrêtent toutes les cinq minutes — ce qui est un avantage quand la randonnée est plus longue que prévu !</p>
+<ul>
+  <li><strong>Départ :</strong> Planchez</li>
+  <li><strong>Distance :</strong> 6 km</li>
+  <li><strong>Durée :</strong> 2h à 2h30</li>
+  <li><strong>Idéal pour :</strong> 6 ans et plus</li>
+</ul>
+
+<h2>5. Bibracte en famille — Le sentier des Remparts (4 km)</h2>
+<p>Le sentier des Remparts du <strong>Mont Beuvray</strong> est conçu pour les familles : panneaux interactifs sur la vie gauloise, reconstitutions d'artisanat, et une végétation spectaculaire tout au long du parcours. Le musée de Bibracte propose des activités pédagogiques spéciales pour les enfants les mercredis et pendant les vacances.</p>
+<ul>
+  <li><strong>Distance :</strong> 4 km</li>
+  <li><strong>Durée :</strong> 1h30 (+ visite du musée)</li>
+  <li><strong>Idéal pour :</strong> enfants curieux d'histoire, 5 ans et plus</li>
+</ul>
+
+<h2>Quoi emporter pour randonner avec des enfants ?</h2>
+<ul>
+  <li>Chaussures imperméables (même en été, le Morvan est humide)</li>
+  <li>K-way pour chacun</li>
+  <li>Loupe de botaniste ou carnet naturaliste pour les enfants</li>
+  <li>Provisions en quantité — les enfants ont toujours plus faim dehors</li>
+  <li>Un appareil photo jetable pour les enfants (ça les occupe et ça crée de beaux souvenirs)</li>
+</ul>
+
+<p>Consultez notre <a href="/activites?cat=wandelen">guide complet des randonnées</a> pour trouver l'itinéraire parfait selon l'âge et le niveau de vos enfants, et les <a href="/evenements">sorties nature organisées</a> qui accueillent les familles.</p>`,
+      en: `<p>Taking children hiking is an art. You need landscapes that captivate them, concrete goals that motivate them, and above all reasonable distances. The Nièvre and Morvan are perfect for this — spectacular nature, well-marked trails, and always a lake nearby for a picnic or a river to paddle in.</p>
+
+<p>Find all available <a href="/activites?cat=wandelen">hiking routes</a> in the region.</p>
+
+<h2>The 30-minute rule</h2>
+<p>A useful guideline: 30 minutes of hiking per year of age. A 4-year-old can walk about 2 hours, a 6-year-old 3 hours. Stay within these limits.</p>
+
+<h2>1. The Otters' Trail — Lac de Saint-Agnan (5 km)</h2>
+<p>Flat, shaded loop with educational panels about local wildlife (otters!). Perfect for ages 4–8. Supervised swimming beach in summer.</p>
+<ul><li><strong>Duration:</strong> 1.5 hours</li></ul>
+
+<h2>2. The Fairies' Forest — Pierre Écrite (3 km)</h2>
+<p>A magical beech forest walk near Vézelay leading to an inscribed Roman rock that children love searching for in the moss.</p>
+<ul><li><strong>Duration:</strong> 1h15</li><li><strong>Best for:</strong> ages 3–7</li></ul>
+
+<h2>3. Bazoches village and wash-houses (4 km)</h2>
+<p>Easy loop from Bazoches château through fields and along streams. Medieval wash-houses and farm animals fascinate young children.</p>
+<ul><li><strong>Duration:</strong> 1.5 hours</li></ul>
+
+<h2>4. La Canche waterfalls (6 km)</h2>
+<p>Natural pools perfect for paddling. Children stop every five minutes — which is actually helpful on longer hikes!</p>
+<ul><li><strong>Duration:</strong> 2–2.5 hours</li><li><strong>Best for:</strong> ages 6+</li></ul>
+
+<h2>5. Bibracte Family Trail (4 km)</h2>
+<p>Designed for families with interactive panels about Gaulish life. Combine with the Bibracte museum for a full educational day.</p>
+<ul><li><strong>Duration:</strong> 1.5 hours (+museum visit)</li></ul>
+
+<p>Browse our <a href="/activites?cat=wandelen">full hiking guide</a> and <a href="/evenements">nature events calendar</a> for family-friendly organised walks.</p>`,
+      nl: `<p>Kinderen meenemen op wandeling is een kunst. Je hebt landschappen nodig die boeien, concrete doelen die motiveren, en redelijke afstanden. De Nièvre en het Morvan zijn hier perfect voor — spectaculaire natuur, goed bewegwijzerde paden en altijd een meer of rivier in de buurt.</p>
+
+<p>Vind alle beschikbare <a href="/activites?cat=wandelen">wandelroutes</a> in de regio.</p>
+
+<h2>De 30-minutenregel</h2>
+<p>Een handige richtlijn: 30 minuten wandelen per leeftijdsjaar. Een kind van 4 kan circa 2 uur lopen, een kind van 6 jaar circa 3 uur.</p>
+
+<h2>1. Het Otterpad — Lac de Saint-Agnan (5 km)</h2>
+<p>Vlakke, beschaduwde rondwandeling met educatieve panelen over otter en andere fauna. Ideaal voor 4–8 jaar. Bewaamd zwemstrand in de zomer.</p>
+<ul><li><strong>Duur:</strong> 1,5 uur</li></ul>
+
+<h2>2. Het Sprookjesbos — Pierre Écrite (3 km)</h2>
+<p>Een magisch beukenbos nabij Vézelay dat uitkomt bij een beschreven Romeinse rots. Kinderen zoeken graag de inscripties in het mos.</p>
+<ul><li><strong>Duur:</strong> 1u15</li><li><strong>Ideaal voor:</strong> 3–7 jaar</li></ul>
+
+<h2>3. Bazoches en de wasplaatsen (4 km)</h2>
+<p>Makkelijke rondwandeling langs middeleeuwse wasplaatsen en weilanden met boerderijdieren.</p>
+<ul><li><strong>Duur:</strong> 1,5 uur</li></ul>
+
+<h2>4. De Canche-watervallen (6 km)</h2>
+<p>Natuurlijke zwembaadjes perfect om in te pootjebaden. Kinderen stoppen elke vijf minuten — wat eigenlijk handig is bij langere wandelingen!</p>
+<ul><li><strong>Duur:</strong> 2–2,5 uur</li><li><strong>Ideaal voor:</strong> 6 jaar en ouder</li></ul>
+
+<h2>5. Bibracte gezinspad (4 km)</h2>
+<p>Speciaal ontworpen voor gezinnen met interactieve panelen over het Gallische leven. Combineer met een museumbezoek.</p>
+<ul><li><strong>Duur:</strong> 1,5 uur (+museum)</li></ul>
+
+<p>Bekijk onze <a href="/activites?cat=wandelen">volledige wandelgids</a> en de <a href="/evenements">natuur-evenementenkalender</a> voor georganiseerde gezinswandelingen.</p>`,
+    },
+  },
   // ─────────────────────────────────────────────────────────────
   {
     slug: 'guide-nevers-que-faire',

@@ -1,4 +1,5 @@
 import { useParams, Link, Navigate } from 'react-router-dom';
+import { usePageTitle } from '../hooks/usePageTitle';
 import { useState, useEffect } from 'react';
 import { getBlogPost } from '../hooks/useBlogPosts';
 import { useBlogPosts } from '../hooks/useBlogPosts';
@@ -39,6 +40,7 @@ export default function BlogPostPage({ lang }) {
   if (post === null) return <Navigate to="/blog" replace />;
 
   const title   = post.title[lang]   || post.title.fr;
+  usePageTitle(title);
   const content = post.content[lang] || post.content.fr;
   const related = allPosts.filter(p => p.slug !== slug).slice(0, 3);
 

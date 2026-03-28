@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { collection, addDoc, Timestamp } from 'firebase/firestore';
 import { db } from '../firebase';
+import { usePageTitle } from '../hooks/usePageTitle';
 
 const COPY = {
   fr: {
@@ -66,6 +67,7 @@ const COPY = {
 };
 
 export default function ContactPage({ lang }) {
+  usePageTitle(tr?.pageTitles?.contact);
   const c = COPY[lang] || COPY.fr;
   const [form, setForm] = useState({ name: '', email: '', subject: c.subjects[0], message: '' });
   const [status, setStatus] = useState('idle');

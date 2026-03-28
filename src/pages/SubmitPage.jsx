@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { collection, addDoc, Timestamp } from 'firebase/firestore';
 import { db } from '../firebase';
+import { usePageTitle } from '../hooks/usePageTitle';
 
 const ACTIVITY_CATEGORIES = ['wandelen', 'fietsen', 'water', 'kastelen', 'eten', 'overig'];
 const EVENT_TYPES = ['festival', 'muziek', 'markt', 'sport', 'natuur', 'cultuur', 'overig'];
@@ -19,6 +20,7 @@ const EMPTY_FORM = {
 };
 
 export default function SubmitPage({ lang, tr }) {
+  usePageTitle(tr?.pageTitles?.submit);
   const s = tr.submit;
   const [form, setForm] = useState(EMPTY_FORM);
   const [submitting, setSubmitting] = useState(false);
