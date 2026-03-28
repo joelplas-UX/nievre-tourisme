@@ -103,13 +103,29 @@ function extractPhoto(poi) {
   try {
     const reps = poi.hasRepresentation || [];
     for (const rep of reps) {
+      // Pad 1: directe ebucore:locator op het rep-object zelf (v1 vereenvoudigd)
+      let direct = rep['ebucore:locator'] || rep.locator;
+      if (Array.isArray(direct)) direct = direct[0];
+      if (direct && typeof direct === 'string' && direct.startsWith('http')) return direct;
+
+      // Pad 2: via hasRelatedResource (oud JSON-LD formaat)
       const resources = rep['ebucore:hasRelatedResource'] || rep.hasRelatedResource || [];
       for (const res of resources) {
         let url = res['ebucore:locator'] || res.locator;
         if (Array.isArray(url)) url = url[0];
         if (url && typeof url === 'string' && url.startsWith('http')) return url;
       }
+
+      // Pad 3: thumbnailUrl direct op rep
+      const thumb = rep.thumbnailUrl || rep['schema:thumbnailUrl'];
+      if (thumb && typeof thumb === 'string' && thumb.startsWith('http')) return thumb;
     }
+
+    // Pad 4: thumbnailUrl direct op het poi-object
+    const root = poi.thumbnailUrl || poi['schema:thumbnailUrl'];
+    if (root && typeof root === 'string' && root.startsWith('http')) return root;
+    if (Array.isArray(root) && root[0]?.startsWith?.('http')) return root[0];
+
   } catch {}
   return null;
 }

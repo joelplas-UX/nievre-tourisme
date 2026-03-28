@@ -2,11 +2,15 @@
  * Zoekt ontbrekende foto's voor evenementen én activiteiten.
  * Background function — geeft direct 202 terug, loopt max 15 min.
  *
+ * Vereiste env var (optioneel maar aanbevolen):
+ *   FLICKR_API_KEY — gratis via https://www.flickr.com/services/apps/create/
+ *
  * Strategie per item zonder imageUrl:
  *  1. Wikipedia FR-artikel op naam
  *  2. Wikipedia FR-artikel met stad
- *  3. Wikimedia Commons tekstzoekopdracht
- *  4. og:image uit de sourceUrl/url van het item (re-fetch)
+ *  3. Flickr (Creative Commons foto's) — echte reisfoto's van de Nièvre/Morvan
+ *  4. Wikimedia Commons tekstzoekopdracht
+ *  5. og:image uit de sourceUrl/url van het item (re-fetch)
  *
  * Verwerkt max 150 evenementen + 150 activiteiten per run.
  */
@@ -71,6 +75,49 @@ async function searchCommonsImage(query) {
   } catch { return null; }
 }
 
+/**
+ * Zoekt Creative Commons foto's op Flickr.
+ * Licenties: CC BY (1), CC BY-SA (3), CC BY-ND (4), CC0/Publiek domein (9,10)
+ * Vereist: FLICKR_API_KEY env var
+ */
+async function searchFlickrImage(query) {
+  const key = process.env.FLICKR_API_KEY;
+  if (!key) return null;
+  try {
+    // Zoek in "Nièvre" of "Morvan" context voor relevantie
+    const searchQuery = query.includes('Nièvre') || query.includes('Morvan')
+      ? query
+      : `${query} Nièvre Morvan France`;
+
+    const params = new URLSearchParams({
+      method: 'flickr.photos.search',
+      api_key: key,
+      text: searchQuery,
+      license: '1,3,4,5,6,9,10', // CC licenties + publiek domein
+      media: 'photos',
+      content_type: '1',           // alleen foto's (geen screenshots)
+      sort: 'relevance',
+      per_page: '5',
+      extras: 'url_l,url_m,owner_name,license',
+      format: 'json',
+      nojsoncallback: '1',
+    });
+
+    const json = await (await fetch(
+      `https://api.flickr.com/services/rest/?${params}`,
+      FETCH_OPTS
+    )).json();
+
+    const photos = json.photos?.photo || [];
+    // Pak de eerste foto met een bruikbare URL
+    for (const photo of photos) {
+      const url = photo.url_l || photo.url_m;
+      if (url && url.startsWith('http')) return url;
+    }
+    return null;
+  } catch { return null; }
+}
+
 /** Haalt og:image of eerste grote <img> op van een externe pagina */
 async function fetchOgImage(pageUrl) {
   if (!pageUrl || !pageUrl.startsWith('http')) return null;
@@ -99,10 +146,10 @@ async function fetchOgImage(pageUrl) {
 }
 
 /**
- * Zoekt foto via 4 stappen, stopt bij eerste treffer.
+ * Zoekt foto via 5 stappen, stopt bij eerste treffer.
  */
 async function findPhoto(titleFr, city, sourceUrl) {
-  // 1. Wikipedia op naam
+  // 1. Wikipedia op naam (meest specifiek)
   const wp1 = await searchWikipediaImage(titleFr);
   if (wp1) return { url: wp1, source: 'wikipedia' };
 
@@ -112,18 +159,25 @@ async function findPhoto(titleFr, city, sourceUrl) {
     if (wp2) return { url: wp2, source: 'wikipedia' };
   }
 
-  // 3. Wikimedia Commons
-  const queries = [
+  // 3. Flickr Creative Commons — echte reisfoto's
+  const flickrQuery = city
+    ? `${titleFr} ${city}`
+    : `${titleFr} Nièvre`;
+  const fl = await searchFlickrImage(flickrQuery);
+  if (fl) return { url: fl, source: 'flickr' };
+
+  // 4. Wikimedia Commons
+  const commonsQueries = [
     `${titleFr} ${city || 'Nièvre'} France`,
     city ? `${city} Nièvre` : null,
   ].filter(Boolean);
 
-  for (const q of queries) {
+  for (const q of commonsQueries) {
     const c = await searchCommonsImage(q);
     if (c) return { url: c, source: 'wikimedia' };
   }
 
-  // 4. og:image van de bronpagina
+  // 5. og:image van de bronpagina
   if (sourceUrl) {
     const og = await fetchOgImage(sourceUrl);
     if (og) return { url: og, source: 'og:image' };
