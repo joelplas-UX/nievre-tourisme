@@ -127,8 +127,8 @@ export const POSTS = [
       nl: 'Top 5 wandelingen die je niet mag missen in het Morvan',
     },
     excerpt: {
-      fr: 'Forêts profondes, lacs sauvages, sommets panoramiques : le Morvan est l'un des meilleurs terrains de randonnée de France. Noah vous guide à travers ses cinq itinéraires préférés pour tous les niveaux.',
-      en: 'Deep forests, wild lakes, panoramic summits: the Morvan is one of France's finest hiking destinations. Noah guides you through his five favourite routes for all levels.',
+      fr: 'Forêts profondes, lacs sauvages, sommets panoramiques : le Morvan est l\'un des meilleurs terrains de randonnée de France. Noah vous guide à travers ses cinq itinéraires préférés pour tous les niveaux.',
+      en: 'Deep forests, wild lakes, panoramic summits: the Morvan is one of France\'s finest hiking destinations. Noah guides you through his five favourite routes for all levels.',
       nl: 'Diepe bossen, wilde meren, panoramische toppen: het Morvan is een van de beste wandelgebieden van Frankrijk. Noah begeleidt je langs zijn vijf favoriete routes voor alle niveaus.',
     },
     content: {
@@ -266,7 +266,7 @@ export const POSTS = [
       nl: 'De Nièvre is een ideale bestemming voor gezinnen met jonge kinderen. Noah selecteert de korte, veilige en speelse wandelingen die uw tochten tot echte avonturen voor de kleintjes maken.',
     },
     content: {
-      fr: `<p>Emmener des enfants en randonnée, c'est tout un art. Il faut des paysages qui les captivent, des objectifs concrets qui les motivent, et surtout des distances raisonnables. La Nièvre et le Morvan sont parfaits pour ça : la nature y est spectaculaire, les sentiers bien balisés, et il n'y a jamais loin vers un lac pour piquer-niquer ou une rivière pour se tremper les pieds.</p>
+      fr: `<p>Emmener des enfants en randonnée, c\'est tout un art. Il faut des paysages qui les captivent, des objectifs concrets qui les motivent, et surtout des distances raisonnables. La Nièvre et le Morvan sont parfaits pour ça : la nature y est spectaculaire, les sentiers bien balisés, et il n\'y a jamais loin vers un lac pour piquer-niquer ou une rivière pour se tremper les pieds.</p>
 
 <p>Découvrez toutes les <a href="/activites?cat=wandelen">randonnées disponibles</a> dans la région, adaptées à tous les niveaux.</p>
 
