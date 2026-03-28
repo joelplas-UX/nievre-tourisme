@@ -1,11 +1,12 @@
 import { useParams, Link, Navigate } from 'react-router-dom';
-import { useEffect } from 'react';
-import { getPost, getRelatedPosts } from '../data/posts';
+import { useState, useEffect } from 'react';
+import { getBlogPost } from '../hooks/useBlogPosts';
+import { useBlogPosts } from '../hooks/useBlogPosts';
 
 const COPY = {
-  fr: { back: '← Blog', related: 'Articles similaires', min: 'min de lecture', by: 'Rédaction Nièvre & Morvan' },
-  en: { back: '← Blog', related: 'Related articles', min: 'min read', by: 'Nièvre & Morvan editorial' },
-  nl: { back: '← Blog', related: 'Gerelateerde artikelen', min: 'min lezen', by: 'Nièvre & Morvan redactie' },
+  fr: { back: '← Blog', related: 'Articles similaires', min: 'min de lecture', by: 'Rédaction Nièvre & Morvan', loading: 'Chargement…' },
+  en: { back: '← Blog', related: 'Related articles', min: 'min read', by: 'Nièvre & Morvan editorial', loading: 'Loading…' },
+  nl: { back: '← Blog', related: 'Gerelateerde artikelen', min: 'min lezen', by: 'Nièvre & Morvan redactie', loading: 'Laden…' },
 };
 
 function formatDate(dateStr, lang) {
@@ -16,18 +17,30 @@ function formatDate(dateStr, lang) {
 
 export default function BlogPostPage({ lang }) {
   const { slug } = useParams();
-  const post = getPost(slug);
   const c = COPY[lang] || COPY.fr;
+
+  const [post, setPost] = useState(undefined); // undefined = loading, null = not found
+  const { posts: allPosts } = useBlogPosts({ publishedOnly: true });
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    setPost(undefined);
+    getBlogPost(slug).then(p => setPost(p || null));
   }, [slug]);
 
-  if (!post) return <Navigate to="/blog" replace />;
+  if (post === undefined) {
+    return (
+      <main className="page" style={{ textAlign: 'center', padding: '4rem 1rem' }}>
+        <p style={{ color: 'var(--text-muted)' }}>{c.loading}</p>
+      </main>
+    );
+  }
+
+  if (post === null) return <Navigate to="/blog" replace />;
 
   const title   = post.title[lang]   || post.title.fr;
   const content = post.content[lang] || post.content.fr;
-  const related = getRelatedPosts(slug, 3);
+  const related = allPosts.filter(p => p.slug !== slug).slice(0, 3);
 
   return (
     <main className="page blog-post-page">

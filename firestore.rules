@@ -32,6 +32,31 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // Blog posts: gepubliceerde posts publiek leesbaar, admin schrijft
+    match /morvan/data/blog_posts/{doc} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+
+    // Contactberichten: iedereen mag aanmaken, alleen admin mag lezen
+    match /morvan/data/contact_messages/{doc} {
+      allow create: if true;
+      allow read, delete: if request.auth != null;
+      allow update: if false;
+    }
+
+    // Nieuwsbrief abonnees: aanmaken + uitschrijven via Function (Admin SDK)
+    match /morvan/data/subscribers/{doc} {
+      allow read: if request.auth != null;
+      allow write: if false; // alleen via Netlify Functions (Admin SDK)
+    }
+
+    // Nieuwsbrief runs log: alleen admin leest, schrijven via Admin SDK
+    match /morvan/data/newsletter_runs/{doc} {
+      allow read: if request.auth != null;
+      allow write: if false;
+    }
+
     // Inzendingen: publiek aanmaken, admin mag lezen + verwijderen
     match /morvan/data/submissions/{doc} {
       allow create: if true;

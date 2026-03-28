@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'firebase/auth';
 import {
-  collection, getDocs, orderBy, query, limit,
+  collection, getDocs, orderBy, query, limit, where,
   doc, updateDoc, addDoc, setDoc, deleteDoc, Timestamp,
 } from 'firebase/firestore';
 import { auth, db } from '../firebase';
@@ -74,6 +74,7 @@ export default function AdminPage({ lang, tr }) {
   const [syncingDT, setSyncingDT] = useState(false);
   const [syncingOAG, setSyncingOAG] = useState(false);
   const [syncingVisorando, setSyncingVisorando] = useState(false);
+  const [syncingKoikispass, setSyncingKoikispass] = useState(false);
   const [enriching, setEnriching] = useState(false);
   const [enrichingPhotos, setEnrichingPhotos] = useState(false);
   const [syncMsg, setSyncMsg] = useState('');
@@ -96,6 +97,28 @@ export default function AdminPage({ lang, tr }) {
   const [photoSearchQuery, setPhotoSearchQuery] = useState('');
   const [newsletters, setNewsletters] = useState([]);
 
+  // Blog
+  const [blogPosts, setBlogPosts] = useState([]);
+  const [blogLoading, setBlogLoading] = useState(false);
+  const [showBlogEditor, setShowBlogEditor] = useState(false);
+  const [editingBlogId, setEditingBlogId] = useState(null); // null = nieuw artikel
+  const [blogMsg, setBlogMsg] = useState('');
+  const [savingBlog, setSavingBlog] = useState(false);
+  const [translating, setTranslating] = useState(false);
+  const [blogPreviewLang, setBlogPreviewLang] = useState('fr');
+  const EMPTY_BLOG = {
+    slug: '', date: new Date().toISOString().slice(0, 10),
+    titleFr: '', titleEn: '', titleNl: '',
+    excerptFr: '', excerptEn: '', excerptNl: '',
+    contentFr: '', contentEn: '', contentNl: '',
+    categoryFr: 'Guide', categoryEn: 'Guide', categoryNl: 'Gids',
+    readTime: 5, image: '', published: false,
+  };
+  const [blogForm, setBlogForm] = useState(EMPTY_BLOG);
+  const contentFrRef = useRef(null);
+  const contentEnRef = useRef(null);
+  const contentNlRef = useRef(null);
+
   // Tab
   const [tab, setTab] = useState('scraping');
 
@@ -111,6 +134,7 @@ export default function AdminPage({ lang, tr }) {
     loadData();
     loadSources();
     loadSubmissions();
+    loadBlogPosts();
   }, [user]);
 
   async function loadData() {
@@ -391,6 +415,216 @@ export default function AdminPage({ lang, tr }) {
     }
   }
 
+  async function handleSyncKoikispass() {
+    setSyncingKoikispass(true);
+    setSyncMsg('');
+    try {
+      const res = await fetch('/.netlify/functions/sync-koikispass-background', { method: 'POST' });
+      if (res.status === 202 || res.ok) {
+        setSyncMsg('✅ Koikispass sync gestart! Wekelijkse evenementen worden geëxtraheerd via AI. Ververs de log over 3–5 minuten.');
+      } else {
+        setSyncMsg(`⚠️ Status ${res.status}`);
+      }
+      setTimeout(() => loadData(), 300000);
+    } catch (err) {
+      setSyncMsg('Fout: ' + err.message);
+    } finally {
+      setSyncingKoikispass(false);
+    }
+  }
+
+  // ── Blog ──────────────────────────────────────────────────────────────────
+  async function loadBlogPosts() {
+    setBlogLoading(true);
+    try {
+      const snap = await getDocs(
+        query(collection(db, 'morvan', 'data', 'blog_posts'), orderBy('date', 'desc'))
+      );
+      setBlogPosts(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+    } catch { /* collectie nog leeg */ }
+    setBlogLoading(false);
+  }
+
+  function openNewBlog() {
+    setEditingBlogId(null);
+    setBlogForm({ ...EMPTY_BLOG, date: new Date().toISOString().slice(0, 10) });
+    setBlogMsg('');
+    setShowBlogEditor(true);
+  }
+
+  function openEditBlog(post) {
+    setEditingBlogId(post.id);
+    setBlogForm({
+      slug: post.slug || '',
+      date: post.date || new Date().toISOString().slice(0, 10),
+      titleFr: post.title?.fr || '',
+      titleEn: post.title?.en || '',
+      titleNl: post.title?.nl || '',
+      excerptFr: post.excerpt?.fr || '',
+      excerptEn: post.excerpt?.en || '',
+      excerptNl: post.excerpt?.nl || '',
+      contentFr: post.content?.fr || '',
+      contentEn: post.content?.en || '',
+      contentNl: post.content?.nl || '',
+      categoryFr: post.category?.fr || 'Guide',
+      categoryEn: post.category?.en || 'Guide',
+      categoryNl: post.category?.nl || 'Gids',
+      readTime: post.readTime || 5,
+      image: post.image || '',
+      published: post.published ?? false,
+    });
+    setBlogMsg('');
+    setShowBlogEditor(true);
+  }
+
+  function makeBlogSlug(title) {
+    return title
+      .toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '')
+      .slice(0, 60);
+  }
+
+  function calcReadTime(text) {
+    const words = (text || '').replace(/<[^>]+>/g, ' ').split(/\s+/).filter(Boolean).length;
+    return Math.max(1, Math.round(words / 200));
+  }
+
+  async function handleTranslate() {
+    if (!blogForm.titleFr) { setBlogMsg('⚠️ Voer eerst de Franse titel in.'); return; }
+    setTranslating(true);
+    setBlogMsg('⏳ Claude vertaalt…');
+    try {
+      const res = await fetch('/.netlify/functions/translate-blog', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          titleFr: blogForm.titleFr,
+          excerptFr: blogForm.excerptFr,
+          contentFr: blogForm.contentFr,
+          categoryFr: blogForm.categoryFr,
+        }),
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      setBlogForm(f => ({
+        ...f,
+        titleEn: data.titleEn || f.titleEn,
+        titleNl: data.titleNl || f.titleNl,
+        excerptEn: data.excerptEn || f.excerptEn,
+        excerptNl: data.excerptNl || f.excerptNl,
+        contentEn: data.contentEn || f.contentEn,
+        contentNl: data.contentNl || f.contentNl,
+        categoryEn: data.categoryEn || f.categoryEn,
+        categoryNl: data.categoryNl || f.categoryNl,
+      }));
+      setBlogMsg('✅ Vertaling klaar! Controleer EN en NL voor je opslaat.');
+    } catch (err) {
+      setBlogMsg('❌ Vertaling mislukt: ' + err.message);
+    } finally {
+      setTranslating(false);
+    }
+  }
+
+  async function handleSaveBlog(e) {
+    e.preventDefault();
+    if (!blogForm.titleFr) { setBlogMsg('⚠️ Franse titel is verplicht.'); return; }
+    setSavingBlog(true);
+    setBlogMsg('');
+    try {
+      const slug = blogForm.slug || makeBlogSlug(blogForm.titleFr);
+      const readTime = blogForm.readTime || calcReadTime(blogForm.contentFr);
+      const docData = {
+        slug,
+        date: blogForm.date,
+        title: { fr: blogForm.titleFr, en: blogForm.titleEn || blogForm.titleFr, nl: blogForm.titleNl || blogForm.titleFr },
+        excerpt: { fr: blogForm.excerptFr, en: blogForm.excerptEn || blogForm.excerptFr, nl: blogForm.excerptNl || blogForm.excerptFr },
+        content: { fr: blogForm.contentFr, en: blogForm.contentEn || blogForm.contentFr, nl: blogForm.contentNl || blogForm.contentFr },
+        category: { fr: blogForm.categoryFr, en: blogForm.categoryEn || blogForm.categoryFr, nl: blogForm.categoryNl || blogForm.categoryFr },
+        readTime,
+        image: blogForm.image || '',
+        published: blogForm.published,
+        updatedAt: Timestamp.now(),
+      };
+
+      if (editingBlogId) {
+        await updateDoc(doc(db, 'morvan', 'data', 'blog_posts', editingBlogId), docData);
+        setBlogMsg('✅ Artikel bijgewerkt!');
+      } else {
+        docData.createdAt = Timestamp.now();
+        await addDoc(collection(db, 'morvan', 'data', 'blog_posts'), docData);
+        setBlogMsg('✅ Artikel aangemaakt!');
+      }
+      await loadBlogPosts();
+      setShowBlogEditor(false);
+    } catch (err) {
+      setBlogMsg('❌ Opslaan mislukt: ' + err.message);
+    } finally {
+      setSavingBlog(false);
+    }
+  }
+
+  async function handleDeleteBlog(id, title) {
+    if (!confirm(`Artikel "${title}" verwijderen?`)) return;
+    await deleteDoc(doc(db, 'morvan', 'data', 'blog_posts', id));
+    setBlogPosts(p => p.filter(x => x.id !== id));
+  }
+
+  async function handleToggleBlogPublished(id, published) {
+    await updateDoc(doc(db, 'morvan', 'data', 'blog_posts', id), { published: !published });
+    setBlogPosts(p => p.map(x => x.id === id ? { ...x, published: !published } : x));
+  }
+
+  // HTML-toolbar helper voor de content textarea
+  function insertHtml(ref, before, after = '') {
+    const el = ref.current;
+    if (!el) return;
+    const start = el.selectionStart;
+    const end = el.selectionEnd;
+    const selected = el.value.slice(start, end) || 'tekst';
+    const inserted = before + selected + after;
+    const newVal = el.value.slice(0, start) + inserted + el.value.slice(end);
+    // Bepaal welk veld
+    const field = el.dataset.field;
+    setBlogForm(f => ({ ...f, [field]: newVal }));
+    setTimeout(() => {
+      el.focus();
+      el.setSelectionRange(start + before.length, start + before.length + selected.length);
+    }, 0);
+  }
+
+  function HtmlToolbar({ refObj, field }) {
+    const btn = (label, before, after) => (
+      <button type="button" className="html-toolbar-btn" title={label}
+        onClick={() => {
+          const el = refObj.current;
+          if (!el) return;
+          const start = el.selectionStart;
+          const end = el.selectionEnd;
+          const selected = el.value.slice(start, end) || 'tekst';
+          const inserted = before + selected + after;
+          const newVal = el.value.slice(0, start) + inserted + el.value.slice(end);
+          setBlogForm(f => ({ ...f, [field]: newVal }));
+          setTimeout(() => { el.focus(); el.setSelectionRange(start + before.length, start + before.length + selected.length); }, 0);
+        }}>
+        {label}
+      </button>
+    );
+    return (
+      <div className="html-toolbar">
+        {btn('H2', '<h2>', '</h2>')}
+        {btn('H3', '<h3>', '</h3>')}
+        {btn('§', '<p>', '</p>')}
+        {btn('B', '<strong>', '</strong>')}
+        {btn('I', '<em>', '</em>')}
+        {btn('UL', '<ul>\n  <li>', '</li>\n</ul>')}
+        {btn('LI', '<li>', '</li>')}
+        {btn('Link', '<a href="">', '</a>')}
+      </div>
+    );
+  }
+
   // ── Foto upload ───────────────────────────────────────────────────────────
   function handlePhotoSelect(e) {
     const file = e.target.files[0];
@@ -562,6 +796,7 @@ export default function AdminPage({ lang, tr }) {
           { key: 'activities',  label: '🥾 Activiteiten' },
           { key: 'photos',      label: '📸 Foto\'s' },
           { key: 'newsletter',  label: '✉️ Nieuwsbrief' },
+          { key: 'blog',        label: '📝 Blog' },
           { key: 'submissions', label: `📬 ${a.submissions}${pendingCount ? ` (${pendingCount})` : ''}` },
         ].map(t => (
           <button
@@ -774,6 +1009,16 @@ export default function AdminPage({ lang, tr }) {
 
           <div className="sync-box">
             <div>
+              <strong>📰 Koikispass.com</strong>
+              <p className="admin-hint">WordPress REST API — wekelijkse evenementenroundups voor de Nièvre. Claude extraheert individuele evenementen met datum, locatie en type.</p>
+            </div>
+            <button className="btn btn-outline" onClick={handleSyncKoikispass} disabled={syncingKoikispass}>
+              {syncingKoikispass ? a.syncing : '📰 Sync Koikispass'}
+            </button>
+          </div>
+
+          <div className="sync-box">
+            <div>
               <strong>✨ AI-verrijking</strong>
               <p className="admin-hint">Genereert ontbrekende titels en beschrijvingen (FR/EN/NL). Vereist: CLAUDE_API_KEY in Netlify.</p>
             </div>
@@ -816,6 +1061,7 @@ export default function AdminPage({ lang, tr }) {
                       'claude-enrich': '✨ AI-verrijking',
                       openstreetmap: '🗺️ OpenStreetMap',
                       visorando: '🥾 Visorando',
+                      koikispass: '📰 Koikispass',
                       'photo-enrich': '🖼️ Foto-verrijking',
                     };
                     const bron = bronMap[s.source] || s.source || '–';
@@ -1060,6 +1306,247 @@ export default function AdminPage({ lang, tr }) {
               </table>
             )
           }
+        </section>
+      )}
+
+      {/* ── Blog ── */}
+      {tab === 'blog' && (
+        <section className="admin-section">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+            <h2>📝 Blog</h2>
+            <button className="btn btn-primary" onClick={openNewBlog}>+ Nieuw artikel</button>
+          </div>
+
+          {/* Editor */}
+          {showBlogEditor && (
+            <div className="blog-editor-overlay">
+              <div className="blog-editor-panel">
+                <div className="blog-editor-header">
+                  <h3>{editingBlogId ? '✏️ Artikel bewerken' : '✏️ Nieuw artikel'}</h3>
+                  <button className="blog-editor-close" onClick={() => setShowBlogEditor(false)}>✕</button>
+                </div>
+
+                <form onSubmit={handleSaveBlog} className="blog-editor-form">
+
+                  {/* Basisinfo */}
+                  <div className="blog-editor-row">
+                    <label>Datum
+                      <input type="date" value={blogForm.date}
+                        onChange={e => setBlogForm(f => ({ ...f, date: e.target.value }))} />
+                    </label>
+                    <label>Leestijd (min)
+                      <input type="number" min="1" max="60" value={blogForm.readTime}
+                        onChange={e => setBlogForm(f => ({ ...f, readTime: +e.target.value }))} />
+                    </label>
+                    <label>
+                      <span>Gepubliceerd</span>
+                      <input type="checkbox" checked={blogForm.published}
+                        onChange={e => setBlogForm(f => ({ ...f, published: e.target.checked }))}
+                        style={{ width: 'auto', marginLeft: '.5rem' }} />
+                    </label>
+                  </div>
+
+                  <label>Slug (URL — leeglaten = automatisch)
+                    <input type="text" placeholder="mijn-artikel-titel"
+                      value={blogForm.slug}
+                      onChange={e => setBlogForm(f => ({ ...f, slug: e.target.value }))} />
+                  </label>
+
+                  <label>Afbeelding URL
+                    <input type="url" placeholder="https://upload.wikimedia.org/…"
+                      value={blogForm.image}
+                      onChange={e => setBlogForm(f => ({ ...f, image: e.target.value }))} />
+                    {blogForm.image && (
+                      <img src={blogForm.image} alt="preview" className="blog-editor-img-preview" />
+                    )}
+                  </label>
+
+                  {/* FR sectie */}
+                  <div className="blog-editor-lang-section">
+                    <div className="blog-editor-lang-header">🇫🇷 Frans <span className="blog-editor-lang-badge">Hoofdtaal</span></div>
+                    <label>Categorie FR
+                      <input type="text" value={blogForm.categoryFr}
+                        onChange={e => setBlogForm(f => ({ ...f, categoryFr: e.target.value }))} />
+                    </label>
+                    <label>Titel FR *
+                      <input type="text" required value={blogForm.titleFr}
+                        onChange={e => setBlogForm(f => ({
+                          ...f, titleFr: e.target.value,
+                          slug: f.slug || makeBlogSlug(e.target.value),
+                          readTime: calcReadTime(f.contentFr),
+                        }))} />
+                    </label>
+                    <label>Samenvatting FR
+                      <textarea rows={3} value={blogForm.excerptFr}
+                        onChange={e => setBlogForm(f => ({ ...f, excerptFr: e.target.value }))} />
+                    </label>
+                    <label>
+                      Inhoud FR (HTML)
+                      <HtmlToolbar refObj={contentFrRef} field="contentFr" />
+                      <textarea
+                        ref={contentFrRef}
+                        data-field="contentFr"
+                        rows={14}
+                        className="blog-editor-content"
+                        value={blogForm.contentFr}
+                        onChange={e => setBlogForm(f => ({
+                          ...f, contentFr: e.target.value,
+                          readTime: calcReadTime(e.target.value),
+                        }))}
+                      />
+                    </label>
+                  </div>
+
+                  {/* Vertaal knop */}
+                  <div className="blog-editor-translate-bar">
+                    <button type="button" className="btn btn-primary" onClick={handleTranslate} disabled={translating}>
+                      {translating ? '⏳ Claude vertaalt…' : '🤖 Vertaal FR → EN + NL met AI'}
+                    </button>
+                    <span className="admin-hint">Vult automatisch de EN- en NL-velden in. Je kunt daarna nog aanpassen.</span>
+                  </div>
+
+                  {/* EN sectie */}
+                  <div className="blog-editor-lang-section">
+                    <div className="blog-editor-lang-header">🇬🇧 Engels</div>
+                    <label>Categorie EN
+                      <input type="text" value={blogForm.categoryEn}
+                        onChange={e => setBlogForm(f => ({ ...f, categoryEn: e.target.value }))} />
+                    </label>
+                    <label>Titel EN
+                      <input type="text" value={blogForm.titleEn}
+                        onChange={e => setBlogForm(f => ({ ...f, titleEn: e.target.value }))} />
+                    </label>
+                    <label>Samenvatting EN
+                      <textarea rows={3} value={blogForm.excerptEn}
+                        onChange={e => setBlogForm(f => ({ ...f, excerptEn: e.target.value }))} />
+                    </label>
+                    <label>
+                      Inhoud EN (HTML)
+                      <HtmlToolbar refObj={contentEnRef} field="contentEn" />
+                      <textarea
+                        ref={contentEnRef}
+                        data-field="contentEn"
+                        rows={10}
+                        className="blog-editor-content"
+                        value={blogForm.contentEn}
+                        onChange={e => setBlogForm(f => ({ ...f, contentEn: e.target.value }))}
+                      />
+                    </label>
+                  </div>
+
+                  {/* NL sectie */}
+                  <div className="blog-editor-lang-section">
+                    <div className="blog-editor-lang-header">🇳🇱 Nederlands</div>
+                    <label>Categorie NL
+                      <input type="text" value={blogForm.categoryNl}
+                        onChange={e => setBlogForm(f => ({ ...f, categoryNl: e.target.value }))} />
+                    </label>
+                    <label>Titel NL
+                      <input type="text" value={blogForm.titleNl}
+                        onChange={e => setBlogForm(f => ({ ...f, titleNl: e.target.value }))} />
+                    </label>
+                    <label>Samenvatting NL
+                      <textarea rows={3} value={blogForm.excerptNl}
+                        onChange={e => setBlogForm(f => ({ ...f, excerptNl: e.target.value }))} />
+                    </label>
+                    <label>
+                      Inhoud NL (HTML)
+                      <HtmlToolbar refObj={contentNlRef} field="contentNl" />
+                      <textarea
+                        ref={contentNlRef}
+                        data-field="contentNl"
+                        rows={10}
+                        className="blog-editor-content"
+                        value={blogForm.contentNl}
+                        onChange={e => setBlogForm(f => ({ ...f, contentNl: e.target.value }))}
+                      />
+                    </label>
+                  </div>
+
+                  {/* Preview */}
+                  {(blogForm.contentFr || blogForm.contentEn || blogForm.contentNl) && (
+                    <div className="blog-editor-preview-section">
+                      <div className="blog-editor-preview-header">
+                        <span>👁️ Voorvertoning</span>
+                        <div className="blog-preview-lang-btns">
+                          {['fr', 'en', 'nl'].map(l => (
+                            <button key={l} type="button"
+                              className={`lang-btn${blogPreviewLang === l ? ' active' : ''}`}
+                              onClick={() => setBlogPreviewLang(l)}>
+                              {l.toUpperCase()}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                      <div className="blog-editor-preview blog-post-content"
+                        dangerouslySetInnerHTML={{
+                          __html: blogForm[`content${blogPreviewLang.charAt(0).toUpperCase() + blogPreviewLang.slice(1)}`] || ''
+                        }}
+                      />
+                    </div>
+                  )}
+
+                  {blogMsg && <p className="admin-msg">{blogMsg}</p>}
+
+                  <div className="blog-editor-actions">
+                    <button type="submit" className="btn btn-primary" disabled={savingBlog}>
+                      {savingBlog ? '⏳ Opslaan…' : (editingBlogId ? '💾 Bijwerken' : '🚀 Publiceren')}
+                    </button>
+                    <button type="button" className="btn btn-outline" onClick={() => setShowBlogEditor(false)}>
+                      Annuleren
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
+
+          {/* Artikelenlijst */}
+          {blogLoading ? (
+            <p className="loading">⏳ Artikelen laden…</p>
+          ) : blogPosts.length === 0 ? (
+            <p className="admin-hint" style={{ marginTop: '1.5rem' }}>
+              Nog geen artikelen in Firestore. Klik op "+ Nieuw artikel" om te beginnen,
+              of gebruik de statische artikelen in <code>src/data/posts.js</code>.
+            </p>
+          ) : (
+            <table className="admin-table" style={{ marginTop: '1.5rem' }}>
+              <thead>
+                <tr>
+                  <th>Titel (FR)</th>
+                  <th>Datum</th>
+                  <th>Status</th>
+                  <th>Acties</th>
+                </tr>
+              </thead>
+              <tbody>
+                {blogPosts.map(post => (
+                  <tr key={post.id}>
+                    <td>
+                      <strong>{post.title?.fr || '—'}</strong>
+                      <br />
+                      <small style={{ color: 'var(--text-muted)' }}>/blog/{post.slug}</small>
+                    </td>
+                    <td>{post.date || '—'}</td>
+                    <td>
+                      <button
+                        className={`status-badge${post.published ? ' status-ok' : ' status-pending'}`}
+                        onClick={() => handleToggleBlogPublished(post.id, post.published)}
+                        title="Klik om te wisselen"
+                      >
+                        {post.published ? '✅ Gepubliceerd' : '⏸ Concept'}
+                      </button>
+                    </td>
+                    <td className="admin-actions">
+                      <button className="btn btn-sm btn-outline" onClick={() => openEditBlog(post)}>✏️ Bewerken</button>
+                      <a href={`/blog/${post.slug}`} target="_blank" rel="noreferrer" className="btn btn-sm btn-outline">👁️ Bekijk</a>
+                      <button className="btn btn-sm btn-danger" onClick={() => handleDeleteBlog(post.id, post.title?.fr)}>🗑️</button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </section>
       )}
 

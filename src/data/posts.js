@@ -6,6 +6,419 @@
 export const POSTS = [
   // ─────────────────────────────────────────────────────────────
   {
+    slug: 'guide-nevers-que-faire',
+    date: '2026-03-30',
+    category: { fr: 'Guide', en: 'Guide', nl: 'Gids' },
+    readTime: 6,
+    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/Nevers_-_Cath%C3%A9drale_Saint-Cyr-et-Sainte-Julitte_%281%29.jpg/1280px-Nevers_-_Cath%C3%A9drale_Saint-Cyr-et-Sainte-Julitte_%281%29.jpg',
+    title: {
+      fr: 'Que faire à Nevers ? Notre guide de la capitale nivernaise',
+      en: 'What to do in Nevers? Our guide to the Nièvre\'s capital',
+      nl: 'Wat te doen in Nevers? Onze gids voor de hoofdstad van de Nièvre',
+    },
+    excerpt: {
+      fr: 'Cathédrale, palais ducal, faïences, bords de Loire et circuit de Magny-Cours : Nevers est une ville surprenante qui mérite bien plus qu\'une simple escale.',
+      en: 'Cathedral, ducal palace, faience pottery, the Loire riverbanks and Magny-Cours circuit: Nevers is a surprising city that deserves far more than a quick stop.',
+      nl: 'Kathedraal, hertogelijk paleis, aardewerk, Loire-oevers en Magny-Cours: Nevers is een verrassende stad die veel meer verdient dan een vluchtig bezoek.',
+    },
+    content: {
+      fr: `<p>Nevers est souvent vue comme une ville de passage sur la route du Sud. C'est une erreur. La préfecture de la Nièvre recèle un patrimoine remarquable, une vie culturelle vivante et une situation géographique exceptionnelle au confluent de la Loire et de la Nièvre. Voici un guide complet pour découvrir Nevers autrement.</p>
+
+<h2>La cathédrale Saint-Cyr-et-Sainte-Julitte</h2>
+<p>C'est l'édifice le plus remarquable de Nevers. La <strong>cathédrale Saint-Cyr-et-Sainte-Julitte</strong> présente la particularité unique en France d'avoir deux absis — une à chaque extrémité — résultat de plusieurs siècles de construction entre le Xe et le XVIe siècle. L'intérieur est étonnamment lumineux grâce aux vitraux contemporains réalisés après les bombardements de la Seconde Guerre mondiale par des artistes comme Jean Bazaine et Marc Ingrand. Ne manquez pas la crypte romane.</p>
+
+<h2>Le palais ducal</h2>
+<p>Face à la cathédrale, le <strong>palais ducal</strong> de style Renaissance (XVe–XVIe siècle) est l'un des premiers exemples du style Renaissance en France. Ses tourelles caractéristiques et sa façade ornée dominent la vieille ville. Aujourd'hui siège de la préfecture, il n'est pas ouvert au public en permanence, mais ses façades extérieures et la cour intérieure se visitent lors des Journées du Patrimoine. Depuis l'esplanade devant le palais, la vue sur la Loire est exceptionnelle.</p>
+
+<h2>Les faïences de Nevers</h2>
+<p>Nevers est mondialement connue pour sa <strong>faïence</strong>, un artisanat qui remonte au XVIe siècle quand des potiers italiens s'installèrent en ville sous la protection du duc de Nevers. Les pièces typiques se reconnaissent à leurs fonds bleus cobalt et blanc, ornés de scènes mythologiques ou bibliques. Le <strong>musée de la Faïence et des Beaux-Arts</strong>, installé dans l'ancien palais épiscopal, conserve une collection de référence. Plusieurs ateliers de faïenciers sont encore actifs en ville et proposent des visites.</p>
+
+<h2>Sainte Bernadette Soubirous</h2>
+<p>Nevers est le dernier lieu de vie de <strong>Bernadette Soubirous</strong>, la voyante de Lourdes. Le couvent Saint-Gildard, où elle vécut ses dernières années et mourut en 1879, conserve son corps intact — devenu lieu de pèlerinage pour des milliers de visiteurs chaque année. Que l'on soit croyant ou non, la visite du couvent et de son jardin est une expérience saisissante.</p>
+
+<h2>Les bords de Loire</h2>
+<p>Nevers est l'une des rares villes françaises à conserver ses <strong>bords de Loire</strong> non urbanisés. Les quais Louis-Codet et l'esplanade offrent une promenade de plusieurs kilomètres entre les saules et les bancs de sable de la Loire sauvage. Le soir, au coucher du soleil, les reflets sur le fleuve et la silhouette de la cathédrale créent l'un des plus beaux panoramas de la région. En été, des activités nautiques sont proposées au bord du fleuve.</p>
+
+<h2>La porte du Croux et les remparts</h2>
+<p>La <strong>porte du Croux</strong> est l'une des mieux préservées des remparts médiévaux de Nevers (XIVe siècle). Cette tour carrée imposante abrite aujourd'hui un petit musée archéologique. Une partie des remparts médiévaux est encore visible dans le quartier historique et donne un bel aperçu de l'ancienne fortification de la ville.</p>
+
+<h2>Le circuit de Magny-Cours</h2>
+<p>À seulement 12 km au sud de Nevers, le <strong>circuit de Nevers Magny-Cours</strong> est l'un des circuits automobiles les plus prestigieux de France. Il accueillit le Grand Prix de France de Formule 1 de 1991 à 2008. Aujourd'hui, le circuit accueille de nombreuses compétitions (GT, Endurance, Motos) et propose des journées de pilotage au volant de voitures de sport. Même sans événement, le musée de la Formule 1 sur place vaut la visite pour les passionnés de motorsport.</p>
+
+<h2>Où manger à Nevers ?</h2>
+<p>La ville compte plusieurs bonnes adresses autour des spécialités régionales :</p>
+<ul>
+  <li>Les restaurants du quartier de la cathédrale pour les cuisines du terroir nivernais.</li>
+  <li>Les bistrots des bords de Loire pour une cuisine simple et locale.</li>
+  <li>Les marchés du samedi matin place Carnot pour les produits frais des maraîchers et fromagers de la région.</li>
+</ul>
+
+<h2>Infos pratiques</h2>
+<ul>
+  <li><strong>Depuis Paris :</strong> 2h en TGV, gare SNCF à 10 min à pied du centre historique.</li>
+  <li><strong>En voiture :</strong> A77 depuis Paris, sortie Nevers-Nord ou Nevers-Sud.</li>
+  <li><strong>Office de tourisme :</strong> place Carnot, ouvert toute l'année.</li>
+  <li><strong>Durée conseillée :</strong> 1 journée complète pour voir l'essentiel, 2 jours si vous souhaitez Magny-Cours et les environs.</li>
+</ul>`,
+
+      en: `<p>Nevers is often seen as a stopover on the way south. That's a mistake. The Nièvre's prefecture holds remarkable heritage, a lively cultural scene and an exceptional location at the confluence of the Loire and the Nièvre. Here is a complete guide to discovering Nevers differently.</p>
+
+<h2>Saint-Cyr Cathedral</h2>
+<p><strong>Saint-Cyr-et-Sainte-Julitte Cathedral</strong> has the unique distinction in France of having two apses — one at each end — the result of centuries of construction from the 10th to the 16th century. The interior is surprisingly luminous thanks to contemporary stained glass created after wartime bombing by artists including Jean Bazaine. Don't miss the Romanesque crypt.</p>
+
+<h2>The Ducal Palace</h2>
+<p>The <strong>Ducal Palace</strong> opposite the cathedral is one of France's earliest examples of Renaissance style (15th–16th century). Its characteristic turrets and ornate façade dominate the old town. Now the prefecture, it opens to the public during Heritage Days. From the esplanade, the view over the Loire is exceptional.</p>
+
+<h2>Nevers Faience</h2>
+<p>Nevers is world-famous for its <strong>faience pottery</strong>, a craft dating to the 16th century when Italian potters settled in the town. The typical pieces feature cobalt blue and white backgrounds with mythological or biblical scenes. The <strong>Faience and Fine Arts Museum</strong> in the former bishop's palace holds the definitive collection. Several active faience workshops in town offer visits.</p>
+
+<h2>Saint Bernadette of Lourdes</h2>
+<p>Nevers was the final home of <strong>Bernadette Soubirous</strong>, the Lourdes visionary. The Saint-Gildard convent, where she spent her last years and died in 1879, preserves her intact body — a pilgrimage site attracting thousands each year. Believer or not, the visit to the convent and its garden is a striking experience.</p>
+
+<h2>The Loire Riverbanks</h2>
+<p>Nevers is one of the few French cities to retain undeveloped <strong>Loire riverbanks</strong>. The quays offer several kilometres of walking between willows and Loire sandbars. At sunset, reflections on the river and the cathedral silhouette create one of the region's finest panoramas.</p>
+
+<h2>Magny-Cours Circuit</h2>
+<p>Just 12 km south of Nevers, the <strong>Nevers Magny-Cours Circuit</strong> hosted the French Formula 1 Grand Prix from 1991 to 2008. Today it hosts GT, Endurance and Motorcycle competitions, plus driving days. The on-site Formula 1 museum is worth a visit for motorsport fans.</p>
+
+<h2>Practical information</h2>
+<ul>
+  <li><strong>From Paris:</strong> 2h by TGV, station is 10 minutes' walk from the historic centre.</li>
+  <li><strong>By car:</strong> A77 motorway from Paris, exit Nevers-Nord or Nevers-Sud.</li>
+  <li><strong>Recommended time:</strong> 1 full day for the essentials, 2 days to include Magny-Cours.</li>
+</ul>`,
+
+      nl: `<p>Nevers wordt vaak gezien als een doorgangspunt op weg naar het zuiden. Dat is een vergissing. De prefectuur van de Nièvre herbergt opmerkelijk erfgoed, een levendig cultureel leven en een uitzonderlijke ligging aan het samenstromen van de Loire en de Nièvre. Een complete gids om Nevers op een andere manier te ontdekken.</p>
+
+<h2>Kathedraal Saint-Cyr</h2>
+<p>De <strong>kathedraal Saint-Cyr-et-Sainte-Julitte</strong> heeft de unieke eigenschap in Frankrijk van twee apsen te hebben — één aan elk uiteinde — het resultaat van eeuwen bouwen van de 10e tot de 16e eeuw. Het interieur is verrassend licht dankzij hedendaagse glas-in-loodramen gemaakt na de oorlogsbombardementen door kunstenaars zoals Jean Bazaine. Mis de Romaanse crypte niet.</p>
+
+<h2>Het hertogelijk paleis</h2>
+<p>Het <strong>hertogelijk paleis</strong> tegenover de kathedraal is een van de vroegste voorbeelden van Renaissancestijl in Frankrijk (15e–16e eeuw). Zijn karakteristieke torentjes en versierde gevel domineren de oude stad. Vanuit de esplanade is het uitzicht over de Loire uitzonderlijk.</p>
+
+<h2>Nevers aardewerk</h2>
+<p>Nevers is wereldberoemd om zijn <strong>faience-aardewerk</strong>, een ambacht dat dateert uit de 16e eeuw toen Italiaanse pottenbakkers zich in de stad vestigden. De typische stukken kenmerken zich door kobaltblauwe en witte achtergronden met mythologische of bijbelse taferelen. Het <strong>Faïence- en Schone Kunstenmuseum</strong> heeft de definitieve collectie. Meerdere actieve ateliers in de stad bieden bezoeken aan.</p>
+
+<h2>De heilige Bernadette</h2>
+<p>Nevers was de laatste woonplaats van <strong>Bernadette Soubirous</strong>, de visionair van Lourdes. Het klooster Saint-Gildard, waar zij haar laatste jaren doorbracht en stierf in 1879, bewaart haar intact lichaam — een bedevaartsoord dat jaarlijks duizenden bezoekers trekt.</p>
+
+<h2>De Loire-oevers</h2>
+<p>Nevers is een van de weinige Franse steden met onbebouwde <strong>Loire-oevers</strong>. De kades bieden kilometers wandelen tussen wilgen en Loire-zandbanken. Bij zonsondergang creëren de weerspiegelingen op de rivier en het silhouet van de kathedraal een van de mooiste panorama's van de regio.</p>
+
+<h2>Magny-Cours circuit</h2>
+<p>Op slechts 12 km ten zuiden van Nevers ligt het <strong>Nevers Magny-Cours Circuit</strong>, dat de Franse Formule 1 Grand Prix organiseerde van 1991 tot 2008. Vandaag herbergt het GT-, Endurance- en Motorevenementen en rijdagen. Het Formule 1-museum op de site is een bezoek waard voor motorsportliefhebbers.</p>
+
+<h2>Praktische informatie</h2>
+<ul>
+  <li><strong>Vanuit Parijs:</strong> 2u per TGV, station op 10 minuten lopen van het historische centrum.</li>
+  <li><strong>Per auto:</strong> A77 snelweg vanuit Parijs, afrit Nevers-Noord of Nevers-Zuid.</li>
+  <li><strong>Aanbevolen tijd:</strong> 1 volle dag voor het essentiële, 2 dagen inclusief Magny-Cours.</li>
+</ul>`,
+    },
+  },
+
+  // ─────────────────────────────────────────────────────────────
+  {
+    slug: 'canal-du-nivernais-guide',
+    date: '2026-03-29',
+    category: { fr: 'Nature & Vélo', en: 'Nature & Cycling', nl: 'Natuur & Fietsen' },
+    readTime: 5,
+    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Canal_du_Nivernais_Baye.JPG/1280px-Canal_du_Nivernais_Baye.JPG',
+    title: {
+      fr: 'Le Canal du Nivernais : guide complet pour une escapade nature',
+      en: 'Canal du Nivernais: complete guide for a nature getaway',
+      nl: 'Canal du Nivernais: complete gids voor een natuuruitstap',
+    },
+    excerpt: {
+      fr: 'Classé parmi les plus beaux canaux de France, le Canal du Nivernais offre 174 km de voyage lent entre écluses, villages et forêts. À vélo ou en bateau, c\'est l\'aventure verte par excellence.',
+      en: 'Ranked among France\'s most beautiful waterways, the Canal du Nivernais offers 174 km of slow travel between locks, villages and forests. By bike or by boat, it\'s the ultimate green adventure.',
+      nl: 'Als een van de mooiste waterwegen van Frankrijk biedt het Canal du Nivernais 174 km langzaam reizen langs sluizen, dorpen en bossen. Per fiets of boot: de ultieme groene avontuur.',
+    },
+    content: {
+      fr: `<p>Le <strong>Canal du Nivernais</strong> est l'un des joyaux méconnus du patrimoine fluvial français. Construit entre 1784 et 1842 pour transporter le bois du Morvan vers Paris, ce canal de 174 kilomètres relie Auxerre à Decize, traversant la Bourgogne du nord au sud à travers des paysages d'une beauté remarquable. Aujourd'hui classé parmi les plus beaux canaux de France, il est devenu un paradis pour les amateurs de tourisme fluvial, de vélo et de nature.</p>
+
+<h2>L'histoire du canal</h2>
+<p>À l'époque de sa construction, le Canal du Nivernais avait une mission claire : acheminer le bois du Morvan — indispensable au chauffage et à la construction — vers les grandes villes du Nord et surtout vers Paris. Les flotteurs de bois, appelés "galvachers", guidaient d'immenses radeaux de troncs depuis les forêts du Morvan jusqu'à la capitale. Le canal comptait jusqu'à 110 écluses sur son tracé, ce qui en fait l'un des plus escarpés de France — et aujourd'hui l'un des plus pittoresques pour les plaisanciers qui naviguent au rythme de ces passages.</p>
+
+<h2>À vélo sur la voie verte</h2>
+<p>La <strong>Voie Verte du Canal du Nivernais</strong> est l'un des itinéraires cyclables les plus agréables de Bourgogne. L'ancienne voie de halage, parfaitement aménagée, longe le canal sur des dizaines de kilomètres sans circulation automobile. C'est un parcours plat, ombragé et reposant, idéal pour les familles et les cyclistes de tous niveaux.</p>
+<p>Quelques étapes incontournables à vélo :</p>
+<ul>
+  <li><strong>Corbigny — Châtillon-en-Bazois</strong> (35 km) : traversée de villages authentiques, belles écluses et paysages de bocage. L'étape la plus accessible pour une journée.</li>
+  <li><strong>Clamecy — Chitry-les-Mines</strong> (25 km) : passage par la gorge de Sardy et les sources du canal dans le nord de la Nièvre. Section sauvage et peu fréquentée.</li>
+  <li><strong>Châtillon-en-Bazois — Decize</strong> (45 km) : l'étape finale avec l'entrée dans la plaine nivernaise et la confluence avec la Loire à Decize.</li>
+</ul>
+
+<h2>En bateau sur le canal</h2>
+<p>La navigation de plaisance sur le Canal du Nivernais est une expérience incomparable. Plusieurs bases nautiques proposent la location de bateaux habitables (sans permis jusqu'à 15 m/h) à la semaine ou au week-end :</p>
+<ul>
+  <li><strong>Auxerre</strong> : point de départ nord du canal, bon choix pour une descente complète vers le sud.</li>
+  <li><strong>Corbigny</strong> : au cœur de la Nièvre, idéal pour des circuits de 3 à 5 jours.</li>
+  <li><strong>Decize</strong> : au sud, pour remonter vers le Morvan en naviguant contre-courant.</li>
+</ul>
+<p>Le rythme sur le canal est volontairement lent — 8 km/h maximum autorisé — ce qui en fait une forme de voyage méditative et ressourçante. Compter en moyenne 3–4 heures pour franchir une dizaine d'écluses.</p>
+
+<h2>Les villages du canal</h2>
+<p>Le canal traverse une série de villages de caractère qui méritent chacun une halte :</p>
+<ul>
+  <li><strong>Clamecy</strong> : ancienne capitale des flotteurs de bois, ville médiévale avec sa collégiale Saint-Martin et ses maisons à colombages. Musée d'art et d'histoire régional.</li>
+  <li><strong>Corbigny</strong> : bourg animé avec marché hebdomadaire, abbaye de Corbigny et nombreux services pour les cyclistes et plaisanciers.</li>
+  <li><strong>Châtillon-en-Bazois</strong> : château médiéval accessible directement depuis le canal, l'un des sites les plus photographiés du parcours.</li>
+  <li><strong>Decize</strong> : ville-presqu'île à la confluence de la Loire et du canal, avec son vieux château médiéval dominant le fleuve.</li>
+</ul>
+
+<h2>La faune et la flore du canal</h2>
+<p>Le Canal du Nivernais est un corridor écologique remarquable. Les berges abritent une faune variée : <strong>martins-pêcheurs</strong> (facilement observables depuis un bateau ou un vélo silencieux), <strong>hérons cendrés</strong>, <strong>loutres</strong> (présentes mais discrètes), <strong>castors</strong> (notamment dans la section nord). Les rives sont couvertes de saules, d'aulnes et d'iris jaunes au printemps. En mai–juin, les renoncules aquatiques couvrent la surface du canal de tapis blancs et jaunes d'une beauté saisissante.</p>
+
+<h2>Infos pratiques</h2>
+<ul>
+  <li><strong>Meilleure période :</strong> mai–octobre pour la navigation, avril–octobre pour le vélo.</li>
+  <li><strong>Location de vélos :</strong> plusieurs loueurs à Corbigny, Clamecy et Auxerre.</li>
+  <li><strong>Location de bateaux :</strong> Nicols, Crown Blue Line et Burgundy Cruisers proposent des bases sur le canal.</li>
+  <li><strong>Écluses :</strong> le canal est géré par VNF (Voies Navigables de France). Les écluses sont en service de mars à novembre.</li>
+  <li><strong>Haltes nautiques :</strong> pontons et services (eau, électricité) disponibles dans les principaux villages.</li>
+</ul>`,
+
+      en: `<p>The <strong>Canal du Nivernais</strong> is one of France's unsung waterway gems. Built between 1784 and 1842 to carry Morvan timber to Paris, this 174-kilometre canal links Auxerre to Decize, crossing Burgundy north to south through remarkable landscapes. Today ranked among France's most beautiful canals, it has become a paradise for boating, cycling and nature lovers.</p>
+
+<h2>A brief history</h2>
+<p>The canal was built to transport Morvan timber — essential for heating and construction — to northern cities, especially Paris. The timber floaters, known as "galvachers", guided vast log rafts from the Morvan forests to the capital. The canal's 110 locks make it one of France's steepest — and today one of its most picturesque for pleasure boaters.</p>
+
+<h2>Cycling the towpath</h2>
+<p>The <strong>Canal du Nivernais Greenway</strong> is one of Burgundy's most pleasant cycling routes. The converted former towpath follows the canal for dozens of kilometres, car-free, flat, shaded and peaceful. Perfect for families and cyclists of all levels.</p>
+<p>Recommended stages by bike:</p>
+<ul>
+  <li><strong>Corbigny — Châtillon-en-Bazois</strong> (35 km): authentic villages, beautiful locks and bocage landscapes. The most accessible day stage.</li>
+  <li><strong>Clamecy — Chitry-les-Mines</strong> (25 km): passing through the Sardy gorge and the canal's source in northern Nièvre. Wild and little-frequented.</li>
+  <li><strong>Châtillon-en-Bazois — Decize</strong> (45 km): the final stage entering the Nivernais plain and the Loire confluence at Decize.</li>
+</ul>
+
+<h2>Boating the canal</h2>
+<p>Pleasure boating on the Canal du Nivernais is an incomparable experience. Several bases hire self-drive houseboats (no licence required up to 15 km/h) by the week or weekend. The maximum speed of 8 km/h makes this a meditative, restorative form of travel.</p>
+
+<h2>Canal villages</h2>
+<ul>
+  <li><strong>Clamecy</strong>: former capital of the timber floaters, medieval town with its collegiate church and half-timbered houses.</li>
+  <li><strong>Corbigny</strong>: lively market town with abbey and services for cyclists and boaters.</li>
+  <li><strong>Châtillon-en-Bazois</strong>: medieval castle accessible directly from the canal — one of the most photographed spots on the route.</li>
+  <li><strong>Decize</strong>: peninsula town at the Loire confluence, with its medieval château overlooking the river.</li>
+</ul>
+
+<h2>Wildlife and flora</h2>
+<p>The canal is a remarkable ecological corridor: <strong>kingfishers</strong> (easily spotted from a boat or silent bike), <strong>grey herons</strong>, <strong>otters</strong> (present but shy), and <strong>beavers</strong> in the northern section. In May–June, water crowfoot covers the canal surface in striking white and yellow carpets.</p>
+
+<h2>Practical information</h2>
+<ul>
+  <li><strong>Best period:</strong> May–October for boating, April–October for cycling.</li>
+  <li><strong>Boat hire:</strong> Nicols, Crown Blue Line and Burgundy Cruisers have bases on the canal.</li>
+  <li><strong>Locks:</strong> managed by VNF (French Waterways). In service March to November.</li>
+</ul>`,
+
+      nl: `<p>Het <strong>Canal du Nivernais</strong> is een van de onbekende pareltjes van het Franse waterwegennet. Gebouwd tussen 1784 en 1842 om Morvan-hout naar Parijs te vervoeren, verbindt dit 174 kilometer lange kanaal Auxerre met Decize, door prachtige Bourgondische landschappen. Vandaag geldt het als een van de mooiste kanalen van Frankrijk, een paradijs voor vaarders, fietsers en natuurliefhebbers.</p>
+
+<h2>Een korte geschiedenis</h2>
+<p>Het kanaal werd aangelegd om Morvan-hout — onmisbaar voor verwarming en bouw — naar de noordelijke steden, vooral Parijs, te transporteren. De houtvlotters, "galvachers" genaamd, begeleidden enorme vlotten boomstammen vanuit de Morvan-bossen naar de hoofdstad. De 110 sluizen van het kanaal maken het een van de steilste van Frankrijk — en vandaag een van de schilderachtigste voor pleziervaarders.</p>
+
+<h2>Fietsen langs het jaagpad</h2>
+<p>Het <strong>fietspad langs het Canal du Nivernais</strong> is een van de aangenaamste fietsroutes van Bourgondië. Het voormalige jaagpad, perfect aangelegd, volgt het kanaal over tientallen kilometers zonder autoverkeer, vlak, beschaduwd en rustgevend. Ideaal voor gezinnen en fietsers van alle niveaus.</p>
+<p>Aanbevolen etappes:</p>
+<ul>
+  <li><strong>Corbigny — Châtillon-en-Bazois</strong> (35 km): authentieke dorpen, mooie sluizen en bocagelandschappen.</li>
+  <li><strong>Clamecy — Chitry-les-Mines</strong> (25 km): door de Sardy-kloof en de bronnen van het kanaal in het noorden van de Nièvre.</li>
+  <li><strong>Châtillon-en-Bazois — Decize</strong> (45 km): het zuidelijke eindstuk naar de samenvloeiing met de Loire.</li>
+</ul>
+
+<h2>Varen op het kanaal</h2>
+<p>Pleziervaart op het Canal du Nivernais is een onvergelijkbare ervaring. Meerdere vaarbases verhuren woonboten (zonder vaarbewijs tot 15 km/u) per week of weekend. De maximumsnelheid van 8 km/u maakt dit een meditatieve, herstellende reisvorm.</p>
+
+<h2>Kanaalsdorpen</h2>
+<ul>
+  <li><strong>Clamecy</strong>: voormalige hoofdstad van de houtvlotters, middeleeuws stadje met collegiale kerk en vakwerkhuizen.</li>
+  <li><strong>Corbigny</strong>: levendig marktstadje met abdij en diensten voor fietsers en vaarders.</li>
+  <li><strong>Châtillon-en-Bazois</strong>: middeleeuws kasteel bereikbaar direct vanuit het kanaal — een van de meest gefotografeerde plekken.</li>
+  <li><strong>Decize</strong>: schiereilandstad aan de Loire-samenvloeiing, met een middeleeuws kasteel dat over de rivier uitkijkt.</li>
+</ul>
+
+<h2>Fauna en flora</h2>
+<p>Het kanaal is een opmerkelijke ecologische corridor: <strong>ijsvogels</strong> (makkelijk te spotten vanuit een boot of stille fiets), <strong>blauwe reigers</strong>, <strong>otters</strong> (aanwezig maar schuw) en <strong>bevers</strong> in het noordelijke deel. In mei–juni bedekt waterranonkel het kanaloppervlak met opvallende witte en gele tapijten.</p>
+
+<h2>Praktische informatie</h2>
+<ul>
+  <li><strong>Beste periode:</strong> mei–oktober voor varen, april–oktober voor fietsen.</li>
+  <li><strong>Bootverhuur:</strong> Nicols, Crown Blue Line en Burgundy Cruisers hebben bases langs het kanaal.</li>
+  <li><strong>Sluizen:</strong> beheerd door VNF (Franse Waterwegen). In dienst van maart tot november.</li>
+</ul>`,
+    },
+  },
+
+  // ─────────────────────────────────────────────────────────────
+  {
+    slug: 'ete-nievre-morvan-activites',
+    date: '2026-03-28',
+    category: { fr: 'Été', en: 'Summer', nl: 'Zomer' },
+    readTime: 6,
+    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Lac_des_settons.jpg/1280px-Lac_des_settons.jpg',
+    title: {
+      fr: 'Nièvre et Morvan en été : le guide des activités estivales',
+      en: 'Nièvre and Morvan in summer: the guide to summer activities',
+      nl: 'Nièvre en Morvan in de zomer: de gids voor zomerse activiteiten',
+    },
+    excerpt: {
+      fr: 'Baignades en lac, festivals en plein air, véloroutes ombragées, marchés nocturnes : l\'été transforme la Nièvre en terrain de jeu grandeur nature pour toute la famille.',
+      en: 'Lake swimming, open-air festivals, shaded cycling routes, night markets: summer turns the Nièvre into a full-scale playground for the whole family.',
+      nl: 'Zwemmen in meren, openluchtfestivals, beschaduwde fietsroutes, nachtmarkten: de zomer verandert de Nièvre in een speeltuin voor het hele gezin.',
+    },
+    content: {
+      fr: `<p>L'été, la Nièvre et le Morvan se révèlent sous leur meilleur jour. Les températures clémentes (25–30°C en juillet-août, rarement caniculaires), les lacs aux eaux claires et les forêts ombragées font de cette région l'une des plus agréables de France pour des vacances estivales. Loin de la foule des grandes stations balnéaires, ici l'été rime avec authenticité, nature et fêtes de village.</p>
+
+<h2>Les baignades : lacs et rivières</h2>
+<p>La Nièvre et le Morvan comptent plus de 90 lacs et étangs, dont plusieurs sont aménagés pour la baignade :</p>
+<ul>
+  <li><strong>Lac des Settons</strong> (Montsauche-les-Settons) : le plus grand lac du Morvan (359 ha). Plage surveillée en juillet-août, location de pédalos, kayaks et stand-up paddle. Petits restaurants et glaciers sur les rives.</li>
+  <li><strong>Lac de Chaumeçon</strong> (Brassy) : plus sauvage et moins fréquenté que les Settons. Accès libre, parking, baignade non surveillée mais dans un cadre naturel exceptionnel.</li>
+  <li><strong>Lac de Saint-Agnan</strong> (Saint-Agnan) : ambiance paisible, très appréciée des familles. Aire de jeux, pique-nique, accès plage.</li>
+  <li><strong>La Nièvre à Saint-Sulpice</strong> : pour une baignade en rivière plus intimiste, certains tronçons de la Nièvre et du Beuvron permettent des baignades naturelles dans des eaux claires et fraîches.</li>
+</ul>
+
+<h2>Les festivals d'été</h2>
+<p>L'été transforme la Nièvre en scène à ciel ouvert. Plusieurs festivals de renom animent la région :</p>
+<ul>
+  <li><strong>Festival de la Cité du Mot (La Charité-sur-Loire)</strong> : grand festival littéraire autour de la parole, du débat et de la langue. Juillet.</li>
+  <li><strong>Festival des Nuits de Saint-Brisson (Morvan)</strong> : spectacles son et lumière dans le cadre naturel du Parc Naturel Régional. Juillet-août.</li>
+  <li><strong>Les Musicales en Morvan</strong> : concerts de musique classique dans des chapelles et prieurés romans du Morvan. Été.</li>
+  <li><strong>Festival Blues sur Seine (Cosne-Cours-sur-Loire)</strong> : jazz et blues au bord de la Loire. Juillet.</li>
+  <li><strong>Marchés nocturnes de Corbigny et Clamecy</strong> : tous les jeudis soirs en juillet-août. Producteurs locaux, artisanat, ambiance festive.</li>
+</ul>
+
+<h2>Véloroutes et VTT</h2>
+<p>L'été est la saison reine pour explorer le Morvan à vélo. La <strong>Route des Grands Lacs du Morvan</strong> est un circuit balisé de 260 km autour des principaux lacs du Parc, avec des dénivelés raisonnables et des paysages spectaculaires. Pour les adeptes du VTT, le Parc Naturel du Morvan dispose de plusieurs spots réputés :</p>
+<ul>
+  <li><strong>VTT des Settons</strong> : une quarantaine de km de single tracks autour du lac, pour tous niveaux.</li>
+  <li><strong>Pumtrack du Lac de Pannecière</strong> : circuits débutants et confirmés dans un cadre de pinèdes et de lacs.</li>
+  <li><strong>Enduro du Morvan</strong> : compétition annuelle qui attire les meilleurs riders français en juillet.</li>
+</ul>
+
+<h2>Activités nautiques</h2>
+<p>Au-delà de la baignade, les lacs du Morvan offrent une palette d'activités nautiques :</p>
+<ul>
+  <li><strong>Voile</strong> : le lac des Settons dispose d'un centre de voile avec cours pour enfants et adultes (Optimist, 420, catamarans).</li>
+  <li><strong>Kayak et canoë</strong> : location disponible sur les Settons et le lac de Chaumeçon. Descentes de rivières organisées sur la Cure et l'Yonne.</li>
+  <li><strong>Pêche</strong> : la Nièvre est un département de pêche réputé, avec la Nièvre, le Beuvron et l'Aron en 1ère catégorie (truites). Permis obligatoire.</li>
+  <li><strong>Stand-up paddle</strong> : location aux Settons et à Pannecière.</li>
+</ul>
+
+<h2>Randonnées et nature</h2>
+<p>En été, les sentiers du Morvan sont à leur sommet de beauté. Les forêts offrent un ombrage naturel appréciable même par les journées chaudes. Quelques randonnées particulièrement adaptées à l'été :</p>
+<ul>
+  <li>Le <strong>Chemin de la Pierre Écrite</strong> (circuit de 12 km depuis Moux-en-Morvan) — inscriptions gallo-romaines et panoramas.</li>
+  <li>La <strong>Montagne Saint-Jean</strong> (circuit de 8 km) — point culminant du nord Morvan avec vue à 360°.</li>
+  <li>Les <strong>sentiers du Haut-Folin</strong> (902 m) — point culminant du Morvan, paysages alpestres en miniature.</li>
+</ul>
+
+<h2>Gastronomie d'été</h2>
+<p>L'été est aussi la saison des marchés en plein air et des tables d'hôtes. Quelques produits à ne pas manquer :</p>
+<ul>
+  <li>Les <strong>myrtilles du Morvan</strong> : ramassage possible en forêt dès début juillet. Tartes, confitures et liqueurs locales.</li>
+  <li>Les <strong>grillades charolaises</strong> sur les marchés de producteurs : la race Charolais se prête idéalement aux grillades estivales.</li>
+  <li>Le <strong>Pouilly-Fumé bien frais</strong> : le blanc ligérien de la rive d'en face, idéal pour les soirées estivales au bord de l'eau.</li>
+</ul>
+
+<h2>Infos pratiques été</h2>
+<ul>
+  <li><strong>Réservation hébergement :</strong> juillet-août se remplit tôt. Réservez au minimum 3 mois à l'avance pour les gîtes bien situés.</li>
+  <li><strong>Météo :</strong> les étés en Nièvre sont généralement doux et peu caniculaires (25–30°C). Les soirées restent fraîches en Morvan (altitude).</li>
+  <li><strong>Moustiques :</strong> les bords de lacs peuvent être un peu agaçants le soir. Prévoir répulsif.</li>
+  <li><strong>Feux :</strong> interdits en forêt d'avril à octobre. Barbecues autorisés uniquement dans les hébergements équipés.</li>
+</ul>`,
+
+      en: `<p>In summer, the Nièvre and Morvan reveal their best side. Mild temperatures (25–30°C in July–August, rarely scorching), clear lakes and shaded forests make this one of France's most pleasant regions for a summer holiday. Far from the crowds of seaside resorts, summer here means authenticity, nature and village festivals.</p>
+
+<h2>Swimming: lakes and rivers</h2>
+<p>The Nièvre and Morvan have over 90 lakes and ponds, several with designated swimming areas:</p>
+<ul>
+  <li><strong>Lac des Settons</strong>: the Morvan's largest lake (359 ha). Supervised beach July–August, pedalo, kayak and paddle-board hire.</li>
+  <li><strong>Lac de Chaumeçon</strong>: wilder and less crowded than Settons. Free access in a stunning natural setting.</li>
+  <li><strong>Lac de Saint-Agnan</strong>: peaceful family atmosphere, play area, picnic, beach access.</li>
+</ul>
+
+<h2>Summer festivals</h2>
+<ul>
+  <li><strong>Festival de la Cité du Mot (La Charité-sur-Loire)</strong>: major literary festival of speech and language. July.</li>
+  <li><strong>Nuits de Saint-Brisson (Morvan)</strong>: sound and light shows in the Regional Natural Park. July–August.</li>
+  <li><strong>Festival Blues sur Seine (Cosne-sur-Loire)</strong>: jazz and blues by the Loire. July.</li>
+  <li><strong>Night markets (Corbigny, Clamecy)</strong>: every Thursday evening in July–August. Local producers, crafts, festive atmosphere.</li>
+</ul>
+
+<h2>Cycling and mountain biking</h2>
+<p>The <strong>Route des Grands Lacs du Morvan</strong> is a waymarked 260 km circuit around the Park's main lakes. For mountain bikers, the Morvan offers numerous tracks around Settons and Pannecière for all levels.</p>
+
+<h2>Water sports</h2>
+<ul>
+  <li><strong>Sailing</strong>: Lac des Settons has a sailing centre with courses for children and adults.</li>
+  <li><strong>Kayak and canoe</strong>: hire available at Settons and Chaumeçon. Organised river descents on the Cure and Yonne.</li>
+  <li><strong>Fishing</strong>: the Nièvre is a renowned fishing department, with Category 1 rivers (trout) including the Nièvre, Beuvron and Aron. Permit required.</li>
+</ul>
+
+<h2>Summer gastronomy</h2>
+<ul>
+  <li><strong>Morvan bilberries</strong>: picking possible in the forest from early July. Tarts, jams and local liqueurs.</li>
+  <li><strong>Charolais grills</strong> at producer markets: the Charolais breed is perfect for summer barbecues.</li>
+  <li><strong>Well-chilled Pouilly-Fumé</strong>: the Loire white from across the river — perfect for summer evenings by the water.</li>
+</ul>
+
+<h2>Practical summer information</h2>
+<ul>
+  <li><strong>Accommodation booking:</strong> July–August fills up early. Book at least 3 months ahead for the best-located gîtes.</li>
+  <li><strong>Weather:</strong> Nièvre summers are generally mild (25–30°C). Evenings stay cool in the Morvan at altitude.</li>
+  <li><strong>Fires:</strong> forbidden in forests April–October. Barbecues only at equipped accommodation.</li>
+</ul>`,
+
+      nl: `<p>In de zomer laten de Nièvre en de Morvan hun beste kant zien. Milde temperaturen (25–30°C in juli–augustus, zelden zwoel), heldere meren en beschaduwde bossen maken dit een van de aangenaamste regio's van Frankrijk voor een zomervakantie. Ver van de drukte van de kustplaatsen staat de zomer hier voor authenticiteit, natuur en dorpsfeesten.</p>
+
+<h2>Zwemmen: meren en rivieren</h2>
+<p>De Nièvre en de Morvan tellen meer dan 90 meren en vijvers, waarvan verscheidene zijn ingericht voor zwemmen:</p>
+<ul>
+  <li><strong>Lac des Settons</strong>: het grootste meer van de Morvan (359 ha). Bewaakt strand juli–augustus, verhuur van waterfietsen, kajaks en stand-up paddles.</li>
+  <li><strong>Lac de Chaumeçon</strong>: wilder en minder druk dan Settons. Vrije toegang in een schitterend natuurlijk kader.</li>
+  <li><strong>Lac de Saint-Agnan</strong>: rustige gezinssfeer, speeltuin, picknick, strandtoegang.</li>
+</ul>
+
+<h2>Zomerfestivals</h2>
+<ul>
+  <li><strong>Festival de la Cité du Mot (La Charité-sur-Loire)</strong>: groot literair festival over taal en debat. Juli.</li>
+  <li><strong>Nuits de Saint-Brisson (Morvan)</strong>: klanken- en lichtspektakels in het Regionaal Natuurpark. Juli–augustus.</li>
+  <li><strong>Festival Blues sur Seine (Cosne-sur-Loire)</strong>: jazz en blues aan de Loire. Juli.</li>
+  <li><strong>Nachtmarkten (Corbigny, Clamecy)</strong>: elke donderdagavond in juli–augustus. Lokale producenten, ambacht, feestelijke sfeer.</li>
+</ul>
+
+<h2>Fietsen en mountainbiken</h2>
+<p>De <strong>Route des Grands Lacs du Morvan</strong> is een bewegwijzerde lus van 260 km rond de belangrijkste meren van het Park. Voor mountainbikers biedt de Morvan talrijke paden rond Settons en Pannecière voor alle niveaus.</p>
+
+<h2>Watersport</h2>
+<ul>
+  <li><strong>Zeilen</strong>: Lac des Settons heeft een zeilcentrum met cursussen voor kinderen en volwassenen.</li>
+  <li><strong>Kajak en kano</strong>: verhuur bij Settons en Chaumeçon. Georganiseerde riviertochten op de Cure en l'Yonne.</li>
+  <li><strong>Vissen</strong>: de Nièvre is een bekend vissersgebied met categorie 1-rivieren (forel) zoals de Nièvre, Beuvron en Aron. Vergunning verplicht.</li>
+</ul>
+
+<h2>Zomergastronomie</h2>
+<ul>
+  <li><strong>Morvan-bosbessen</strong>: plukken mogelijk in het bos vanaf begin juli. Taarten, jam en lokale likeuren.</li>
+  <li><strong>Charolais-grillades</strong> op producentenmarkten: het Charolais-ras is perfect voor zomerse barbecues.</li>
+  <li><strong>Goed gekoelde Pouilly-Fumé</strong>: de Loire-witte wijn van de overkant — perfect voor zomeravonden bij het water.</li>
+</ul>
+
+<h2>Praktische zomerinformatie</h2>
+<ul>
+  <li><strong>Overnachting boeken:</strong> juli–augustus raakt vroeg vol. Boek minstens 3 maanden van tevoren voor de best gelegen gîtes.</li>
+  <li><strong>Weer:</strong> de zomers in de Nièvre zijn over het algemeen mild (25–30°C). Avonden blijven koel in de Morvan op hoogte.</li>
+  <li><strong>Vuur:</strong> verboden in bossen van april tot oktober. Barbecues alleen bij uitgeruste accommodaties.</li>
+</ul>`,
+    },
+  },
+
+  // ─────────────────────────────────────────────────────────────
+  {
     slug: 'guide-week-end-paques-morvan',
     date: '2026-03-27',
     category: { fr: 'Guide', en: 'Guide', nl: 'Gids' },

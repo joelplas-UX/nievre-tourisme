@@ -16,9 +16,14 @@
   node_bundler = "esbuild"
 
 # Scheduled scraper — elke donderdag 06:00 UTC
-[functions."scrape-events"]
+# Let op: naam eindigt op -background zodat Netlify 15 min geeft ipv 10 sec
+[functions."scrape-events-background"]
   schedule = "0 6 * * 4"
 
 # Wekelijkse nieuwsbrief — elke donderdag 07:00 UTC (na scraping)
-[functions."schedule-newsletter"]
+[functions."schedule-newsletter-background"]
   schedule = "0 7 * * 4"
+
+# Koikispass sync — elke donderdag 06:30 UTC (tussenin scraping en nieuwsbrief)
+[functions."sync-koikispass-background"]
+  schedule = "30 6 * * 4"
