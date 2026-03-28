@@ -4,7 +4,7 @@ export const t = {
   fr: {
     siteTitle: 'Nièvre & Morvan',
     tagline: 'Votre guide pour découvrir la Nièvre et le Morvan',
-    nav: { home: 'Accueil', events: 'Événements', activities: 'Activités', region: 'La région', submit: 'Proposer', admin: 'Admin' },
+    nav: { home: 'Accueil', events: 'Événements', activities: 'Activités', blog: 'Blog', region: 'La région', submit: 'Proposer', about: 'À propos', contact: 'Contact', privacy: 'Confidentialité', admin: 'Admin' },
     hero: {
       title: 'Découvrez la Nièvre & le Morvan',
       subtitle: 'Événements, activités et bons plans en Nièvre et Morvan',
@@ -103,7 +103,7 @@ export const t = {
   en: {
     siteTitle: 'Nièvre & Morvan',
     tagline: 'Your guide to discovering the Nièvre and Morvan',
-    nav: { home: 'Home', events: 'Events', activities: 'Activities', region: 'The region', submit: 'Suggest', admin: 'Admin' },
+    nav: { home: 'Home', events: 'Events', activities: 'Activities', blog: 'Blog', region: 'The region', submit: 'Suggest', about: 'About', contact: 'Contact', privacy: 'Privacy', admin: 'Admin' },
     hero: {
       title: 'Discover the Nièvre & Morvan',
       subtitle: 'Events, activities and tips in the Nièvre and Morvan',
@@ -202,7 +202,7 @@ export const t = {
   nl: {
     siteTitle: 'Nièvre & Morvan',
     tagline: 'Uw gids voor de Nièvre en de Morvan',
-    nav: { home: 'Home', events: 'Evenementen', activities: 'Activiteiten', region: 'De regio', submit: 'Aanmelden', admin: 'Admin' },
+    nav: { home: 'Home', events: 'Evenementen', activities: 'Activiteiten', blog: 'Blog', region: 'De regio', submit: 'Aanmelden', about: 'Over ons', contact: 'Contact', privacy: 'Privacy', admin: 'Admin' },
     hero: {
       title: 'Ontdek de Nièvre & de Morvan',
       subtitle: 'Evenementen, activiteiten en tips in de Nièvre en de Morvan',

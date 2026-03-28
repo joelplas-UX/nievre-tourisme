@@ -16,8 +16,12 @@ export default function Footer({ tr, lang }) {
           <Link to="/">{tr.nav.home}</Link>
           <Link to="/evenements">{tr.nav.events}</Link>
           <Link to="/activites">{tr.nav.activities}</Link>
+          <Link to="/blog">{tr.nav.blog}</Link>
           <Link to="/region">{tr.nav.region}</Link>
+          <Link to="/over">{tr.nav.about}</Link>
+          <Link to="/contact">{tr.nav.contact}</Link>
           <Link to="/proposer" className="footer-link-highlight">{tr.nav.submit}</Link>
+          <Link to="/privacy" style={{ fontSize: '.82rem', color: 'rgba(255,255,255,.5)' }}>{tr.nav.privacy}</Link>
         </div>
         <div className="footer-meta">
           <p>✅ {tr.footer.updated}</p>

@@ -12,6 +12,7 @@ export default function Header({ lang, setLang, tr }) {
     { to: '/', label: nav.home },
     { to: '/evenements', label: nav.events },
     { to: '/activites', label: nav.activities },
+    { to: '/blog', label: nav.blog },
     { to: '/region', label: nav.region },
   ];
 
