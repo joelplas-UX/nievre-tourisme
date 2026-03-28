@@ -11,7 +11,7 @@ export const POSTS = [
     date: '2026-03-27',
     category: { fr: 'Actualité', en: 'News', nl: 'Nieuws' },
     readTime: 5,
-    image: 'https://images.unsplash.com/photo-1547683905-f686c993aae5?w=1200&q=80',
+    image: 'https://upload.wikimedia.org/wikipedia/commons/8/84/Nevers_loire_crue_2008_02.JPG',
     title: {
       fr: 'Crues en Nièvre : ce que vous devez savoir (mars 2026)',
       en: 'Flooding in the Nièvre: what you need to know (March 2026)',
@@ -120,7 +120,7 @@ export const POSTS = [
     date: '2026-03-25',
     category: { fr: 'Randonnée', en: 'Hiking', nl: 'Wandelen' },
     readTime: 7,
-    image: 'https://images.unsplash.com/photo-1519904981063-b0cf448d047a?w=1200&q=80',
+    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/France_-_Bourgogne_-_Morvan_-_Bourgogne_-_Ni%C3%A8vre_-_Vue_depuis_le_mont_Moux_%28M%C3%A9diHAL_1266977%29.jpg/1280px-France_-_Bourgogne_-_Morvan_-_Bourgogne_-_Ni%C3%A8vre_-_Vue_depuis_le_mont_Moux_%28M%C3%A9diHAL_1266977%29.jpg',
     title: {
       fr: 'Top 5 des randonnées incontournables dans le Morvan',
       en: 'Top 5 must-do hikes in the Morvan',
@@ -254,7 +254,7 @@ export const POSTS = [
     date: '2026-03-22',
     category: { fr: 'Randonnée', en: 'Hiking', nl: 'Wandelen' },
     readTime: 5,
-    image: 'https://images.unsplash.com/photo-1551632811-561732d1e306?w=1200&q=80',
+    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/For%C3%AAt_domaniale_de_Desvres_Sentier_GR.jpg/1280px-For%C3%AAt_domaniale_de_Desvres_Sentier_GR.jpg',
     title: {
       fr: 'Randonner avec des enfants dans la Nièvre : les meilleures balades',
       en: 'Hiking with children in the Nièvre: the best family walks',

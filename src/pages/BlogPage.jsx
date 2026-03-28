@@ -57,6 +57,7 @@ export default function BlogPage({ lang }) {
                     alt={post.title[lang] || post.title.fr}
                     className="blog-card-img"
                     loading="lazy"
+                    onError={e => { e.target.style.display = 'none'; }}
                   />
                 </Link>
               )}
