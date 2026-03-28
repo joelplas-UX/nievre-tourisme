@@ -16,21 +16,36 @@ export default function Header({ lang, setLang, tr }) {
     { to: '/region', label: nav.region },
   ];
 
+  const close = () => setMenuOpen(false);
+
   return (
     <header className="header">
       <div className="header-inner">
-        <Link to="/" className="logo">
+        <Link to="/" className="logo" onClick={close}>
           <span className="logo-icon">🌿</span>
           <span className="logo-text">{tr.siteTitle}</span>
         </Link>
 
         <nav className={`main-nav${menuOpen ? ' open' : ''}`}>
+          {/* Taalkeuze bovenaan mobiel menu */}
+          <div className="lang-switcher lang-switcher-menu">
+            {['fr', 'en', 'nl'].map(l => (
+              <button
+                key={l}
+                className={`lang-btn${lang === l ? ' active' : ''}`}
+                onClick={() => { setLang(l); close(); }}
+              >
+                {LANG_LABELS[l]}
+              </button>
+            ))}
+          </div>
+          <div className="nav-divider" />
           {links.map(l => (
             <Link
               key={l.to}
               to={l.to}
               className={`nav-link${location.pathname === l.to ? ' active' : ''}`}
-              onClick={() => setMenuOpen(false)}
+              onClick={close}
             >
               {l.label}
             </Link>
@@ -38,7 +53,8 @@ export default function Header({ lang, setLang, tr }) {
         </nav>
 
         <div className="header-right">
-          <div className="lang-switcher">
+          {/* Desktop: taalknoppen in header */}
+          <div className="lang-switcher lang-switcher-desktop">
             {['fr', 'en', 'nl'].map(l => (
               <button
                 key={l}
@@ -49,7 +65,12 @@ export default function Header({ lang, setLang, tr }) {
               </button>
             ))}
           </div>
-          <button className="hamburger" onClick={() => setMenuOpen(v => !v)} aria-label="Menu">
+          <button
+            className={`hamburger${menuOpen ? ' open' : ''}`}
+            onClick={() => setMenuOpen(v => !v)}
+            aria-label="Menu"
+            aria-expanded={menuOpen}
+          >
             <span /><span /><span />
           </button>
         </div>

@@ -4,9 +4,9 @@ import { getBlogPost } from '../hooks/useBlogPosts';
 import { useBlogPosts } from '../hooks/useBlogPosts';
 
 const COPY = {
-  fr: { back: '← Blog', related: 'Articles similaires', min: 'min de lecture', by: 'Rédaction Nièvre & Morvan', loading: 'Chargement…' },
-  en: { back: '← Blog', related: 'Related articles', min: 'min read', by: 'Nièvre & Morvan editorial', loading: 'Loading…' },
-  nl: { back: '← Blog', related: 'Gerelateerde artikelen', min: 'min lezen', by: 'Nièvre & Morvan redactie', loading: 'Laden…' },
+  fr: { back: '← Blog', related: 'Articles similaires', min: 'min de lecture', by: 'Par Noah', loading: 'Chargement…' },
+  en: { back: '← Blog', related: 'Related articles', min: 'min read', by: 'By Noah', loading: 'Loading…' },
+  nl: { back: '← Blog', related: 'Gerelateerde artikelen', min: 'min lezen', by: 'Door Noah', loading: 'Laden…' },
 };
 
 function formatDate(dateStr, lang) {

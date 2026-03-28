@@ -25,7 +25,7 @@ function getDb() {
 }
 
 const SITE_URL = process.env.URL || 'https://nievre-tourisme.netlify.app';
-const FROM     = 'Nièvre & Morvan <nieuwsbrief@nievre-morvan.fr>';
+const FROM     = 'Noah | Nièvre & Morvan <nieuwsbrief@nievremorvan.com>';
 
 // ── Haversine afstand (km) ─────────────────────────────────────────────────
 function distKm(lat1, lng1, lat2, lng2) {

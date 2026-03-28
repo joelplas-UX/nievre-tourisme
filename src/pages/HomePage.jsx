@@ -13,7 +13,17 @@ export default function HomePage({ lang, tr }) {
   const { activities } = useActivities();
 
   const featuredEvents = events.slice(0, 3);
-  const featuredActivities = activities.slice(0, 4);
+
+  // Activiteiten: filter overnachting/hebergement eruit voor homepage
+  const EXCLUDE_CATS = new Set(['overnachting', 'hebergement', 'restaurant', 'eten']);
+  const EXCLUDE_WORDS = ['gîte', 'gite', 'camping', 'piscine', 'bowling', 'hébergement', 'hôtel', 'hotel'];
+  const filteredActivities = activities
+    .filter(a => !EXCLUDE_CATS.has(a.category))
+    .filter(a => {
+      const title = (a.title?.fr || a.title?.nl || a.title?.en || '').toLowerCase();
+      return !EXCLUDE_WORDS.some(w => title.includes(w));
+    });
+  const featuredActivities = filteredActivities.slice(0, 4);
 
   return (
     <main>

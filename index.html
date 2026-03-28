@@ -7,22 +7,66 @@
     <title>Nièvre & Morvan — Découvrir la région</title>
     <meta name="description" content="Événements, activités et sorties dans la Nièvre et le Morvan. Votre guide touristique pour découvrir la région." />
     <meta name="keywords" content="Nièvre tourisme, Morvan événements, activités Morvan, agenda Nièvre, Bourgogne" />
+    <link rel="canonical" href="https://nievremorvan.com/" />
     <meta property="og:title" content="Nièvre & Morvan — Découvrir la région" />
-    <meta property="og:description" content="Événements, activités et sorties dans la Nièvre et le Morvan." />
+    <meta property="og:description" content="Événements, activités et sorties dans la Nièvre et le Morvan. Votre guide touristique par Noah." />
     <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://nievremorvan.com/" />
+    <meta property="og:image" content="https://images.unsplash.com/photo-1448375240586-882707db888b?w=1200&q=80" />
+    <meta property="og:locale" content="fr_FR" />
+    <meta property="og:locale:alternate" content="en_GB" />
+    <meta property="og:locale:alternate" content="nl_NL" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Nièvre & Morvan — Découvrir la région" />
+    <meta name="twitter:description" content="Événements, activités, randonnées et sorties dans la Nièvre et le Morvan." />
+    <meta name="twitter:image" content="https://images.unsplash.com/photo-1448375240586-882707db888b?w=1200&q=80" />
+    <meta name="author" content="Noah — Nièvre & Morvan" />
+    <!-- Structured data: WebSite -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Nièvre & Morvan",
+      "url": "https://nievremorvan.com",
+      "description": "Événements, activités et sorties dans la Nièvre et le Morvan",
+      "author": { "@type": "Person", "name": "Noah" },
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://nievremorvan.com/activites?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
 
-    <!-- Google Analytics GA4 -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-3MLK2LR2LF"></script>
+    <!-- Google Analytics GA4 — alleen laden na cookie-toestemming -->
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', 'G-3MLK2LR2LF');
+      // Standaard analytics geblokkeerd; CookieBanner activeert dit na toestemming
+      gtag('consent', 'default', {
+        analytics_storage: 'denied',
+        ad_storage: 'denied',
+        wait_for_update: 500
+      });
+      gtag('config', 'G-3MLK2LR2LF', { send_page_view: false });
+      // Herstel toestemming als al eerder gegeven
+      (function() {
+        const c = localStorage.getItem('cookie_consent');
+        if (c === 'all') {
+          gtag('consent', 'update', { analytics_storage: 'granted', ad_storage: 'granted' });
+          const s = document.createElement('script');
+          s.async = true;
+          s.src = 'https://www.googletagmanager.com/gtag/js?id=G-3MLK2LR2LF';
+          document.head.appendChild(s);
+          gtag('event', 'page_view');
+        }
+      })();
     </script>
 
     <!-- Google AdSense -->

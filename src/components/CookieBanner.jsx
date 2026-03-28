@@ -68,6 +68,18 @@ export default function CookieBanner({ lang }) {
     setConsent(choice);
     setShowBanner(false);
     setShowManage(false);
+    // Google Analytics toestemming bijwerken
+    if (typeof window.gtag === 'function') {
+      const granted = choice === 'all' ? 'granted' : 'denied';
+      window.gtag('consent', 'update', { analytics_storage: granted, ad_storage: granted });
+      if (choice === 'all' && !document.querySelector('script[src*="googletagmanager"]')) {
+        const s = document.createElement('script');
+        s.async = true;
+        s.src = 'https://www.googletagmanager.com/gtag/js?id=G-3MLK2LR2LF';
+        document.head.appendChild(s);
+        window.gtag('event', 'page_view');
+      }
+    }
   }
 
   function saveManage() {
