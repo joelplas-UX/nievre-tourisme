@@ -8,7 +8,12 @@
  */
 import { handler as sendNewsletter } from './send-newsletter-background.js';
 
-export const handler = async () => {
+export const handler = async (event) => {
+  const token = event?.headers?.['x-cron-token'] || event?.queryStringParameters?.token;
+  const cronToken = process.env.CRON_SECRET_TOKEN;
+  if (cronToken && token !== cronToken && event?.headers?.['x-admin-trigger'] !== '1') {
+    return { statusCode: 401, body: 'Unauthorized' };
+  }
   console.log('[schedule-newsletter-background] Wekelijkse nieuwsbrief gestart');
   try {
     await sendNewsletter({}, {});
