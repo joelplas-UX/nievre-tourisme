@@ -96,6 +96,8 @@ export default function AdminPage({ lang, tr }) {
   const [photoAssignId, setPhotoAssignId] = useState('');
   const [photoSearchQuery, setPhotoSearchQuery] = useState('');
   const [newsletters, setNewsletters] = useState([]);
+  const [claudeUsage, setClaudeUsage] = useState(null);
+  const [claudeUsageLoading, setClaudeUsageLoading] = useState(false);
 
   // Blog
   const [blogPosts, setBlogPosts] = useState([]);
@@ -798,6 +800,7 @@ export default function AdminPage({ lang, tr }) {
           { key: 'newsletter',  label: '✉️ Nieuwsbrief' },
           { key: 'blog',        label: '📝 Blog' },
           { key: 'submissions', label: `📬 ${a.submissions}${pendingCount ? ` (${pendingCount})` : ''}` },
+          { key: 'kosten',      label: '💶 API-kosten' },
         ].map(t => (
           <button
             key={t.key}
@@ -1596,6 +1599,138 @@ export default function AdminPage({ lang, tr }) {
           ))}
         </section>
       )}
+      {/* ── API-kosten ── */}
+      {tab === 'kosten' && (
+        <section className="admin-section">
+          <h3>💶 Claude API-gebruik &amp; kosten</h3>
+
+          {!claudeUsage && !claudeUsageLoading && (
+            <button className="btn btn-outline" onClick={async () => {
+              setClaudeUsageLoading(true);
+              try {
+                const res = await fetch('/.netlify/functions/get-claude-usage');
+                const data = await res.json();
+                setClaudeUsage(data);
+              } catch (e) {
+                setClaudeUsage({ available: false, reason: 'error', message: e.message });
+              } finally {
+                setClaudeUsageLoading(false);
+              }
+            }}>📊 Gebruik ophalen</button>
+          )}
+
+          {claudeUsageLoading && <p style={{ color: 'var(--gray-600)', marginTop: 16 }}>Gegevens ophalen…</p>}
+
+          {claudeUsage && !claudeUsage.available && (
+            <div style={{ marginTop: 20, padding: '16px 20px', background: 'var(--gray-50)', borderRadius: 10, border: '1px solid var(--gray-100)' }}>
+              {claudeUsage.reason === 'no_admin_key' && <>
+                <p><strong>⚠️ ANTHROPIC_ADMIN_KEY niet ingesteld</strong></p>
+                <p style={{ marginTop: 8, fontSize: '.9rem', color: 'var(--gray-600)' }}>
+                  Voeg een Admin API-sleutel toe in Netlify Environment Variables:<br />
+                  <code style={{ background:'var(--gray-100)', padding:'2px 6px', borderRadius:4 }}>ANTHROPIC_ADMIN_KEY</code> = <code>sk-ant-admin...</code><br /><br />
+                  Genereer een Admin API-sleutel via <strong>console.anthropic.com → Settings → Admin Keys</strong>.<br />
+                  Vereist: organisatie-account (niet individueel).
+                </p>
+              </>}
+              {claudeUsage.reason === 'no_organization' && <>
+                <p><strong>⚠️ Organisatie-account vereist</strong></p>
+                <p style={{ marginTop: 8, fontSize: '.9rem', color: 'var(--gray-600)' }}>
+                  De Anthropic Usage API is alleen beschikbaar voor organisatie-accounts.<br />
+                  Bekijk je kosten op <strong>console.anthropic.com/cost</strong>.
+                </p>
+              </>}
+              {claudeUsage.reason === 'not_admin_key' && <>
+                <p><strong>⚠️ Geen Admin API-sleutel</strong></p>
+                <p style={{ marginTop: 8, fontSize: '.9rem', color: 'var(--gray-600)' }}>
+                  De sleutel in ANTHROPIC_ADMIN_KEY moet beginnen met <code>sk-ant-admin...</code>.<br />
+                  Genereer via <strong>console.anthropic.com → Settings → Admin Keys</strong>.
+                </p>
+              </>}
+              {claudeUsage.reason === 'error' && <p>Fout: {claudeUsage.message}</p>}
+            </div>
+          )}
+
+          {claudeUsage?.available && (() => {
+            const toEur = cents => (cents / 100).toFixed(2);
+            const fmt   = n => n >= 1_000_000
+              ? (n / 1_000_000).toFixed(1) + 'M'
+              : n >= 1_000 ? (n / 1_000).toFixed(0) + 'K' : String(n);
+
+            return (
+              <div style={{ marginTop: 20 }}>
+                {/* KPI kaarten */}
+                <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', marginBottom: 28 }}>
+                  {[
+                    { label: 'Kosten afgelopen 30 dagen', value: `$${toEur(claudeUsage.totalCostCents)}` },
+                    { label: 'Kosten afgelopen 7 dagen',  value: `$${toEur(claudeUsage.costLast7Cents)}` },
+                    { label: 'Totaal modellen actief',    value: Object.keys(claudeUsage.modelTotals).length },
+                  ].map(kpi => (
+                    <div key={kpi.label} style={{ flex: '1 1 160px', background: 'var(--cream)', border: '1px solid var(--gray-100)', borderRadius: 10, padding: '16px 20px' }}>
+                      <p style={{ fontSize: '.8rem', color: 'var(--gray-600)', marginBottom: 6 }}>{kpi.label}</p>
+                      <p style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--green-dark)' }}>{kpi.value}</p>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Gebruik per model */}
+                <h4 style={{ marginBottom: 12 }}>Tokenverbruik per model (30 dagen)</h4>
+                <table className="admin-table" style={{ marginBottom: 24 }}>
+                  <thead>
+                    <tr>
+                      <th>Model</th>
+                      <th style={{ textAlign: 'right' }}>Input</th>
+                      <th style={{ textAlign: 'right' }}>Output</th>
+                      <th style={{ textAlign: 'right' }}>Cache gelezen</th>
+                      <th style={{ textAlign: 'right' }}>Cache aangemaakt</th>
+                      <th style={{ textAlign: 'right' }}>Totaal</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {Object.entries(claudeUsage.modelTotals)
+                      .sort((a, b) => (b[1].input + b[1].output) - (a[1].input + a[1].output))
+                      .map(([model, t]) => (
+                        <tr key={model}>
+                          <td><code style={{ fontSize: '.8rem' }}>{model}</code></td>
+                          <td style={{ textAlign: 'right' }}>{fmt(t.input)}</td>
+                          <td style={{ textAlign: 'right' }}>{fmt(t.output)}</td>
+                          <td style={{ textAlign: 'right' }}>{fmt(t.cacheRead)}</td>
+                          <td style={{ textAlign: 'right' }}>{fmt(t.cacheWrite)}</td>
+                          <td style={{ textAlign: 'right', fontWeight: 700 }}>{fmt(t.input + t.output)}</td>
+                        </tr>
+                      ))}
+                  </tbody>
+                </table>
+
+                {/* Dagelijkse kosten */}
+                <h4 style={{ marginBottom: 12 }}>Dagelijkse kosten (laatste 14 dagen)</h4>
+                <div style={{ display: 'flex', alignItems: 'flex-end', gap: 4, height: 80, marginBottom: 8 }}>
+                  {claudeUsage.dailyCosts.slice(-14).map(d => {
+                    const max = Math.max(...claudeUsage.dailyCosts.map(x => x.cents), 1);
+                    const h   = Math.max(2, Math.round((d.cents / max) * 72));
+                    return (
+                      <div key={d.date} title={`${d.date}: $${(d.cents/100).toFixed(4)}`}
+                        style={{ flex: 1, height: h, background: 'var(--green)', borderRadius: '3px 3px 0 0', minWidth: 8, cursor: 'default' }} />
+                    );
+                  })}
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '.72rem', color: 'var(--gray-600)' }}>
+                  <span>{claudeUsage.dailyCosts.at(-14)?.date?.slice(5)}</span>
+                  <span>{claudeUsage.dailyCosts.at(-1)?.date?.slice(5)}</span>
+                </div>
+
+                <div style={{ marginTop: 16, fontSize: '.82rem', color: 'var(--gray-600)' }}>
+                  Bijgewerkt op {new Date(claudeUsage.fetchedAt).toLocaleString('nl-NL')} ·{' '}
+                  <button style={{ background: 'none', border: 'none', color: 'var(--green)', cursor: 'pointer', fontSize: 'inherit' }}
+                    onClick={() => setClaudeUsage(null)}>
+                    ↻ Ververs
+                  </button>
+                </div>
+              </div>
+            );
+          })()}
+        </section>
+      )}
+
     </main>
   );
 }
