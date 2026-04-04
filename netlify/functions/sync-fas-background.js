@@ -64,6 +64,20 @@ function extractJsonLdEvents(html) {
   return events;
 }
 
+// ── HOOFDLETTERS → Title Case ─────────────────────────────────
+// FAS slaat addressLocality op in CAPS: "COSNE-COURS-SUR-LOIRE"
+const LC_WORDS = new Set(['de','du','des','le','la','les','sur','sous','en','et','ou','lès','les']);
+function titleCase(str) {
+  if (!str) return str;
+  // Splits op spaties en koppeltekens, bewaar het scheidingsteken
+  return str.toLowerCase()
+    .replace(/([a-zàâäéèêëîïôùûüç]+)/gi, (word, _, offset) => {
+      const isFirst = offset === 0;
+      if (!isFirst && LC_WORDS.has(word)) return word;
+      return word.charAt(0).toUpperCase() + word.slice(1);
+    });
+}
+
 // ── Maak stabiele Firestore ID ────────────────────────────────
 function makeEventId(siteKey, ev) {
   const raw = `${siteKey}_${ev.name || ''}_${ev.startDate || ''}`;
@@ -135,16 +149,28 @@ export const handler = async (event) => {
           const docId = makeEventId(site.key, ev);
           const docRef = eventsCol.doc(docId);
 
-          // Sla over als al bestaat
+          // Gemeenschappelijke velden — vroeg berekenen voor dedup-update
+          const postcode = ev.location?.address?.postalCode;
+          const rawCity  = ev.location?.address?.addressLocality || null;
+          const city     = rawCity ? titleCase(rawCity) : null;
+          const locName  = ev.location?.name ? titleCase(ev.location.name) : city;
+          const address  = ev.location?.address?.streetAddress
+            ? titleCase(ev.location.address.streetAddress) : null;
+
+          // Sla over als al bestaat — update wel locatie als die ontbreekt
           const snap = await docRef.get();
-          if (snap.exists) { skipped++; continue; }
+          if (snap.exists) {
+            if (!snap.data().city && city) {
+              await docRef.update({ city, location: locName, address, updatedAt: Timestamp.now() });
+            }
+            skipped++; continue;
+          }
 
           // Datumcontrole
           const dateObj = parseIsoDate(ev.startDate);
           if (dateObj && (dateObj < minDate || dateObj > maxDate)) { skipped++; continue; }
 
           // Postcode-filter voor bourgogne-coeurdeloire (dekt ook Cher)
-          const postcode = ev.location?.address?.postalCode;
           if (site.key === 'bourg-loire' && postcode && !postcode.startsWith('58')) {
             skipped++; continue;
           }
@@ -159,9 +185,9 @@ export const handler = async (event) => {
           await docRef.set({
             title:       { fr: ev.name || '', en: null, nl: null },
             description: { fr: ev.description || null, en: null, nl: null },
-            city:        ev.location?.address?.addressLocality || null,
-            location:    ev.location?.name || ev.location?.address?.addressLocality || null,
-            address:     ev.location?.address?.streetAddress || null,
+            city,
+            location:    locName || null,
+            address,
             postcode:    postcode || null,
             lat:         ev.location?.geo?.latitude  ? parseFloat(ev.location.geo.latitude)  : null,
             lng:         ev.location?.geo?.longitude ? parseFloat(ev.location.geo.longitude) : null,

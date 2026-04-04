@@ -28,48 +28,70 @@ const API     = `${BASE}/wp-json/wp/v2`;
 const HEADERS = { 'User-Agent': 'NievreMorevan/1.0 (nievremorvan.com)', 'Accept': 'application/json' };
 const MAX_EVENTS = 40;
 
-const FR_MONTHS = {
-  janvier:1, février:2, mars:3, avril:4, mai:5, juin:6,
-  juillet:7, août:8, septembre:9, octobre:10, novembre:11, décembre:12,
+const FR_MONTHS_MAP = {
+  janvier:1, fevrier:2, mars:3, avril:4, mai:5, juin:6,
+  juillet:7, aout:8, septembre:9, octobre:10, novembre:11, decembre:12,
 };
+const MONTH_PAT = 'janvier|f[eé]vrier|mars|avril|mai|juin|juillet|ao[uû]t|septembre|octobre|novembre|d[eé]cembre';
 
-// ── Parse datum uit HTML: "Mercredi 22 — Avril 2026 — 14:00-18:00" ─
+function normalizeMonth(str) {
+  return str.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+}
+
+// ── Parse datum uit HTML van culture.nevers.fr ────────────────
+// De datum is gesplitst over aparte HTML-elementen:
+//   "Avril 2026"  (maand+jaar in één element)
+//   "Mercredi 22" (weekdag+dag in ander element)
+//   "14:00 - 18:00" (tijd in li)
+// Na stripping: "... Avril 2026 Mercredi 22 14:00 - 18:00 ..."
 function parseDateFromHtml(html) {
-  // Verwijder tags
   const text = html.replace(/<[^>]+>/g, ' ').replace(/\s{2,}/g, ' ');
 
-  // Patroon: dag — Maand Jaar — HH:MM(-HH:MM)?
-  const m = text.match(
-    /(\d{1,2})\s*[—–-]\s*(janvier|f[eé]vrier|mars|avril|mai|juin|juillet|ao[uû]t|septembre|octobre|novembre|d[eé]cembre)\s+(\d{4})(?:\s*[—–-]\s*(\d{2}:\d{2})(?:\s*-\s*(\d{2}:\d{2}))?)?/i
-  );
-  if (!m) {
-    // Alternatief: "22 Avril 2026 à 14h00"
-    const m2 = text.match(
-      /(\d{1,2})\s+(janvier|f[eé]vrier|mars|avril|mai|juin|juillet|ao[uû]t|septembre|octobre|novembre|d[eé]cembre)\s+(\d{4})(?:\s+[àa]\s+(\d{1,2})h(\d{2}))?/i
-    );
-    if (!m2) return { dateObj: null, timeStart: null, timeEnd: null };
-    const day   = parseInt(m2[1]);
-    const month = FR_MONTHS[m2[2].toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')] || null;
-    const year  = parseInt(m2[3]);
-    const hour  = m2[4] != null ? parseInt(m2[4]) : null;
-    const min   = m2[5] != null ? parseInt(m2[5]) : 0;
-    if (!month) return { dateObj: null, timeStart: null, timeEnd: null };
-    return {
-      dateObj:   new Date(year, month - 1, day, hour ?? 0, min),
-      timeStart: hour !== null ? `${String(hour).padStart(2,'0')}:${String(min).padStart(2,'0')}` : null,
-      timeEnd:   null,
-    };
+  let day = null, month = null, year = null, timeStart = null, timeEnd = null;
+
+  // Patroon A: "le 22 Avril 2026" of "22 Avril 2026"
+  const mA = text.match(new RegExp(`(?:le\\s+)?(\\d{1,2})\\s+(${MONTH_PAT})\\s+(\\d{4})`, 'i'));
+  if (mA) {
+    day   = parseInt(mA[1]);
+    month = FR_MONTHS_MAP[normalizeMonth(mA[2])];
+    year  = parseInt(mA[3]);
   }
 
-  const day   = parseInt(m[1]);
-  const month = FR_MONTHS[m[2].toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')] || null;
-  const year  = parseInt(m[3]);
-  if (!month) return { dateObj: null, timeStart: null, timeEnd: null };
-  return {
-    dateObj:   new Date(year, month - 1, day),
-    timeStart: m[4] || null,
-    timeEnd:   m[5] || null,
-  };
+  // Patroon B: "Avril 2026" gevolgd (binnen 40 tekens) door dagcijfer
+  if (!day) {
+    const mB = text.match(new RegExp(`(${MONTH_PAT})\\s+(\\d{4})`, 'i'));
+    if (mB) {
+      month = FR_MONTHS_MAP[normalizeMonth(mB[1])];
+      year  = parseInt(mB[2]);
+      // Zoek dagcijfer (1-31) vlak voor of na de maand (window van 40 tekens)
+      const start  = Math.max(0, mB.index - 40);
+      const window = text.slice(start, mB.index + mB[0].length + 40);
+      const mDay   = window.match(/\b([1-9]|[12]\d|3[01])\b/);
+      if (mDay) day = parseInt(mDay[1]);
+    }
+  }
+
+  // Patroon C: "22 avril" zonder jaar — gebruik huidig/volgend jaar
+  if (!day) {
+    const mC = text.match(new RegExp(`(\\d{1,2})\\s+(${MONTH_PAT})`, 'i'));
+    if (mC) {
+      day   = parseInt(mC[1]);
+      month = FR_MONTHS_MAP[normalizeMonth(mC[2])];
+      year  = new Date().getFullYear();
+    }
+  }
+
+  if (!day || !month || !year) return { dateObj: null, timeStart: null, timeEnd: null };
+
+  // Tijdstip: "14:00 - 18:00" of "14:00-18:00"
+  const mT = text.match(/(\d{2}:\d{2})\s*[-–]\s*(\d{2}:\d{2})/);
+  if (mT) { timeStart = mT[1]; timeEnd = mT[2]; }
+  else {
+    const mT2 = text.match(/(\d{1,2})h(\d{2})/);
+    if (mT2) timeStart = `${String(parseInt(mT2[1])).padStart(2,'0')}:${mT2[2]}`;
+  }
+
+  return { dateObj: new Date(year, month - 1, day), timeStart, timeEnd };
 }
 
 // ── Haal locatienaam op via taxonomie-ID ─────────────────────
