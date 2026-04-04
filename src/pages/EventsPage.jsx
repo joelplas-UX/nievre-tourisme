@@ -174,7 +174,7 @@ export default function EventsPage({ lang, tr }) {
             {lang === 'fr' ? 'Quand :' : lang === 'nl' ? 'Wanneer:' : 'When:'}
           </span>
           <div className="filter-chips">
-            {timeFilters.filter(f => f.value !== 'dayafter').map(f => (
+            {timeFilters.map(f => (
               <button
                 key={f.value}
                 className={`chip chip--time${timeKey === f.value ? ' active' : ''}`}
