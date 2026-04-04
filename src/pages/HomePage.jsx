@@ -12,7 +12,25 @@ export default function HomePage({ lang, tr }) {
   const { events } = useEvents();
   const { activities } = useActivities();
 
-  const featuredEvents = events.slice(0, 3);
+  const now = new Date(); now.setHours(0, 0, 0, 0);
+  const featuredEvents = [...events]
+    .sort((a, b) => {
+      const startA = a.date?.toDate?.();
+      const startB = b.date?.toDate?.();
+      const endA   = a.endDate?.toDate?.() || startA;
+      const endB   = b.endDate?.toDate?.() || startB;
+      // Meerdaags lopend (al begonnen, nog niet afgelopen) → naar achter
+      const ongoingA = startA && startA < now && endA >= now;
+      const ongoingB = startB && startB < now && endB >= now;
+      if (ongoingA && !ongoingB) return 1;
+      if (ongoingB && !ongoingA) return -1;
+      // Geen datum → helemaal achteraan
+      if (!startA && !startB) return 0;
+      if (!startA) return 1;
+      if (!startB) return -1;
+      return startA - startB;
+    })
+    .slice(0, 3);
 
   // Activiteiten: filter overnachting/hebergement eruit voor homepage
   const EXCLUDE_CATS = new Set(['overnachting', 'hebergement', 'restaurant', 'eten']);

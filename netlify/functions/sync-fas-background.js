@@ -88,6 +88,22 @@ function makeEventId(siteKey, ev) {
     .slice(0, 80);
 }
 
+// ── Wikipedia-foto van het dorp ───────────────────────────────
+async function getVillagePhoto(cityName) {
+  if (!cityName) return null;
+  try {
+    const encoded = encodeURIComponent(cityName);
+    const res = await fetch(
+      `https://fr.wikipedia.org/w/api.php?action=query&titles=${encoded}&prop=pageimages&format=json&pithumbsize=800&origin=*`,
+      { headers: { 'User-Agent': 'NievreMorevan/1.0 (nievremorvan.com)' } }
+    );
+    if (!res.ok) return null;
+    const data = await res.json();
+    const page = Object.values(data?.query?.pages || {})[0];
+    return page?.thumbnail?.source || null;
+  } catch { return null; }
+}
+
 // ── Datum ISO string → Date object ───────────────────────────
 function parseIsoDate(str) {
   if (!str) return null;
@@ -160,8 +176,18 @@ export const handler = async (event) => {
           // Sla over als al bestaat — update wel locatie als die ontbreekt
           const snap = await docRef.get();
           if (snap.exists) {
-            if (!snap.data().city && city) {
-              await docRef.update({ city, location: locName, address, updatedAt: Timestamp.now() });
+            const existing = snap.data();
+            const updates = {};
+            if (!existing.city && city) {
+              updates.city = city; updates.location = locName; updates.address = address;
+            }
+            if (!existing.imageUrl && city) {
+              const wikiPhoto = await getVillagePhoto(city);
+              if (wikiPhoto) { updates.imageUrl = wikiPhoto; updates.imageSource = 'wikipedia_village'; }
+            }
+            if (Object.keys(updates).length) {
+              updates.updatedAt = Timestamp.now();
+              await docRef.update(updates);
             }
             skipped++; continue;
           }
@@ -179,8 +205,13 @@ export const handler = async (event) => {
             ? `${ev.offers[0].price} ${ev.offers[0].priceCurrency || 'EUR'}`
             : null;
 
-          const imageUrl = ev.image?.url || ev.image?.contentUrl
+          let imageUrl = ev.image?.url || ev.image?.contentUrl
             || (typeof ev.image === 'string' ? ev.image : null);
+
+          // Geen afbeelding in JSON-LD → Wikipedia-foto van het dorp
+          if (!imageUrl && city) {
+            imageUrl = await getVillagePhoto(city);
+          }
 
           await docRef.set({
             title:       { fr: ev.name || '', en: null, nl: null },

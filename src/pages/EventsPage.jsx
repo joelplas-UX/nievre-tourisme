@@ -169,27 +169,37 @@ export default function EventsPage({ lang, tr }) {
       </div>
 
       <div className="filters">
-        <div className="filter-chips">
-          {TYPES.map(type => (
-            <button
-              key={type}
-              className={`chip${activeType === type ? ' active' : ''}`}
-              onClick={() => setActiveType(type)}
-            >
-              {tr.events.filter[type]}
-            </button>
-          ))}
+        <div className="filter-row">
+          <span className="filter-label">
+            {lang === 'fr' ? 'Quand :' : lang === 'nl' ? 'Wanneer:' : 'When:'}
+          </span>
+          <div className="filter-chips">
+            {timeFilters.filter(f => f.value !== 'dayafter').map(f => (
+              <button
+                key={f.value}
+                className={`chip chip--time${timeKey === f.value ? ' active' : ''}`}
+                onClick={() => setTimeKey(f.value)}
+              >
+                {f.label}
+              </button>
+            ))}
+          </div>
         </div>
-        <div className="filter-chips" style={{ marginTop: 8 }}>
-          {timeFilters.map(f => (
-            <button
-              key={f.value}
-              className={`chip chip--time${timeKey === f.value ? ' active' : ''}`}
-              onClick={() => setTimeKey(f.value)}
-            >
-              {f.label}
-            </button>
-          ))}
+        <div className="filter-row">
+          <span className="filter-label">
+            {lang === 'fr' ? 'Type :' : lang === 'nl' ? 'Type:' : 'Type:'}
+          </span>
+          <div className="filter-chips">
+            {TYPES.map(type => (
+              <button
+                key={type}
+                className={`chip${activeType === type ? ' active' : ''}`}
+                onClick={() => setActiveType(type)}
+              >
+                {tr.events.filter[type]}
+              </button>
+            ))}
+          </div>
         </div>
         <div className="filters-right">
           <div className="postcode-wrap">

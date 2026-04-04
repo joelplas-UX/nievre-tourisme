@@ -77,6 +77,7 @@ export default function AdminPage({ lang, tr }) {
   const [syncingKoikispass, setSyncingKoikispass] = useState(false);
   const [syncingLejdc, setSyncingLejdc] = useState(false);
   const [syncingFas, setSyncingFas] = useState(false);
+  const [patching, setPatching] = useState(false);
   const [syncingLaCharite, setSyncingLaCharite] = useState(false);
   const [syncingCultureNevers, setSyncingCultureNevers] = useState(false);
   const [enriching, setEnriching] = useState(false);
@@ -449,6 +450,22 @@ export default function AdminPage({ lang, tr }) {
     } finally {
       setSyncingLejdc(false);
     }
+  }
+
+  async function handlePatchEvents() {
+    setPatching(true); setScrapeMsg('');
+    try {
+      const res = await fetch('/.netlify/functions/patch-events-background', {
+        method: 'POST', headers: { 'x-admin-trigger': '1' },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setScrapeMsg(`✅ Patch klaar: ${data.patchedDates} datums, ${data.patchedTypes} types, ${data.patchedPhotos} foto's hersteld.`);
+      } else {
+        setScrapeMsg(`⚠️ Status ${res.status}`);
+      }
+    } catch (err) { setScrapeMsg('Fout: ' + err.message); }
+    finally { setPatching(false); }
   }
 
   async function handleSyncFas() {
@@ -902,6 +919,10 @@ export default function AdminPage({ lang, tr }) {
             </button>
             <button className="btn btn-outline" onClick={handleSyncCultureNevers} disabled={syncingCultureNevers}>
               {syncingCultureNevers ? a.syncing : '🎭 Sync Culture Nevers'}
+            </button>
+            <button className="btn btn-outline" onClick={handlePatchEvents} disabled={patching}
+              title="Herstelt ontbrekende datums, types en foto's voor bestaande events">
+              {patching ? '⏳ Patching…' : '🔧 Patch bestaande events'}
             </button>
           </div>
           {scrapeMsg && <p className="scrape-msg">{scrapeMsg}</p>}
