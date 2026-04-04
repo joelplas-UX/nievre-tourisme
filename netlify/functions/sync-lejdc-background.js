@@ -106,7 +106,7 @@ function parseArticleBlocks(html) {
 async function extractEvents(text, publishedRaw, articleUrl) {
   const msg = await anthropic.messages.create({
     model: 'claude-haiku-4-5-20251001',
-    max_tokens: 4000,
+    max_tokens: 8192,
     messages: [{
       role: 'user',
       content: `Extraheer alle evenementen uit deze tekst van een Frans regionaal krantenartikel over de Nièvre.
@@ -142,8 +142,16 @@ Regels:
   const raw = msg.content[0].text.trim();
   const jsonStart = raw.indexOf('[');
   const jsonEnd = raw.lastIndexOf(']') + 1;
-  if (jsonStart === -1) return [];
-  return JSON.parse(raw.slice(jsonStart, jsonEnd));
+  if (jsonStart === -1 || jsonEnd <= 1) {
+    console.warn('[sync-lejdc] Geen JSON array in Claude response:', raw.slice(0, 300));
+    return [];
+  }
+  try {
+    return JSON.parse(raw.slice(jsonStart, jsonEnd));
+  } catch (err) {
+    console.warn('[sync-lejdc] JSON parse mislukt:', err.message, '— fragment:', raw.slice(jsonStart, jsonStart + 200));
+    return [];
+  }
 }
 
 // ── Stap 5: Wikipedia-foto van het dorp ──────────────────────

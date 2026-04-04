@@ -31,3 +31,15 @@
 # Le JDC "que faire" sync — dagelijks 07:30 UTC
 [functions."sync-lejdc-background"]
   schedule = "30 7 * * *"
+
+# FAS-platform sites — elke donderdag 06:15 UTC
+[functions."sync-fas-background"]
+  schedule = "15 6 * * 4"
+
+# La Charité-sur-Loire — elke donderdag 06:45 UTC
+[functions."sync-lacharite-background"]
+  schedule = "45 6 * * 4"
+
+# Culture Nevers — elke donderdag 07:15 UTC
+[functions."sync-culturenevers-background"]
+  schedule = "15 7 * * 4"

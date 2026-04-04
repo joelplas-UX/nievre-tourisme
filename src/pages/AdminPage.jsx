@@ -76,6 +76,9 @@ export default function AdminPage({ lang, tr }) {
   const [syncingVisorando, setSyncingVisorando] = useState(false);
   const [syncingKoikispass, setSyncingKoikispass] = useState(false);
   const [syncingLejdc, setSyncingLejdc] = useState(false);
+  const [syncingFas, setSyncingFas] = useState(false);
+  const [syncingLaCharite, setSyncingLaCharite] = useState(false);
+  const [syncingCultureNevers, setSyncingCultureNevers] = useState(false);
   const [enriching, setEnriching] = useState(false);
   const [enrichingPhotos, setEnrichingPhotos] = useState(false);
   const [syncMsg, setSyncMsg] = useState('');
@@ -446,6 +449,33 @@ export default function AdminPage({ lang, tr }) {
     } finally {
       setSyncingLejdc(false);
     }
+  }
+
+  async function handleSyncFas() {
+    setSyncingFas(true); setScrapeMsg('');
+    try {
+      const res = await fetch('/.netlify/functions/sync-fas-background', { method: 'POST', headers: { 'x-admin-trigger': '1' } });
+      setScrapeMsg(res.status === 202 || res.ok ? '✅ FAS sync gestart (4 sites)! Ververs de log over 3–5 minuten.' : `⚠️ Status ${res.status}`);
+    } catch (err) { setScrapeMsg('Fout: ' + err.message); }
+    finally { setSyncingFas(false); }
+  }
+
+  async function handleSyncLaCharite() {
+    setSyncingLaCharite(true); setScrapeMsg('');
+    try {
+      const res = await fetch('/.netlify/functions/sync-lacharite-background', { method: 'POST', headers: { 'x-admin-trigger': '1' } });
+      setScrapeMsg(res.status === 202 || res.ok ? '✅ La Charité sync gestart! Ververs de log over 3–5 minuten.' : `⚠️ Status ${res.status}`);
+    } catch (err) { setScrapeMsg('Fout: ' + err.message); }
+    finally { setSyncingLaCharite(false); }
+  }
+
+  async function handleSyncCultureNevers() {
+    setSyncingCultureNevers(true); setScrapeMsg('');
+    try {
+      const res = await fetch('/.netlify/functions/sync-culturenevers-background', { method: 'POST', headers: { 'x-admin-trigger': '1' } });
+      setScrapeMsg(res.status === 202 || res.ok ? '✅ Culture Nevers sync gestart! Ververs de log over 3–5 minuten.' : `⚠️ Status ${res.status}`);
+    } catch (err) { setScrapeMsg('Fout: ' + err.message); }
+    finally { setSyncingCultureNevers(false); }
   }
 
   async function handleSyncKoikispass() {
@@ -864,6 +894,15 @@ export default function AdminPage({ lang, tr }) {
             <button className="btn btn-outline" onClick={handleSyncLejdc} disabled={syncingLejdc}>
               {syncingLejdc ? a.syncing : '📰 Sync Le JDC'}
             </button>
+            <button className="btn btn-outline" onClick={handleSyncFas} disabled={syncingFas}>
+              {syncingFas ? a.syncing : '🏛️ Sync FAS (4 sites)'}
+            </button>
+            <button className="btn btn-outline" onClick={handleSyncLaCharite} disabled={syncingLaCharite}>
+              {syncingLaCharite ? a.syncing : '⛪ Sync La Charité'}
+            </button>
+            <button className="btn btn-outline" onClick={handleSyncCultureNevers} disabled={syncingCultureNevers}>
+              {syncingCultureNevers ? a.syncing : '🎭 Sync Culture Nevers'}
+            </button>
           </div>
           {scrapeMsg && <p className="scrape-msg">{scrapeMsg}</p>}
 
@@ -888,6 +927,10 @@ export default function AdminPage({ lang, tr }) {
                       datatourisme: '🇫🇷 DataTourisme', 'claude-enrich': '✨ AI-verrijking',
                       openstreetmap: '🗺️ OpenStreetMap', visorando: '🥾 Visorando',
                       koikispass: '📰 Koikispass', lejdc: '📰 Le JDC',
+                      fas: '🏛️ FAS (4 sites)', 'fas_nevers': '🏛️ Nevers Tourisme',
+                      'fas_morvan-sg': '🏛️ Morvan Sommets', 'fas_parc-morvan': '🏛️ Parc Morvan',
+                      'fas_bourg-loire': '🏛️ Bourgogne Loire',
+                      lacharite: '⛪ La Charité', culture_nevers: '🎭 Culture Nevers',
                       'photo-enrich': '🖼️ Foto-verrijking', openagenda: '📅 OpenAgenda',
                     };
                     const bron      = bronMap[s.source] || s.source || '–';
