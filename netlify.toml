@@ -27,3 +27,7 @@
 # Koikispass sync — elke donderdag 06:30 UTC (tussenin scraping en nieuwsbrief)
 [functions."sync-koikispass-background"]
   schedule = "30 6 * * 4"
+
+# Le JDC "que faire" sync — dagelijks 07:30 UTC
+[functions."sync-lejdc-background"]
+  schedule = "30 7 * * *"

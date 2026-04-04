@@ -75,6 +75,7 @@ export default function AdminPage({ lang, tr }) {
   const [syncingOAG, setSyncingOAG] = useState(false);
   const [syncingVisorando, setSyncingVisorando] = useState(false);
   const [syncingKoikispass, setSyncingKoikispass] = useState(false);
+  const [syncingLejdc, setSyncingLejdc] = useState(false);
   const [enriching, setEnriching] = useState(false);
   const [enrichingPhotos, setEnrichingPhotos] = useState(false);
   const [syncMsg, setSyncMsg] = useState('');
@@ -414,6 +415,26 @@ export default function AdminPage({ lang, tr }) {
       setSyncMsg('Fout: ' + err.message);
     } finally {
       setSyncingVisorando(false);
+    }
+  }
+
+  async function handleSyncLejdc() {
+    setSyncingLejdc(true);
+    setSyncMsg('');
+    try {
+      const res = await fetch('/.netlify/functions/sync-lejdc-background', {
+        method: 'POST',
+        headers: { 'x-admin-trigger': '1' },
+      });
+      if (res.status === 202 || res.ok) {
+        setSyncMsg('✅ Le JDC sync gestart! Dagelijkse "que faire" evenementen worden geëxtraheerd via AI. Ververs de log over 3–5 minuten.');
+      } else {
+        setSyncMsg(`⚠️ Status ${res.status}`);
+      }
+    } catch (err) {
+      setSyncMsg('Fout: ' + err.message);
+    } finally {
+      setSyncingLejdc(false);
     }
   }
 
@@ -1022,6 +1043,16 @@ export default function AdminPage({ lang, tr }) {
 
           <div className="sync-box">
             <div>
+              <strong>📰 Le JDC — Que faire dans la Nièvre</strong>
+              <p className="admin-hint">Dagelijks nieuw artikel op lejdc.fr met evenementen per dorp. Claude extraheert datum, locatie en type. Wikipedia-foto van het dorp als fallback.</p>
+            </div>
+            <button className="btn btn-outline" onClick={handleSyncLejdc} disabled={syncingLejdc}>
+              {syncingLejdc ? a.syncing : '📰 Sync Le JDC'}
+            </button>
+          </div>
+
+          <div className="sync-box">
+            <div>
               <strong>✨ AI-verrijking</strong>
               <p className="admin-hint">Genereert ontbrekende titels en beschrijvingen (FR/EN/NL). Vereist: CLAUDE_API_KEY in Netlify.</p>
             </div>
@@ -1065,6 +1096,7 @@ export default function AdminPage({ lang, tr }) {
                       openstreetmap: '🗺️ OpenStreetMap',
                       visorando: '🥾 Visorando',
                       koikispass: '📰 Koikispass',
+                      lejdc: '📰 Le JDC',
                       'photo-enrich': '🖼️ Foto-verrijking',
                     };
                     const bron = bronMap[s.source] || s.source || '–';
