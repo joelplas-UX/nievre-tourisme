@@ -458,9 +458,8 @@ export default function AdminPage({ lang, tr }) {
       const res = await fetch('/.netlify/functions/patch-events-background', {
         method: 'POST', headers: { 'x-admin-trigger': '1' },
       });
-      if (res.ok) {
-        const data = await res.json();
-        setScrapeMsg(`✅ Patch klaar: ${data.patchedDates} datums, ${data.patchedTypes} types, ${data.patchedPhotos} foto's hersteld.`);
+      if (res.status === 202 || res.ok) {
+        setScrapeMsg('✅ Patch gestart! Datums, types en foto\'s worden hersteld. Ververs de scraping log over 2–5 minuten.');
       } else {
         setScrapeMsg(`⚠️ Status ${res.status}`);
       }
