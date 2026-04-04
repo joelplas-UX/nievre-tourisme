@@ -437,12 +437,12 @@ export default function AdminPage({ lang, tr }) {
         headers: { 'x-admin-trigger': '1' },
       });
       if (res.status === 202 || res.ok) {
-        setSyncMsg('✅ Le JDC sync gestart! Dagelijkse "que faire" evenementen worden geëxtraheerd via AI. Ververs de log over 3–5 minuten.');
+        setScrapeMsg('✅ Le JDC sync gestart! Dagelijkse "que faire" evenementen worden geëxtraheerd via AI. Ververs de log over 3–5 minuten.');
       } else {
-        setSyncMsg(`⚠️ Status ${res.status}`);
+        setScrapeMsg(`⚠️ Status ${res.status}`);
       }
     } catch (err) {
-      setSyncMsg('Fout: ' + err.message);
+      setScrapeMsg('Fout: ' + err.message);
     } finally {
       setSyncingLejdc(false);
     }
@@ -450,17 +450,17 @@ export default function AdminPage({ lang, tr }) {
 
   async function handleSyncKoikispass() {
     setSyncingKoikispass(true);
-    setSyncMsg('');
+    setScrapeMsg('');
     try {
       const res = await fetch('/.netlify/functions/sync-koikispass-background', { method: 'POST' });
       if (res.status === 202 || res.ok) {
-        setSyncMsg('✅ Koikispass sync gestart! Wekelijkse evenementen worden geëxtraheerd via AI. Ververs de log over 3–5 minuten.');
+        setScrapeMsg('✅ Koikispass sync gestart! Evenementen van /lagenda/ worden opgehaald. Ververs de log over 3–5 minuten.');
       } else {
-        setSyncMsg(`⚠️ Status ${res.status}`);
+        setScrapeMsg(`⚠️ Status ${res.status}`);
       }
       setTimeout(() => loadData(), 300000);
     } catch (err) {
-      setSyncMsg('Fout: ' + err.message);
+      setScrapeMsg('Fout: ' + err.message);
     } finally {
       setSyncingKoikispass(false);
     }
@@ -858,33 +858,75 @@ export default function AdminPage({ lang, tr }) {
             <button className="btn btn-outline" onClick={handleSyncOAG} disabled={syncingOAG}>
               {syncingOAG ? a.syncing : '📅 Sync OpenAgenda'}
             </button>
+            <button className="btn btn-outline" onClick={handleSyncKoikispass} disabled={syncingKoikispass}>
+              {syncingKoikispass ? a.syncing : '📰 Sync Koikispass'}
+            </button>
+            <button className="btn btn-outline" onClick={handleSyncLejdc} disabled={syncingLejdc}>
+              {syncingLejdc ? a.syncing : '📰 Sync Le JDC'}
+            </button>
           </div>
           {scrapeMsg && <p className="scrape-msg">{scrapeMsg}</p>}
 
-          <h3>{a.lastRun}</h3>
-          {runs.length === 0
+          <h3>📋 Scraping history <button className="btn btn-outline" style={{fontSize:'.8rem',padding:'4px 10px',marginLeft:8}} onClick={loadData}>↻ Ververs</button></h3>
+          {activitySyncs.length === 0
             ? <p className="admin-hint">Nog geen scraping uitgevoerd.</p>
             : (
-              <table className="admin-table">
+              <table className="admin-table" style={{ marginBottom: 24 }}>
                 <thead>
-                  <tr><th>Datum</th><th>Bronnen</th><th>Gevonden</th><th>Toegevoegd</th><th>Verwijderd</th><th>Fouten</th></tr>
+                  <tr>
+                    <th>Datum</th>
+                    <th>Bron</th>
+                    <th>Opgeslagen</th>
+                    <th>Overgeslagen</th>
+                    <th>Duur</th>
+                    <th>Fouten</th>
+                  </tr>
                 </thead>
                 <tbody>
-                  {runs.map(r => (
-                    <tr key={r.id}>
-                      <td>{r.timestamp?.toDate?.().toLocaleString('nl-NL') || '–'}</td>
-                      <td>{r.sourcesScraped}</td>
-                      <td>{r.eventsFound}</td>
-                      <td>{r.eventsAdded}</td>
-                      <td>{r.eventsDeleted ?? '–'}</td>
-                      <td style={{ color: r.errors?.length ? '#e63946' : 'inherit' }}>
-                        {r.errors?.length || 0}
-                        {r.errors?.length > 0 && (
-                          <span title={r.errors.join('\n')} style={{ marginLeft: 4, cursor: 'help' }}>⚠️</span>
+                  {activitySyncs.map(s => {
+                    const bronMap = {
+                      datatourisme: '🇫🇷 DataTourisme', 'claude-enrich': '✨ AI-verrijking',
+                      openstreetmap: '🗺️ OpenStreetMap', visorando: '🥾 Visorando',
+                      koikispass: '📰 Koikispass', lejdc: '📰 Le JDC',
+                      'photo-enrich': '🖼️ Foto-verrijking', openagenda: '📅 OpenAgenda',
+                    };
+                    const bron      = bronMap[s.source] || s.source || '–';
+                    const dateTs    = s.timestamp || s.createdAt;
+                    const added     = s.savedCount ?? s.added ?? s.eventsAdded ?? '–';
+                    const skipped   = s.skippedCount ?? s.skipped ?? s.eventsSkipped ?? '–';
+                    const duurSec   = s.durationMs ? `${Math.round(s.durationMs / 1000)}s` : '–';
+                    const logFouten = (s.log || []).filter(l => /^fout/i.test(l));
+                    const errArray  = s.errors?.length ? s.errors : logFouten.length ? logFouten : s.error ? [s.error] : [];
+                    const foutCount = s.errorCount ?? errArray.length;
+                    const isExp     = expandedSyncId === s.id;
+                    return (
+                      <>
+                        <tr key={s.id} style={{ cursor: foutCount > 0 || s.log?.length ? 'pointer' : 'default' }}
+                            onClick={() => setExpandedSyncId(isExp ? null : s.id)}>
+                          <td>{dateTs?.toDate?.().toLocaleString('nl-NL') || '–'}</td>
+                          <td>{bron}</td>
+                          <td>{added}</td>
+                          <td>{skipped}</td>
+                          <td>{duurSec}</td>
+                          <td style={{ color: foutCount ? '#e63946' : 'inherit' }}>
+                            {foutCount || 0}
+                            {foutCount > 0 && <span style={{ marginLeft: 4 }}>⚠️</span>}
+                            {s.log?.length > 0 && <span style={{ marginLeft: 4, fontSize: '.75rem', color: 'var(--gray-400)' }}>{isExp ? '▲' : '▼'}</span>}
+                          </td>
+                        </tr>
+                        {isExp && (
+                          <tr key={`${s.id}-log`}>
+                            <td colSpan={6} style={{ background: 'var(--gray-50)', padding: '8px 12px', fontSize: '.82rem', color: 'var(--gray-700)' }}>
+                              {(s.log || errArray).map((l, i) => (
+                                <div key={i} style={{ color: /^fout/i.test(l) ? '#e63946' : 'inherit', marginBottom: 2 }}>{l}</div>
+                              ))}
+                              {!s.log?.length && !errArray.length && <span style={{ color: 'var(--gray-400)' }}>Geen logregels.</span>}
+                            </td>
+                          </tr>
                         )}
-                      </td>
-                    </tr>
-                  ))}
+                      </>
+                    );
+                  })}
                 </tbody>
               </table>
             )
@@ -1043,26 +1085,6 @@ export default function AdminPage({ lang, tr }) {
 
           <div className="sync-box">
             <div>
-              <strong>📰 Koikispass.com</strong>
-              <p className="admin-hint">WordPress REST API — wekelijkse evenementenroundups voor de Nièvre. Claude extraheert individuele evenementen met datum, locatie en type.</p>
-            </div>
-            <button className="btn btn-outline" onClick={handleSyncKoikispass} disabled={syncingKoikispass}>
-              {syncingKoikispass ? a.syncing : '📰 Sync Koikispass'}
-            </button>
-          </div>
-
-          <div className="sync-box">
-            <div>
-              <strong>📰 Le JDC — Que faire dans la Nièvre</strong>
-              <p className="admin-hint">Dagelijks nieuw artikel op lejdc.fr met evenementen per dorp. Claude extraheert datum, locatie en type. Wikipedia-foto van het dorp als fallback.</p>
-            </div>
-            <button className="btn btn-outline" onClick={handleSyncLejdc} disabled={syncingLejdc}>
-              {syncingLejdc ? a.syncing : '📰 Sync Le JDC'}
-            </button>
-          </div>
-
-          <div className="sync-box">
-            <div>
               <strong>✨ AI-verrijking</strong>
               <p className="admin-hint">Genereert ontbrekende titels en beschrijvingen (FR/EN/NL). Vereist: CLAUDE_API_KEY in Netlify.</p>
             </div>
@@ -1081,78 +1103,6 @@ export default function AdminPage({ lang, tr }) {
             </button>
           </div>
           {syncMsg && <p className="scrape-msg">{syncMsg}</p>}
-
-          <h3>📋 Synchronisatiehistorie <button className="btn btn-outline" style={{fontSize:'.8rem',padding:'4px 10px',marginLeft:8}} onClick={loadData}>↻ Ververs</button></h3>
-          {activitySyncs.length === 0
-            ? <p className="admin-hint">Nog geen synchronisaties uitgevoerd.</p>
-            : (
-              <table className="admin-table" style={{ marginBottom: 24 }}>
-                <thead>
-                  <tr>
-                    <th>Datum</th>
-                    <th>Bron</th>
-                    <th>Verrijkt/Geschreven</th>
-                    <th>Afb./Overgeslagen</th>
-                    <th>Duur</th>
-                    <th>Fouten</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {activitySyncs.map(s => {
-                    const duurSec = s.durationMs ? `${Math.round(s.durationMs / 1000)}s` : '–';
-                    const bronMap = {
-                      datatourisme: '🇫🇷 DataTourisme',
-                      'claude-enrich': '✨ AI-verrijking',
-                      openstreetmap: '🗺️ OpenStreetMap',
-                      visorando: '🥾 Visorando',
-                      koikispass: '📰 Koikispass',
-                      lejdc: '📰 Le JDC',
-                      'photo-enrich': '🖼️ Foto-verrijking',
-                    };
-                    const bron = bronMap[s.source] || s.source || '–';
-                    // Normaliseer veldnamen: nieuw formaat vs. oud formaat
-                    const dateTs  = s.timestamp || s.createdAt;
-                    const added   = s.savedCount  ?? s.added   ?? s.eventsAdded   ?? '–';
-                    const skipped = s.skippedCount ?? s.skipped ?? s.eventsSkipped ?? '–';
-                    // Foutdetails: log-regels die beginnen met "Fout", of errors-array, of error-string
-                    const logFouten = (s.log || []).filter(l => /^fout/i.test(l));
-                    const errArray  = s.errors?.length ? s.errors : logFouten.length ? logFouten : s.error ? [s.error] : [];
-                    const foutCount = s.errorCount ?? errArray.length;
-                    const isExpanded = expandedSyncId === s.id;
-                    return (
-                      <>
-                        <tr key={s.id} style={{ cursor: foutCount > 0 || s.log?.length ? 'pointer' : 'default' }}
-                            onClick={() => setExpandedSyncId(isExpanded ? null : s.id)}>
-                          <td>{dateTs?.toDate?.().toLocaleString('nl-NL') || '–'}</td>
-                          <td>{bron}</td>
-                          <td>{added}</td>
-                          <td>{skipped}</td>
-                          <td>{duurSec}</td>
-                          <td style={{ color: foutCount ? '#e63946' : 'inherit' }}>
-                            {foutCount || 0}
-                            {foutCount > 0 && <span style={{ marginLeft: 4 }}>⚠️</span>}
-                            {(s.log?.length > 0) && <span style={{ marginLeft: 4, fontSize: '.75rem', color: 'var(--gray-400)' }}>{isExpanded ? '▲' : '▼'}</span>}
-                          </td>
-                        </tr>
-                        {isExpanded && (
-                          <tr key={`${s.id}-log`}>
-                            <td colSpan={6} style={{ background: 'var(--gray-50)', padding: '8px 12px', fontSize: '.82rem', color: 'var(--gray-700)' }}>
-                              {(s.log || errArray).map((l, i) => (
-                                <div key={i} style={{ color: /^fout/i.test(l) ? '#e63946' : 'inherit', marginBottom: 2 }}>
-                                  {l}
-                                </div>
-                              ))}
-                              {s.log?.length === 0 && errArray.length === 0 && <span style={{ color: 'var(--gray-400)' }}>Geen logregels beschikbaar.</span>}
-                            </td>
-                          </tr>
-                        )}
-                      </>
-                    );
-                  })}
-                </tbody>
-              </table>
-            )
-          }
 
           <h3>➕ {a.addActivity}</h3>
           <form onSubmit={addActivity} className="activity-form">
