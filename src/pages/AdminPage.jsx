@@ -99,6 +99,7 @@ export default function AdminPage({ lang, tr }) {
   const [newsletters, setNewsletters] = useState([]);
   const [claudeUsage, setClaudeUsage] = useState(null);
   const [claudeUsageLoading, setClaudeUsageLoading] = useState(false);
+  const [expandedSyncId, setExpandedSyncId] = useState(null);
 
   // Blog
   const [blogPosts, setBlogPosts] = useState([]);
@@ -154,11 +155,20 @@ export default function AdminPage({ lang, tr }) {
     evData.sort((a, b) => (a.date?.toMillis?.() ?? 0) - (b.date?.toMillis?.() ?? 0));
     setEvents(evData);
 
-    const syncsSnap = await getDocs(query(
-      collection(db, 'morvan', 'data', 'activity_syncs'),
-      orderBy('timestamp', 'desc'), limit(25)
-    ));
-    setActivitySyncs(syncsSnap.docs.map(d => ({ id: d.id, ...d.data() })));
+    // Laad beide collecties en voeg samen voor de synchronisatiehistorie
+    const [syncsSnap, scrapeRunsSnap] = await Promise.all([
+      getDocs(query(collection(db, 'morvan', 'data', 'activity_syncs'), orderBy('timestamp', 'desc'), limit(25))).catch(() => ({ docs: [] })),
+      getDocs(query(collection(db, 'morvan', 'data', 'scrape_runs'), orderBy('createdAt', 'desc'), limit(25))).catch(() => ({ docs: [] })),
+    ]);
+    const allSyncs = [
+      ...syncsSnap.docs.map(d => ({ id: d.id, ...d.data(), _col: 'activity_syncs' })),
+      ...scrapeRunsSnap.docs.map(d => ({ id: d.id, ...d.data(), _col: 'scrape_runs' })),
+    ].sort((a, b) => {
+      const ta = (a.timestamp || a.createdAt)?.toMillis?.() ?? 0;
+      const tb = (b.timestamp || b.createdAt)?.toMillis?.() ?? 0;
+      return tb - ta;
+    }).slice(0, 30);
+    setActivitySyncs(allSyncs);
 
     try {
       const nlSnap = await getDocs(query(
@@ -1100,21 +1110,43 @@ export default function AdminPage({ lang, tr }) {
                       'photo-enrich': '🖼️ Foto-verrijking',
                     };
                     const bron = bronMap[s.source] || s.source || '–';
-                    const foutCount = s.errors?.length || 0;
+                    // Normaliseer veldnamen: nieuw formaat vs. oud formaat
+                    const dateTs  = s.timestamp || s.createdAt;
+                    const added   = s.savedCount  ?? s.added   ?? s.eventsAdded   ?? '–';
+                    const skipped = s.skippedCount ?? s.skipped ?? s.eventsSkipped ?? '–';
+                    // Foutdetails: log-regels die beginnen met "Fout", of errors-array, of error-string
+                    const logFouten = (s.log || []).filter(l => /^fout/i.test(l));
+                    const errArray  = s.errors?.length ? s.errors : logFouten.length ? logFouten : s.error ? [s.error] : [];
+                    const foutCount = s.errorCount ?? errArray.length;
+                    const isExpanded = expandedSyncId === s.id;
                     return (
-                      <tr key={s.id}>
-                        <td>{s.timestamp?.toDate?.().toLocaleString('nl-NL') || '–'}</td>
-                        <td>{bron}</td>
-                        <td>{s.added ?? '–'}</td>
-                        <td>{s.skipped ?? '–'}</td>
-                        <td>{duurSec}</td>
-                        <td style={{ color: foutCount ? '#e63946' : 'inherit' }}>
-                          {foutCount}
-                          {foutCount > 0 && (
-                            <span title={s.errors.join('\n')} style={{ marginLeft: 4, cursor: 'help' }}>⚠️</span>
-                          )}
-                        </td>
-                      </tr>
+                      <>
+                        <tr key={s.id} style={{ cursor: foutCount > 0 || s.log?.length ? 'pointer' : 'default' }}
+                            onClick={() => setExpandedSyncId(isExpanded ? null : s.id)}>
+                          <td>{dateTs?.toDate?.().toLocaleString('nl-NL') || '–'}</td>
+                          <td>{bron}</td>
+                          <td>{added}</td>
+                          <td>{skipped}</td>
+                          <td>{duurSec}</td>
+                          <td style={{ color: foutCount ? '#e63946' : 'inherit' }}>
+                            {foutCount || 0}
+                            {foutCount > 0 && <span style={{ marginLeft: 4 }}>⚠️</span>}
+                            {(s.log?.length > 0) && <span style={{ marginLeft: 4, fontSize: '.75rem', color: 'var(--gray-400)' }}>{isExpanded ? '▲' : '▼'}</span>}
+                          </td>
+                        </tr>
+                        {isExpanded && (
+                          <tr key={`${s.id}-log`}>
+                            <td colSpan={6} style={{ background: 'var(--gray-50)', padding: '8px 12px', fontSize: '.82rem', color: 'var(--gray-700)' }}>
+                              {(s.log || errArray).map((l, i) => (
+                                <div key={i} style={{ color: /^fout/i.test(l) ? '#e63946' : 'inherit', marginBottom: 2 }}>
+                                  {l}
+                                </div>
+                              ))}
+                              {s.log?.length === 0 && errArray.length === 0 && <span style={{ color: 'var(--gray-400)' }}>Geen logregels beschikbaar.</span>}
+                            </td>
+                          </tr>
+                        )}
+                      </>
                     );
                   })}
                 </tbody>
