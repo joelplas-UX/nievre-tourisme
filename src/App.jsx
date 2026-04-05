@@ -15,6 +15,7 @@ import PrivacyPage from './pages/PrivacyPage';
 import ContactPage from './pages/ContactPage';
 import AboutPage from './pages/AboutPage';
 import { t } from './i18n';
+import EasterDecoration from './components/EasterDecoration';
 import './App.css';
 
 export default function App() {
@@ -53,6 +54,7 @@ export default function App() {
         </Routes>
         <Footer tr={tr} lang={lang} />
         <CookieBanner lang={lang} />
+        <EasterDecoration />
       </div>
     </BrowserRouter>
   );
