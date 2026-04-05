@@ -29,7 +29,7 @@ const HEADERS_HTML = {
   'Accept-Language': 'fr-FR,fr;q=0.9',
 };
 
-// ── Type normalisatie ─────────────────────────────────────────
+// ── Type normalisatie (Frans → NL) ────────────────────────────
 const TYPE_MAP = {
   concert: 'muziek', musique: 'muziek', music: 'muziek',
   spectacle: 'cultuur', theatre: 'cultuur',
@@ -46,6 +46,31 @@ function normalizeType(type) {
   const t = type.toLowerCase().trim().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   if (VALID_TYPES.has(t)) return null; // al geldig, geen update nodig
   return TYPE_MAP[t] || 'overig';
+}
+
+// ── Keyword-based type classificatie (voor FAS/La Charité/Culture Nevers) ──
+function classifyType(title = '') {
+  const text = title.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  if (/festival/.test(text)) return 'festival';
+  if (/concert|musique|live|chanson|jazz|rock|classique|orchestre|chorale|groupe|chanteur/.test(text)) return 'muziek';
+  if (/marche|brocante|vide.?grenier|foire|salon|braderie|artisanat/.test(text)) return 'markt';
+  if (/rando|randonnee|balade|trail|course|velo|sport|athletisme/.test(text)) return 'sport';
+  if (/nature|foret|jardin|botanique|faune|flore/.test(text)) return 'natuur';
+  if (/exposition|musee|patrimoine|theatre|cinema|spectacle|danse|cirque|lecture|conference|animation|arts?/.test(text)) return 'cultuur';
+  return null; // geen classificatie gevonden
+}
+
+// ── HTML entities decoderen ───────────────────────────────────
+function decodeHtmlEntities(str) {
+  if (!str || !str.includes('&')) return str;
+  return str
+    .replace(/&rsquo;/gi, '\u2019').replace(/&lsquo;/gi, '\u2018')
+    .replace(/&rdquo;/gi, '\u201d').replace(/&ldquo;/gi, '\u201c')
+    .replace(/&ndash;/gi, '\u2013').replace(/&mdash;/gi, '\u2014')
+    .replace(/&amp;/gi, '&').replace(/&lt;/gi, '<').replace(/&gt;/gi, '>')
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/&#(\d+);/g,    (_, n) => String.fromCharCode(parseInt(n, 10)))
+    .replace(/&#x([0-9a-f]+);/gi, (_, h) => String.fromCharCode(parseInt(h, 16)));
 }
 
 // ── Datumparser voor culture.nevers (zelfde als scraper) ──────
@@ -116,12 +141,32 @@ export const handler = async (event) => {
     const docs = snap.docs.map(d => ({ ref: d.ref, id: d.id, ...d.data() }));
     log.push(`${docs.length} events gevonden`);
 
+    let patchedTitles = 0;
     for (const ev of docs) {
       const updates = {};
 
-      // 1. Type normalisatie
+      // 1a. Type normalisatie (Frans → NL)
       const newType = normalizeType(ev.type);
       if (newType) { updates.type = newType; patchedTypes++; }
+
+      // 1b. Keyword-classificatie voor events die nog 'overig' zijn (FAS/La Charité/Culture Nevers)
+      const effectiveType = updates.type || ev.type;
+      if (effectiveType === 'overig') {
+        const titleFr = ev.title?.fr || '';
+        const classified = classifyType(titleFr);
+        if (classified && classified !== 'overig') {
+          updates.type = classified;
+          if (!newType) patchedTypes++;
+        }
+      }
+
+      // 1c. HTML entities in titels
+      const titleFr = ev.title?.fr || '';
+      const cleanTitle = decodeHtmlEntities(titleFr);
+      if (cleanTitle !== titleFr) {
+        updates.title = { ...(ev.title || {}), fr: cleanTitle };
+        patchedTitles++;
+      }
 
       // 2. Culture Nevers: datum ontbreekt
       if (!ev.date && ev.source === 'culture_nevers' && ev.sourceUrl) {
@@ -163,8 +208,8 @@ export const handler = async (event) => {
       }
     }
 
-    log.push(`Klaar: ${patchedDates} datums, ${patchedTypes} types, ${patchedPhotos} foto's gepatcht, ${errors} fouten`);
-    return { statusCode: 200, body: JSON.stringify({ patchedDates, patchedTypes, patchedPhotos, errors, log }) };
+    log.push(`Klaar: ${patchedDates} datums, ${patchedTypes} types, ${patchedPhotos} foto's, ${patchedTitles} titels gepatcht, ${errors} fouten`);
+    return { statusCode: 200, body: JSON.stringify({ patchedDates, patchedTypes, patchedPhotos, patchedTitles, errors, log }) };
 
   } catch (err) {
     console.error('[patch-events]', err.message);

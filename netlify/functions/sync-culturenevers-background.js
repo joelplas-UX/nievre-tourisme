@@ -38,6 +38,31 @@ function normalizeMonth(str) {
   return str.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 }
 
+// ── HTML entities decoderen ───────────────────────────────────
+function decodeHtmlEntities(str) {
+  if (!str) return str;
+  return str
+    .replace(/&rsquo;/gi, '\u2019').replace(/&lsquo;/gi, '\u2018')
+    .replace(/&rdquo;/gi, '\u201d').replace(/&ldquo;/gi, '\u201c')
+    .replace(/&ndash;/gi, '\u2013').replace(/&mdash;/gi, '\u2014')
+    .replace(/&amp;/gi, '&').replace(/&lt;/gi, '<').replace(/&gt;/gi, '>')
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/&#(\d+);/g,    (_, n) => String.fromCharCode(parseInt(n, 10)))
+    .replace(/&#x([0-9a-f]+);/gi, (_, h) => String.fromCharCode(parseInt(h, 16)));
+}
+
+// ── Type classificatie op basis van titelwoorden ─────────────
+function classifyType(title = '') {
+  const text = title.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  if (/festival/.test(text)) return 'festival';
+  if (/concert|musique|live|chanson|jazz|rock|classique|orchestre|chorale|groupe|chanteur/.test(text)) return 'muziek';
+  if (/marche|brocante|vide.?grenier|foire|salon|braderie|artisanat/.test(text)) return 'markt';
+  if (/rando|randonnee|balade|trail|course|velo|sport|athletisme/.test(text)) return 'sport';
+  if (/nature|foret|jardin|botanique|faune|flore/.test(text)) return 'natuur';
+  if (/exposition|musee|patrimoine|theatre|cinema|spectacle|danse|cirque|lecture|conference|animation|arts?/.test(text)) return 'cultuur';
+  return 'overig';
+}
+
 // ── Parse datum uit HTML van culture.nevers.fr ────────────────
 // De datum is gesplitst over aparte HTML-elementen:
 //   "Avril 2026"  (maand+jaar in één element)
@@ -184,15 +209,16 @@ export const handler = async (event) => {
           // Afbeelding
           const imageUrl = await fetchImage(item.featured_media);
 
+          const titleFr = decodeHtmlEntities(item.title?.rendered || '');
           await docRef.set({
-            title:       { fr: item.title?.rendered || '', en: null, nl: null },
+            title:       { fr: titleFr, en: null, nl: null },
             description: { fr: null, en: null, nl: null },
             city:        'Nevers',
             location:    lieu || 'Nevers',
             date:        dateObj ? Timestamp.fromDate(dateObj) : null,
             timeStart:   timeStart || null,
             timeEnd:     timeEnd   || null,
-            type:        'overig',
+            type:        classifyType(titleFr),
             price:       null,
             imageUrl:    imageUrl || null,
             sourceUrl:   item.link,

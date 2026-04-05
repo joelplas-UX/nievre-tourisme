@@ -104,6 +104,19 @@ async function getVillagePhoto(cityName) {
   } catch { return null; }
 }
 
+// ── Type classificatie op basis van titelwoorden ─────────────
+function classifyType(title = '', description = '') {
+  const text = `${title} ${description}`.toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  if (/festival/.test(text)) return 'festival';
+  if (/concert|musique|live|chanson|jazz|rock|classique|orchestre|chorale|groupe|chanteur/.test(text)) return 'muziek';
+  if (/marche|brocante|vide.?grenier|foire|salon|braderie|artisanat/.test(text)) return 'markt';
+  if (/rando|randonnee|balade|trail|course|velo|kayak|escalade|sport|athletisme/.test(text)) return 'sport';
+  if (/nature|foret|jardin|botanique|faune|flore|environnement/.test(text)) return 'natuur';
+  if (/exposition|musee|patrimoine|theatre|cinema|spectacle|danse|cirque|lecture|conference|animation|arts?/.test(text)) return 'cultuur';
+  return 'overig';
+}
+
 // ── Datum ISO string → Date object ───────────────────────────
 function parseIsoDate(str) {
   if (!str) return null;
@@ -226,7 +239,7 @@ export const handler = async (event) => {
             endDate:     ev.endDate ? Timestamp.fromDate(new Date(ev.endDate)) : null,
             timeStart:   extractTime(ev.startDate),
             timeEnd:     extractTime(ev.endDate),
-            type:        'overig',
+            type:        classifyType(ev.name, ev.description),
             price,
             imageUrl,
             imageSource: imageUrl ? 'fas' : null,

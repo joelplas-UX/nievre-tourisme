@@ -36,6 +36,19 @@ const HEADERS = { 'User-Agent': 'NievreMorevan/1.0 (nievremorvan.com)', 'Accept'
 const CATEGORIES = [297, 291, 295, 327];
 const MAX_POSTS  = 20;
 
+// ── Type classificatie op basis van titelwoorden ─────────────
+function classifyType(title = '', description = '') {
+  const text = `${title} ${description}`.toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  if (/festival/.test(text)) return 'festival';
+  if (/concert|musique|live|chanson|jazz|rock|classique|orchestre|chorale|groupe|chanteur/.test(text)) return 'muziek';
+  if (/marche|brocante|vide.?grenier|foire|salon|braderie|artisanat/.test(text)) return 'markt';
+  if (/rando|randonnee|balade|trail|course|velo|kayak|escalade|sport|athletisme/.test(text)) return 'sport';
+  if (/nature|foret|jardin|botanique|faune|flore|environnement/.test(text)) return 'natuur';
+  if (/exposition|musee|patrimoine|theatre|cinema|spectacle|danse|cirque|lecture|conference|animation|arts?/.test(text)) return 'cultuur';
+  return 'overig';
+}
+
 // ── Strip HTML naar platte tekst ─────────────────────────────
 function stripHtml(html) {
   return (html || '')
@@ -157,7 +170,7 @@ export const handler = async (event) => {
           dateText:    extracted.dateText || null,
           timeStart:   extracted.timeStart || null,
           timeEnd:     null,
-          type:        'overig',
+          type:        classifyType(extracted.title || title),
           price:       extracted.price || null,
           imageUrl:    imageUrl || null,
           sourceUrl:   post.link,

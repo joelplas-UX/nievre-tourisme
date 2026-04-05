@@ -88,12 +88,14 @@ async function fetchArticle(url) {
 // ── Stap 3: Parse HTML naar blokken per dag/stad ─────────────
 function parseArticleBlocks(html) {
   // Strip scripts en styles
-  const clean = html
-    .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
-    .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
-    .replace(/<[^>]+>/g, ' ')
-    .replace(/\s{2,}/g, ' ')
-    .trim();
+  const clean = decodeHtmlEntities(
+    html
+      .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
+      .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
+      .replace(/<[^>]+>/g, ' ')
+      .replace(/\s{2,}/g, ' ')
+      .trim()
+  );
 
   // Vind gepubliceerde datum
   const dateMatch = html.match(/Publié le (\d{2}) ([a-zA-Zéû]+) (\d{4})/i);
@@ -173,6 +175,24 @@ async function getVillagePhoto(cityName) {
   }
 }
 
+// ── HTML entities decoderen ───────────────────────────────────
+function decodeHtmlEntities(str) {
+  if (!str) return str;
+  return str
+    .replace(/&rsquo;/gi, '\u2019')
+    .replace(/&lsquo;/gi, '\u2018')
+    .replace(/&rdquo;/gi, '\u201d')
+    .replace(/&ldquo;/gi, '\u201c')
+    .replace(/&ndash;/gi, '\u2013')
+    .replace(/&mdash;/gi, '\u2014')
+    .replace(/&amp;/gi,   '&')
+    .replace(/&lt;/gi,    '<')
+    .replace(/&gt;/gi,    '>')
+    .replace(/&nbsp;/gi,  ' ')
+    .replace(/&#(\d+);/g,    (_, n)  => String.fromCharCode(parseInt(n, 10)))
+    .replace(/&#x([0-9a-f]+);/gi, (_, h) => String.fromCharCode(parseInt(h, 16)));
+}
+
 // ── Datum string → JS Date ────────────────────────────────────
 const FR_MONTHS = {
   janvier:1,février:2,mars:3,avril:4,mai:5,juin:6,
@@ -180,7 +200,13 @@ const FR_MONTHS = {
 };
 function parseDate(dateStr) {
   if (!dateStr) return null;
-  const m = dateStr.match(/(\d{1,2})\s+([a-zéû]+)\s*(\d{4})?/i);
+  // ISO formaat: YYYY-MM-DD (zoals Claude teruggeeft)
+  if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr.trim())) {
+    const d = new Date(dateStr.trim());
+    return isNaN(d.getTime()) ? null : d;
+  }
+  // Frans formaat: "12 avril 2026" of "12 avril"
+  const m = dateStr.match(/(\d{1,2})\s+([a-zéûû]+)\s*(\d{4})?/i);
   if (!m) return null;
   const day = parseInt(m[1]);
   const month = FR_MONTHS[m[2].toLowerCase()];
