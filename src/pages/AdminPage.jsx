@@ -469,17 +469,17 @@ export default function AdminPage({ lang, tr }) {
   }
 
   async function handlePatchActivities() {
-    setPatchingActivities(true); setScrapeMsg('');
+    setPatchingActivities(true); setSyncMsg('');
     try {
       const res = await fetch('/.netlify/functions/patch-activities-background', {
         method: 'POST', headers: { 'x-admin-trigger': '1' },
       });
       if (res.status === 202 || res.ok) {
-        setScrapeMsg('✅ Foto-patch activiteiten gestart! Wikipedia-foto\'s worden opgehaald. Ververs de scraping log over 5–10 minuten.');
+        setSyncMsg('🖼️ Foto-patch gestart! Wikipedia-foto\'s worden opgehaald voor activiteiten zonder afbeelding. Ververs de log over 5–10 minuten.');
       } else {
-        setScrapeMsg(`⚠️ Status ${res.status}`);
+        setSyncMsg(`⚠️ Status ${res.status}`);
       }
-    } catch (err) { setScrapeMsg('Fout: ' + err.message); }
+    } catch (err) { setSyncMsg('Fout: ' + err.message); }
     finally { setPatchingActivities(false); }
   }
 
@@ -1147,15 +1147,19 @@ export default function AdminPage({ lang, tr }) {
               <strong>OpenStreetMap</strong>
               <p className="admin-hint">POIs + wandelroutes (GR, PR) uit OpenStreetMap via Overpass API.</p>
             </div>
-            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-              <button className="btn btn-outline" onClick={handleSyncActivities} disabled={syncingActivities}>
-                {syncingActivities ? a.syncing : a.syncActivities}
-              </button>
-              <button className="btn btn-outline" onClick={handlePatchActivities} disabled={patchingActivities}
-                title="Voegt Wikipedia-foto's toe aan activiteiten die nog geen afbeelding hebben">
-                {patchingActivities ? '⏳ Patching…' : '🖼️ Patch foto\'s activiteiten'}
-              </button>
+            <button className="btn btn-outline" onClick={handleSyncActivities} disabled={syncingActivities}>
+              {syncingActivities ? a.syncing : a.syncActivities}
+            </button>
+          </div>
+
+          <div className="sync-box">
+            <div>
+              <strong>🖼️ Wikipedia-foto's</strong>
+              <p className="admin-hint">Voegt foto's van Wikipedia toe aan activiteiten die nog geen afbeelding hebben (naam van POI of stad).</p>
             </div>
+            <button className="btn btn-outline" onClick={handlePatchActivities} disabled={patchingActivities}>
+              {patchingActivities ? '⏳ Bezig…' : '🖼️ Patch foto\'s activiteiten'}
+            </button>
           </div>
 
           <div className="sync-box">
