@@ -47,6 +47,34 @@ area["ISO3166-2"="FR-58"]->.dep;
 out center tags 200;
 `;
 
+// ── Wikipedia-foto ophalen ────────────────────────────────────────────────
+
+async function tryWikipediaPhoto(name) {
+  if (!name) return null;
+  try {
+    const res = await fetch(
+      `https://fr.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(name)}&prop=pageimages&format=json&pithumbsize=800&origin=*`,
+      { headers: { 'User-Agent': 'NievreMorevan/1.0 (nievremorvan.com)' } }
+    );
+    if (!res.ok) return null;
+    const data = await res.json();
+    const page = Object.values(data?.query?.pages || {})[0];
+    if (page?.missing !== undefined) return null; // pagina bestaat niet
+    return page?.thumbnail?.source || null;
+  } catch { return null; }
+}
+
+// Probeer eerst de naam (kasteel/museum), dan de stad als fallback
+async function getWikipediaPhoto(primaryName, fallbackCity) {
+  const photo = await tryWikipediaPhoto(primaryName);
+  if (photo) return { url: photo, source: 'wikipedia_poi' };
+  if (fallbackCity && fallbackCity !== primaryName) {
+    const cityPhoto = await tryWikipediaPhoto(fallbackCity);
+    if (cityPhoto) return { url: cityPhoto, source: 'wikipedia_village' };
+  }
+  return null;
+}
+
 // ── Helpers ────────────────────────────────────────────────────────────────
 
 async function overpassFetch(query) {
@@ -144,20 +172,34 @@ POIs: ${JSON.stringify(poiList)}`,
         const existing = await ref.get();
         if (existing.exists && existing.data().manuallyEdited) return;
 
+        const city = poi.tags['addr:city'] || poi.tags.locality || '';
+        const existingImageUrl = existing.exists ? existing.data().imageUrl : null;
+
+        // Foto: bestaande behouden, anders Wikipedia ophalen
+        let imageUrl = existingImageUrl || null;
+        let imageSource = existing.exists ? existing.data().imageSource : null;
+        if (!imageUrl) {
+          // Voor historische objecten/musea: probeer POI-naam eerst
+          const isNamedPoi = poi.tags.historic || poi.tags.tourism === 'museum' || poi.tags.tourism === 'attraction';
+          const wikiResult = await getWikipediaPhoto(isNamedPoi ? poi.tags.name : null, city);
+          if (wikiResult) { imageUrl = wikiResult.url; imageSource = wikiResult.source; }
+          await new Promise(r => setTimeout(r, 120)); // bescheiden pauze
+        }
+
         const data = {
           title: { fr: poi.tags.name, en: poi.tags['name:en'] || poi.tags.name, nl: poi.tags['name:nl'] || poi.tags.name },
           description: { fr: desc.desc_fr || '', en: desc.desc_en || '', nl: desc.desc_nl || '' },
           category: mapPoiCategory(poi.tags),
-          location: poi.tags['addr:city'] || poi.tags.locality || '',
+          location: city,
           lat: poi.lat ?? null,
           lng: poi.lon ?? null,
           url: poi.tags.website || poi.tags.url || '',
-          imageUrl: null,
           source: 'openstreetmap',
           osmId: poi.id,
           permanent: true,
           updatedAt: Timestamp.now(),
         };
+        if (imageUrl) { data.imageUrl = imageUrl; data.imageSource = imageSource; }
         if (!existing.exists) { data.createdAt = Timestamp.now(); added++; } else { updated++; }
         await ref.set(data, { merge: true });
       }));
@@ -214,6 +256,17 @@ Routes: ${JSON.stringify(routeList)}`,
         const tags = route.tags;
         const distance = formatDistance(tags);
         const difficulty = formatDifficulty(tags);
+        const city = tags['addr:city'] || tags.locality || tags.from || '';
+        const existingImageUrl = existing.exists ? existing.data().imageUrl : null;
+
+        // Foto: bestaande behouden, anders Wikipedia van startplaats ophalen
+        let imageUrl = existingImageUrl || null;
+        let imageSource = existing.exists ? existing.data().imageSource : null;
+        if (!imageUrl && city) {
+          const wikiResult = await getWikipediaPhoto(null, city);
+          if (wikiResult) { imageUrl = wikiResult.url; imageSource = wikiResult.source; }
+          await new Promise(r => setTimeout(r, 120));
+        }
 
         // Bouw openingHours-veld her als wandelinfo
         const info = [
@@ -231,7 +284,7 @@ Routes: ${JSON.stringify(routeList)}`,
           },
           description: { fr: desc.desc_fr || '', en: desc.desc_en || '', nl: desc.desc_nl || '' },
           category: 'wandelen',
-          location: tags['addr:city'] || tags.locality || tags.from || '',
+          location: city,
           lat: route.center?.lat ?? null,
           lng: route.center?.lon ?? null,
           url: tags.website || tags.url || '',
@@ -240,12 +293,12 @@ Routes: ${JSON.stringify(routeList)}`,
           difficulty: difficulty || null,
           osmRef: tags.ref || null,
           osmNetwork: tags.network || tags.operator || null,
-          imageUrl: null,
           source: 'openstreetmap',
           osmId: route.id,
           permanent: true,
           updatedAt: Timestamp.now(),
         };
+        if (imageUrl) { data.imageUrl = imageUrl; data.imageSource = imageSource; }
         if (!existing.exists) { data.createdAt = Timestamp.now(); added++; } else { updated++; }
         await ref.set(data, { merge: true });
       }));
