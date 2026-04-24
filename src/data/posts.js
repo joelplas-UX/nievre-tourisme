@@ -11,7 +11,7 @@ export const POSTS = [
     date: '2026-04-24',
     category: { fr: 'Séjours', en: 'Stays', nl: 'Verblijf' },
     readTime: 6,
-    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/Lac_des_Settons_%282%29.JPG/1280px-Lac_des_Settons_%282%29.JPG',
+    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Lac_des_settons_-_barrage_03.jpg/1280px-Lac_des_settons_-_barrage_03.jpg',
     title: {
       fr: 'Vacances de mai dans la Nièvre : idées pour toute la famille',
       en: 'May holidays in the Nièvre: ideas for the whole family',
@@ -119,7 +119,7 @@ export const POSTS = [
     date: '2026-04-27',
     category: { fr: 'Traditions', en: 'Traditions', nl: 'Tradities' },
     readTime: 4,
-    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Convallaria_majalis_aka.jpg/1280px-Convallaria_majalis_aka.jpg',
+    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Convallaria_majalis_inflorescence_-_Keila.jpg/1280px-Convallaria_majalis_inflorescence_-_Keila.jpg',
     title: {
       fr: 'Le 1er mai dans la Nièvre : muguet, repos et fête du travail',
       en: 'May Day in the Nièvre: lily of the valley, rest and Labour Day',
@@ -223,7 +223,7 @@ export const POSTS = [
     date: '2026-04-22',
     category: { fr: 'Activités', en: 'Activities', nl: 'Activiteiten' },
     readTime: 5,
-    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Canal_du_Nivernais_Chevroches.jpg/1280px-Canal_du_Nivernais_Chevroches.jpg',
+    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/57/Canal_du_Nivernais_in_Villiers-sur-Yonne_%281%29.jpg/1280px-Canal_du_Nivernais_in_Villiers-sur-Yonne_%281%29.jpg',
     title: {
       fr: 'Le beau temps est là : nos meilleures activités de plein air pour ce printemps',
       en: 'Fine weather is here: our best outdoor activities for this spring',
@@ -694,7 +694,7 @@ export const POSTS = [
     date: '2026-03-30',
     category: { fr: 'Guide', en: 'Guide', nl: 'Gids' },
     readTime: 6,
-    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/Nevers_-_Cath%C3%A9drale_Saint-Cyr-et-Sainte-Julitte_%281%29.jpg/1280px-Nevers_-_Cath%C3%A9drale_Saint-Cyr-et-Sainte-Julitte_%281%29.jpg',
+    image: 'https://upload.wikimedia.org/wikipedia/commons/c/c5/Nevers_Cathedrale.jpg',
     title: {
       fr: 'Que faire à Nevers ? Notre guide de la capitale nivernaise',
       en: 'What to do in Nevers? Our guide to the Nièvre\'s capital',
@@ -807,7 +807,7 @@ export const POSTS = [
     date: '2026-03-29',
     category: { fr: 'Nature & Vélo', en: 'Nature & Cycling', nl: 'Natuur & Fietsen' },
     readTime: 5,
-    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Canal_du_Nivernais_Baye.JPG/1280px-Canal_du_Nivernais_Baye.JPG',
+    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/22/Canal_du_Nivernais_DSC_0726.JPG/1280px-Canal_du_Nivernais_DSC_0726.JPG',
     title: {
       fr: 'Le Canal du Nivernais : guide complet pour une escapade nature',
       en: 'Canal du Nivernais: complete guide for a nature getaway',
@@ -941,7 +941,7 @@ export const POSTS = [
     date: '2026-03-28',
     category: { fr: 'Été', en: 'Summer', nl: 'Zomer' },
     readTime: 6,
-    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Lac_des_settons.jpg/1280px-Lac_des_settons.jpg',
+    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Lac_des_settons_-_barrage_03.jpg/1280px-Lac_des_settons_-_barrage_03.jpg',
     title: {
       fr: 'Nièvre et Morvan en été : le guide des activités estivales',
       en: 'Nièvre and Morvan in summer: the guide to summer activities',
@@ -1107,7 +1107,7 @@ export const POSTS = [
     date: '2026-03-27',
     category: { fr: 'Guide', en: 'Guide', nl: 'Gids' },
     readTime: 7,
-    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Lac_des_settons.jpg/1280px-Lac_des_settons.jpg',
+    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Lac_des_settons_-_barrage_03.jpg/1280px-Lac_des_settons_-_barrage_03.jpg',
     title: {
       fr: 'Pâques en Morvan : notre guide pour un week-end parfait',
       en: 'Easter in the Morvan: our guide to a perfect long weekend',
@@ -1195,7 +1195,7 @@ export const POSTS = [
     date: '2026-03-26',
     category: { fr: 'Randonnée', en: 'Hiking', nl: 'Wandelen' },
     readTime: 5,
-    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Saut_de_Gouloux.jpg/1280px-Saut_de_Gouloux.jpg',
+    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/94/Saut_du_Gouloux_%2833706270025%29.jpg/1280px-Saut_du_Gouloux_%2833706270025%29.jpg',
     title: {
       fr: '5 randonnées incontournables pour Pâques en Morvan',
       en: '5 must-do hikes for Easter in the Morvan',
@@ -1297,7 +1297,7 @@ export const POSTS = [
     date: '2026-03-25',
     category: { fr: 'Famille', en: 'Family', nl: 'Familie' },
     readTime: 4,
-    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/Chateau_Chinon_-_Musee_Septennat.jpg/1280px-Chateau_Chinon_-_Musee_Septennat.jpg',
+    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/032_Paysage_du_Morvan_depuis_Ch%C3%A2teau-Chinon.jpg/1280px-032_Paysage_du_Morvan_depuis_Ch%C3%A2teau-Chinon.jpg',
     title: {
       fr: 'Activités en famille pour Pâques dans la Nièvre',
       en: 'Family activities for Easter in the Nièvre',
@@ -1371,7 +1371,7 @@ export const POSTS = [
     date: '2026-03-24',
     category: { fr: 'Gastronomie', en: 'Food & Drink', nl: 'Eten & Drinken' },
     readTime: 4,
-    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/17/Burgundy_wine_grapes.jpg/1280px-Burgundy_wine_grapes.jpg',
+    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Vineyard_in_Burgundy%2C_France.jpg/1280px-Vineyard_in_Burgundy%2C_France.jpg',
     title: {
       fr: 'Agneau pascal, chocolats et vins : Pâques gourmand en Bourgogne',
       en: 'Easter lamb, chocolates and wines: a gourmet Easter in Burgundy',
