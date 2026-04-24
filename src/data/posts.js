@@ -5,6 +5,310 @@
 
 export const POSTS = [
 
+  // ─── Meivakantie in de Nièvre & Morvan ───────────────────────
+  {
+    slug: 'vacances-mai-nievre-morvan',
+    date: '2026-04-24',
+    category: { fr: 'Séjours', en: 'Stays', nl: 'Verblijf' },
+    readTime: 6,
+    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/Lac_des_Settons_%282%29.JPG/1280px-Lac_des_Settons_%282%29.JPG',
+    title: {
+      fr: 'Vacances de mai dans la Nièvre : idées pour toute la famille',
+      en: 'May holidays in the Nièvre: ideas for the whole family',
+      nl: 'Meivakantie in de Nièvre: ideeën voor het hele gezin',
+    },
+    excerpt: {
+      fr: 'Les vacances de printemps sont l\'occasion rêvée de découvrir la Nièvre et le Morvan avant l\'afflux estival. Noah vous propose ses meilleures idées : lacs, forêts, châteaux et randonnées en famille.',
+      en: 'The spring holidays are the perfect opportunity to discover the Nièvre and Morvan before the summer crowds. Noah shares his best ideas: lakes, forests, châteaux and family hikes.',
+      nl: 'De meivakantie is de ideale gelegenheid om de Nièvre en het Morvan te ontdekken vóór de zomerdrukte. Noah deelt zijn beste tips: meren, bossen, kastelen en wandelingen voor het gezin.',
+    },
+    content: {
+      fr: `<p>Les vacances de mai sont peut-être le meilleur moment pour visiter la Nièvre. Les prairies sont d'un vert éclatant, les forêts du Morvan sentent l'humus et la résine fraîche, et les routes de campagne sont encore désertes. Pas encore d'embouteillages sur la D978, pas de queue au château de Bazoches — juste la région dans toute sa splendeur printanière.</p>
+
+<h2>Le Lac des Settons : idéal pour les familles</h2>
+<p>Le <strong>Lac des Settons</strong>, niché au cœur du Morvan à 580 mètres d'altitude, est le plan d'eau le plus populaire de la région — et pour cause. En mai, il est encore calme, l'eau commence à se réchauffer et les activités nautiques reprennent doucement. Les enfants adorent les plages de sable fin, tandis que les parents peuvent louer des pédalos, des kayaks ou faire le tour du lac à pied (7 km, très accessible).</p>
+<p>À deux pas, le <strong>Lac de Chaumeçon</strong> est plus sauvage, entouré de forêts de résineux. Parfait pour une balade au bord de l'eau entre deux averses printanières.</p>
+
+<h2>Châteaux et patrimoine : l'histoire en famille</h2>
+<p>La Nièvre regorge de <a href="/activites?cat=kastelen">châteaux et de sites médiévaux</a> qui fascinent petits et grands. Quelques incontournables :</p>
+<ul>
+  <li><strong>Château de Bazoches</strong> : ancienne demeure de Vauban, avec des explications accessibles aux enfants sur les fortifications.</li>
+  <li><strong>Château-Chinon</strong> : la ville haute offre un panorama extraordinaire sur les collines du Morvan.</li>
+  <li><strong>Vézelay</strong> : la basilique Sainte-Madeleine, classée à l'UNESCO, est accessible à pied depuis un village médiéval remarquablement préservé. Un incontournable à moins d'une heure de Nevers.</li>
+</ul>
+
+<h2>Randonnées pour tous les niveaux</h2>
+<p>Le Morvan propose des <a href="/activites?cat=wandelen">itinéraires de randonnée</a> pour tous les niveaux. En mai, la végétation est au maximum de sa beauté sans être encore étouffante :</p>
+<ul>
+  <li><strong>Débutants :</strong> Le tour des lacs de Pannecière et des Settons (balisage facile, terrain plat).</li>
+  <li><strong>Intermédiaires :</strong> La montée au <strong>Haut-Folin</strong> (901 m), point culminant du Morvan — vue imprenable sur toute la région.</li>
+  <li><strong>Sportifs :</strong> Le GR13, qui traverse le Morvan du nord au sud, est praticable en journées d'étapes.</li>
+</ul>
+
+<h2>Le Canal du Nivernais à vélo</h2>
+<p>Le <strong>Canal du Nivernais</strong> relie Auxerre à Decize sur 174 km de voie d'eau paisible. La piste cyclable qui le longe est idéale pour une sortie à vélo en famille : terrain plat, paysages variés (forêts, prairies, écluses pittoresques), haltes dans les villages de bord de canal. Louez des vélos à Corbigny ou Clamecy et partez pour une journée inoubliable.</p>
+
+<h2>Pratique</h2>
+<ul>
+  <li><strong>Hébergement :</strong> Les gîtes et chambres d'hôtes sont encore disponibles et moins chers qu'en juillet-août. Réservez tout de même à l'avance pour les week-ends.</li>
+  <li><strong>Météo :</strong> Mai peut être capricieux — prévoyez des vêtements imperméables et une couche chaude pour le soir.</li>
+  <li><strong>Événements :</strong> Consultez notre <a href="/evenements">agenda des événements</a> — foires de printemps, marchés locaux et animations culturelles sont nombreux.</li>
+</ul>
+
+<p>La Nièvre en mai, c'est la région à son meilleur : vivante, verte, paisible. Profitez-en avant que les touristes estivaux ne découvrent ce que vous savez déjà !</p>`,
+
+      en: `<p>May holidays might just be the best time to visit the Nièvre. The meadows are a brilliant green, the Morvan forests smell of fresh resin and soil, and the country roads are still quiet. No queues at Château de Bazoches, no traffic on the D978 — just the region at its unspoiled spring best.</p>
+
+<h2>Lac des Settons: perfect for families</h2>
+<p><strong>Lac des Settons</strong>, nestled in the heart of the Morvan at 580 metres altitude, is the region's most popular lake — and for good reason. In May it's still peaceful, the water is warming up and water activities are slowly resuming. Children love the sandy beaches while parents can rent pedalos, kayaks or walk the lake loop (7 km, very accessible).</p>
+<p>Nearby, <strong>Lac de Chaumeçon</strong> is wilder, surrounded by conifer forests — perfect for a woodland stroll between spring showers.</p>
+
+<h2>Châteaux and heritage sites</h2>
+<p>The Nièvre is full of <a href="/activites?cat=kastelen">châteaux and medieval sites</a> that captivate visitors of all ages:</p>
+<ul>
+  <li><strong>Château de Bazoches</strong>: Vauban's former home, with accessible explanations of historic fortifications.</li>
+  <li><strong>Château-Chinon</strong>: the upper town offers a remarkable panorama over the Morvan hills.</li>
+  <li><strong>Vézelay</strong>: the UNESCO-listed Basilica of Sainte-Madeleine crowns a beautifully preserved medieval village — a must-see less than an hour from Nevers.</li>
+</ul>
+
+<h2>Hiking for all abilities</h2>
+<p>The Morvan has <a href="/activites?cat=wandelen">hiking trails</a> for every fitness level. In May, the vegetation is at its most beautiful without being overgrown:</p>
+<ul>
+  <li><strong>Easy:</strong> The lake loop around Settons and Pannecière (flat, well-marked).</li>
+  <li><strong>Moderate:</strong> The ascent to <strong>Haut-Folin</strong> (901 m), the Morvan's highest point.</li>
+  <li><strong>Demanding:</strong> The GR13 long-distance trail crosses the Morvan north to south.</li>
+</ul>
+
+<h2>Cycling the Canal du Nivernais</h2>
+<p>The <strong>Canal du Nivernais</strong> runs 174 km from Auxerre to Decize. The towpath cycling route is ideal for families: flat terrain, varied scenery of forests, meadows and picturesque locks, with village stops along the way. Rent bikes in Corbigny or Clamecy for an unforgettable day out.</p>
+
+<p>Check our <a href="/evenements">events calendar</a> — spring fairs, local markets and cultural events fill the diary throughout May.</p>`,
+
+      nl: `<p>De meivakantie is misschien wel het mooiste moment om de Nièvre te bezoeken. De weiden staan stralend groen, de Morvan-bossen geuren naar verse hars, en de landweggetjes zijn nog rustig. Geen rijen bij het Château de Bazoches, geen drukte op de D978 — gewoon de regio op haar ongerepte lentebestaan.</p>
+
+<h2>Lac des Settons: ideaal voor gezinnen</h2>
+<p><strong>Lac des Settons</strong>, verscholen in het hart van het Morvan op 580 meter hoogte, is het populairste meer van de regio. In mei is het er nog rustig, warmt het water langzaam op en worden watersportactiviteiten weer opgepakt. Kinderen zijn dol op de zandstrandjes; ouders kunnen fietsboten of kajaks huren of het meer rondwandelen (7 km, zeer toegankelijk).</p>
+<p>Vlakbij is <strong>Lac de Chaumeçon</strong> wilder van karakter, omgeven door naaldbossen — perfect voor een wandeling langs het water tussen de lenteregenbuien door.</p>
+
+<h2>Kastelen en erfgoed</h2>
+<p>De Nièvre barst van de <a href="/activites?cat=kastelen">kastelen en middeleeuwse bezienswaardigheden</a>:</p>
+<ul>
+  <li><strong>Château de Bazoches</strong>: voormalige woning van Vauban, met toegankelijke uitleg over vestingbouw.</li>
+  <li><strong>Château-Chinon</strong>: de bovenstad biedt een adembenemend panorama over de Morvan-heuvels.</li>
+  <li><strong>Vézelay</strong>: de UNESCO-basiliek kroont een prachtig bewaard middeleeuws dorp — een must op minder dan een uur van Nevers.</li>
+</ul>
+
+<h2>Wandelen voor elk niveau</h2>
+<p>Het Morvan heeft <a href="/activites?cat=wandelen">wandelroutes</a> voor ieder fitnessniveau. In mei staat de natuur op haar mooist:</p>
+<ul>
+  <li><strong>Beginners:</strong> De meerlus rond Settons en Pannecière (vlak, goed bewegwijzerd).</li>
+  <li><strong>Gevorderd:</strong> De beklimming van de <strong>Haut-Folin</strong> (901 m), hoogste punt van het Morvan.</li>
+  <li><strong>Sportief:</strong> De GR13 doorkruist het Morvan van noord naar zuid.</li>
+</ul>
+
+<h2>Fietsen langs het Canal du Nivernais</h2>
+<p>Het <strong>Canal du Nivernais</strong> loopt 174 km van Auxerre naar Decize. Het jaagpad is ideaal voor een gezinsfietsdag: vlak terrein, afwisselende landschappen en pittoreske sluizen. Huur fietsen in Corbigny of Clamecy voor een onvergetelijke dag.</p>
+
+<p>Bekijk onze <a href="/evenements">evenementenagenda</a> — lentekermissen, boerenmarkten en culturele animaties staan volop op het programma in mei.</p>`,
+    },
+  },
+
+  // ─── 1 mei — Fête du Travail ─────────────────────────────────
+  {
+    slug: 'fete-du-travail-1er-mai',
+    date: '2026-04-27',
+    category: { fr: 'Traditions', en: 'Traditions', nl: 'Tradities' },
+    readTime: 4,
+    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Convallaria_majalis_aka.jpg/1280px-Convallaria_majalis_aka.jpg',
+    title: {
+      fr: 'Le 1er mai dans la Nièvre : muguet, repos et fête du travail',
+      en: 'May Day in the Nièvre: lily of the valley, rest and Labour Day',
+      nl: '1 mei in de Nièvre: lelietje-van-dalen, rust en Dag van de Arbeid',
+    },
+    excerpt: {
+      fr: 'Le 1er mai, c\'est le muguet offert au coin de la rue, les commerces fermés et une journée fériée bien méritée. Dans la Nièvre, cette tradition se vit à la fois simplement et joyeusement. Noah vous explique comment profiter de cette journée particulière.',
+      en: 'May Day means lily of the valley sold at every street corner, closed shops and a well-earned public holiday. In the Nièvre, this tradition is celebrated simply and joyfully. Noah explains how to make the most of this special day.',
+      nl: 'Op 1 mei staan lelietjes-van-dalen te koop op elke straathoek, zijn de winkels dicht en geniet iedereen van een welverdiende vrije dag. In de Nièvre wordt deze traditie hartelijk en eenvoudig gevierd. Noah legt uit hoe je deze bijzondere dag optimaal beleeft.',
+    },
+    content: {
+      fr: `<p>Le 1er mai occupe une place à part dans le calendrier français. C'est le seul jour férié où il est légalement permis à n'importe qui — particulier ou association — de vendre du muguet sans autorisation spéciale. Résultat : dès le matin, les trottoirs de Nevers, Château-Chinon, Clamecy et des villages alentour se couvrent de petits bouquets de clochettes blanches. Une image douce et immuable.</p>
+
+<h2>La tradition du muguet</h2>
+<p>Offrir du muguet porte bonheur — c'est une croyance ancrée depuis le XVIe siècle, quand Charles IX en aurait reçu un brin et décidé d'en offrir chaque année aux dames de la cour. Dans la Nièvre, les forêts du Morvan en recèlent de vastes tapis naturels qui fleurissent précisément autour du 1er mai. Si vous vous promenez en forêt, vous les sentirez avant même de les voir.</p>
+<p><em>Attention : le muguet sauvage est une espèce protégée dans de nombreux départements. Vérifiez la réglementation locale avant de cueillir.</em></p>
+
+<h2>Qu'est-ce qui est ouvert le 1er mai ?</h2>
+<p>Le 1er mai est le seul jour férié où la loi interdit aux employeurs d'imposer le travail (sauf exceptions). En pratique, dans la Nièvre :</p>
+<ul>
+  <li><strong>Fermés :</strong> la plupart des commerces, administrations, offices de tourisme, certains musées.</li>
+  <li><strong>Ouverts :</strong> hôtels, restaurants, boulangeries (souvent), stations-service, sites de plein air.</li>
+  <li><strong>Variable :</strong> les musées — certains ouvrent, d'autres non. Vérifiez à l'avance.</li>
+</ul>
+
+<h2>Les événements du 1er mai dans la région</h2>
+<p>Paradoxalement, le 1er mai est souvent animé : fêtes associatives, bals populaires, randonnées organisées. Plusieurs communes de la Nièvre profitent du pont pour organiser :</p>
+<ul>
+  <li>Des <strong>vide-greniers et brocantes</strong> dans les bourgs — une excellente occasion de chiner.</li>
+  <li>Des <strong>randonnées du muguet</strong> organisées par les associations locales de randonnée.</li>
+  <li>Des <strong>repas champêtres</strong> dans les fermes et domaines ouverts pour l'occasion.</li>
+</ul>
+<p>Consultez notre <a href="/evenements">agenda</a> pour les événements du moment dans la région.</p>
+
+<h2>Une journée idéale pour se balader</h2>
+<p>Avec les commerces fermés et la circulation réduite, le 1er mai est une journée parfaite pour explorer la région à pied ou à vélo. Le long du <strong>Canal du Nivernais</strong>, dans les <strong>forêts du Morvan</strong> ou sur les levées de la <strong>Loire</strong> — la nature est au rendez-vous, et vous aurez les sentiers presque pour vous seul.</p>
+
+<p>Alors, bon 1er mai — et n'oubliez pas d'offrir un brin de muguet à quelqu'un que vous aimez.</p>`,
+
+      en: `<p>May Day holds a special place in the French calendar. It is the only public holiday on which anyone — individual or association — may legally sell lily of the valley without a special permit. The result: by morning, the pavements of Nevers, Château-Chinon, Clamecy and surrounding villages are lined with small bunches of white bells. A gentle, timeless sight.</p>
+
+<h2>The lily of the valley tradition</h2>
+<p>Giving lily of the valley brings good luck — a belief rooted since the 16th century, when King Charles IX reportedly received a sprig and decided to offer one to every lady at court each year. In the Nièvre, the Morvan forests harbour vast natural carpets that bloom precisely around May 1st. Walk through the woods and you'll smell them before you see them.</p>
+<p><em>Note: wild lily of the valley is a protected species in many French départements. Check local regulations before picking any.</em></p>
+
+<h2>What's open on May Day?</h2>
+<p>May 1st is the only public holiday where French law prohibits employers from requiring staff to work (with limited exceptions). In the Nièvre:</p>
+<ul>
+  <li><strong>Closed:</strong> most shops, public offices, tourist offices, some museums.</li>
+  <li><strong>Open:</strong> hotels, restaurants, bakeries (usually), petrol stations, outdoor sites.</li>
+  <li><strong>Variable:</strong> museums — some open, some don't. Check in advance.</li>
+</ul>
+
+<h2>Events on 1st May in the region</h2>
+<p>Paradoxically, May Day is often lively: community fêtes, village dances, organised hikes. Several Nièvre towns use the long weekend to hold:</p>
+<ul>
+  <li><strong>Boot fairs and antique markets</strong> in village centres — great for browsing.</li>
+  <li><strong>Muguet hikes</strong> organised by local walking clubs.</li>
+  <li><strong>Countryside lunches</strong> at farms and estates opening for the occasion.</li>
+</ul>
+<p>Check our <a href="/evenements">events calendar</a> for what's on in the region.</p>
+
+<h2>A perfect day for exploring</h2>
+<p>With shops closed and roads quiet, May Day is ideal for exploring on foot or by bike. Along the <strong>Canal du Nivernais</strong>, through the <strong>Morvan forests</strong> or along the <strong>Loire</strong> embankments — nature is at its best, and you'll have the paths almost to yourself.</p>
+
+<p>Happy May Day — and don't forget to give someone you love a sprig of lily of the valley.</p>`,
+
+      nl: `<p>1 mei heeft een bijzondere plek in de Franse kalender. Het is de enige feestdag waarop iedereen — particulier of vereniging — zonder speciale vergunning lelietjes-van-dalen mag verkopen. Het gevolg: 's ochtends staan de trottoirs van Nevers, Château-Chinon, Clamecy en omliggende dorpen vol met kleine bosjes witte klokjes. Een teder, tijdloos beeld.</p>
+
+<h2>De lelietje-traditie</h2>
+<p>Lelietjes-van-dalen schenken brengt geluk — een overtuiging die teruggaat tot de 16e eeuw, toen koning Karel IX naar verluidt een takje ontving en besloot elk jaar een exemplaar te schenken aan alle dames aan het hof. In de Nièvre verbergen de Morvan-bossen enorme tapijten van wilde lelietjes die precies rond 1 mei bloeien. Loop door het bos en je ruikt ze al voordat je ze ziet.</p>
+<p><em>Let op: wilde lelietjes-van-dalen zijn in veel Franse departementen beschermd. Check de lokale regels voordat je iets plukt.</em></p>
+
+<h2>Wat is er open op 1 mei?</h2>
+<p>1 mei is de enige feestdag waarop de Franse wet werkgevers verbiedt personeel te laten werken (met beperkte uitzonderingen). In de Nièvre:</p>
+<ul>
+  <li><strong>Gesloten:</strong> de meeste winkels, overheidsdiensten, VVV-kantoren, sommige musea.</li>
+  <li><strong>Open:</strong> hotels, restaurants, bakkerijen (doorgaans), tankstations, buitenlocaties.</li>
+  <li><strong>Wisselend:</strong> musea — sommige open, andere niet. Controleer vooraf.</li>
+</ul>
+
+<h2>Evenementen op 1 mei in de regio</h2>
+<p>Paradoxaal genoeg is 1 mei vaak juist levendig: dorpsfeesten, volksdansen, georganiseerde wandelingen. Verschillende Nièvre-gemeenten gebruiken het lange weekend voor:</p>
+<ul>
+  <li><strong>Rommelmarkten en brocantes</strong> in dorpscentra — ideaal voor snuffelen.</li>
+  <li><strong>Muguet-wandelingen</strong> georganiseerd door lokale wandelclubs.</li>
+  <li><strong>Boerenmaaltijden</strong> op boerderijen en landgoederen die voor de gelegenheid opengaan.</li>
+</ul>
+<p>Bekijk onze <a href="/evenements">evenementenagenda</a> voor wat er in de regio te doen is.</p>
+
+<h2>Een perfecte dag om te verkennen</h2>
+<p>Met gesloten winkels en rustige wegen is 1 mei ideaal om te voet of op de fiets op pad te gaan. Langs het <strong>Canal du Nivernais</strong>, door de <strong>Morvan-bossen</strong> of langs de <strong>Loire-dijken</strong> — de natuur is op haar mooist en je hebt de paden bijna voor jezelf.</p>
+
+<p>Fijne 1 mei — en vergeet niet iemand die je lief is een bosje lelietjes te geven.</p>`,
+    },
+  },
+
+  // ─── Mooi lenteweer: buitenactiviteiten ──────────────────────
+  {
+    slug: 'printemps-activites-plein-air',
+    date: '2026-04-22',
+    category: { fr: 'Activités', en: 'Activities', nl: 'Activiteiten' },
+    readTime: 5,
+    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Canal_du_Nivernais_Chevroches.jpg/1280px-Canal_du_Nivernais_Chevroches.jpg',
+    title: {
+      fr: 'Le beau temps est là : nos meilleures activités de plein air pour ce printemps',
+      en: 'Fine weather is here: our best outdoor activities for this spring',
+      nl: 'Het mooie weer is aangebroken: de beste buitenactiviteiten voor dit voorjaar',
+    },
+    excerpt: {
+      fr: 'Après un hiver pluvieux et des crues mémorables, le soleil s\'installe enfin sur la Nièvre et le Morvan. Noah profite de ce beau temps retrouvé pour vous proposer un tour d\'horizon des meilleures activités de plein air de la région.',
+      en: 'After a wet winter and memorable floods, sunshine has finally settled over the Nièvre and Morvan. Noah takes advantage of the fine weather to round up the region\'s best outdoor activities.',
+      nl: 'Na een natte winter en memorabele overstromingen heeft de zon zich eindelijk gevestigd boven de Nièvre en het Morvan. Noah grijpt het mooie weer aan om de beste buitenactiviteiten van de regio op een rij te zetten.',
+    },
+    content: {
+      fr: `<p>Il aura fallu être patient, mais le printemps est bel et bien là. Après des semaines de grisaille et des rivières en crue qui ont rappelé aux habitants de la Nièvre la puissance de leur territoire, le soleil s'est installé avec une belle constance. Les températures grimpent doucement, les terrasses font leur réapparition, et la campagne nivernaise explose de vert et de fleurs. C'est le moment idéal pour sortir.</p>
+
+<h2>Kayak et canoë sur l'Yonne et le Cousin</h2>
+<p>Avec la décrue progressive, les rivières du Morvan retrouvent des niveaux idéaux pour la pratique du kayak et du canoë. <strong>L'Yonne</strong>, qui prend sa source au Haut-Folin, offre des parcours variés selon les sections : rapides techniques pour les initiés, tronçons tranquilles pour les familles. Le <strong>Cousin</strong>, affluent de l'Yonne, est particulièrement prisé entre Avallon et Vézelay pour ses paysages encaissés et sauvages.</p>
+<p>Plusieurs bases nautiques dans la région proposent location de matériel et accompagnement — consultez notre <a href="/activites">page activités</a> pour les coordonnées.</p>
+
+<h2>Le vélo sur le Canal du Nivernais</h2>
+<p>174 kilomètres de voie verte longeant le <strong>Canal du Nivernais</strong>, de Decize à Auxerre — la piste cyclable nivernaise est l'une des plus belles de Bourgogne. Au printemps, le cadre est exceptionnel : les platanes et les aulnes qui bordent le canal sont en pleine feuillaison, les écluses s'animent et les péniches reprennent doucement leur navigation.</p>
+<p>Pour une journée, la section <strong>Clamecy–Corbigny</strong> est parfaite : environ 35 km aller-retour, avec un arrêt déjeuner à Corbigny. La section <strong>Cercy-la-Tour–Decize</strong> est quant à elle plus plate et idéale pour les familles avec jeunes enfants.</p>
+
+<h2>Randonnée : les incontournables du printemps</h2>
+<p>C'est la saison de tous les possibles en randonnée. Voici trois suggestions pour profiter au maximum du Morvan printanier :</p>
+<ul>
+  <li><strong>Le tour du Lac de Pannecière :</strong> 17 km en boucle autour du plus grand lac artificiel du Morvan. Vues splendides, peu de dénivelé, accessible à tous.</li>
+  <li><strong>La montée au Mont Beuvray :</strong> site de l'antique Bibracte, capitale des Éduens. La forêt en mai y est magique, et le panorama depuis le sommet embrasse plusieurs départements.</li>
+  <li><strong>Le sentier de la Pierre-Écrite :</strong> entre Corbigny et Lormes, ce chemin forestier longe des sources et des mégalithes presque oubliés.</li>
+</ul>
+
+<h2>Pêche à la truite</h2>
+<p>La saison de la pêche a ouvert en mars, et les rivières du Morvan — classées en première catégorie pour la richesse de leurs eaux — sont parmi les meilleures destinations de pêche à la truite de Bourgogne. <strong>L'Aron</strong>, le <strong>Chalaux</strong> et le <strong>Toron</strong> sont particulièrement réputés des pêcheurs. Renseignez-vous auprès des sociétés de pêche locales pour les cartes journalières.</p>
+
+<h2>Jardins et espaces verts</h2>
+<p>Pour une sortie plus douce, les <strong>jardins de Nevers</strong> sont en pleine floraison : le jardin de la Préfecture et les parcs le long de la Loire invitent à la flânerie. À Cosne-Cours-sur-Loire, le parc de la Maison de la Loire offre une vue imprenable sur le fleuve et ses sables.</p>
+
+<p>Ce printemps dans la Nièvre, il n'y a plus d'excuse pour rester à l'intérieur. Consultez notre <a href="/evenements">agenda des sorties</a> et partez à la découverte !</p>`,
+
+      en: `<p>Patience has finally paid off — spring is truly here. After weeks of grey skies and memorable flooding that reminded the Nièvre's residents of their landscape's raw power, sunshine has settled in with reassuring constancy. Temperatures are climbing gently, café terraces are back, and the Nivernais countryside is bursting with green and blossom. It's the perfect moment to head outside.</p>
+
+<h2>Kayaking and canoeing on the Yonne and Cousin rivers</h2>
+<p>As rivers return to ideal levels following the floods, the Morvan's waterways are perfect for kayaking and canoeing. The <strong>Yonne</strong>, which rises at Haut-Folin, offers varied stretches: technical rapids for experienced paddlers and gentle sections for families. The <strong>Cousin</strong>, a tributary of the Yonne, is especially popular between Avallon and Vézelay for its wild, steep-sided scenery.</p>
+<p>Several watersports centres in the region offer equipment hire and guided outings — see our <a href="/activites">activities page</a> for details.</p>
+
+<h2>Cycling the Canal du Nivernais</h2>
+<p>174 kilometres of traffic-free cycling along the <strong>Canal du Nivernais</strong> from Decize to Auxerre — the Nivernais cycling route is one of Burgundy's finest. In spring the setting is exceptional: plane trees and alders along the canal burst into leaf, locks come to life and barges slowly resume their journeys.</p>
+<p>For a day ride, the <strong>Clamecy–Corbigny</strong> section is ideal: around 35 km return with a lunch stop in Corbigny. The flatter <strong>Cercy-la-Tour–Decize</strong> section is perfect for families with young children.</p>
+
+<h2>Hiking: spring highlights</h2>
+<p>Three suggestions to make the most of the Morvan in spring:</p>
+<ul>
+  <li><strong>Lac de Pannecière loop:</strong> 17 km around the Morvan's largest reservoir. Splendid views, minimal elevation gain, accessible to all.</li>
+  <li><strong>Mont Beuvray:</strong> site of ancient Bibracte, capital of the Aedui tribe. The forest in May is magical, and the summit panorama spans several départements.</li>
+  <li><strong>Sentier de la Pierre-Écrite:</strong> a forest path between Corbigny and Lormes following springs and almost-forgotten megaliths.</li>
+</ul>
+
+<h2>Trout fishing</h2>
+<p>The fishing season opened in March, and the Morvan's rivers — classified première catégorie for their crystal-clear waters — are among Burgundy's finest trout destinations. The <strong>Aron</strong>, <strong>Chalaux</strong> and <strong>Toron</strong> rivers are particularly prized. Contact local angling clubs for day permits.</p>
+
+<p>This spring in the Nièvre, there's no excuse to stay indoors. Check our <a href="/evenements">events calendar</a> and head out to explore!</p>`,
+
+      nl: `<p>Geduld wordt beloond — de lente is er écht. Na weken van grijs weer en memorabele overstromingen die de inwoners van de Nièvre de kracht van hun landschap herinnerden, heeft de zon zich eindelijk stevig gevestigd. De temperaturen klimmen langzaam, de terrassen zijn terug en het Nivernais platteland barst uit in groen en bloesem. Het perfecte moment om naar buiten te gaan.</p>
+
+<h2>Kajakken en kanoën op de Yonne en de Cousin</h2>
+<p>Nu de rivieren na de overstromingen terugkeren naar ideale niveaus, zijn de Morvan-wateren perfect voor kajak en kano. De <strong>Yonne</strong>, die ontspringt op de Haut-Folin, biedt gevarieerde trajecten: technische stroomversnellingen voor gevorderden en rustige stukken voor gezinnen. De <strong>Cousin</strong>, een zijrivier van de Yonne, is bijzonder geliefd tussen Avallon en Vézelay voor zijn wilde, stenige oevers.</p>
+<p>Meerdere watersportcentra in de regio verhuren materiaal en bieden begeleide tochten — zie onze <a href="/activites">activiteitenpagina</a> voor details.</p>
+
+<h2>Fietsen langs het Canal du Nivernais</h2>
+<p>174 kilometer autovrij fietsen langs het <strong>Canal du Nivernais</strong> van Decize naar Auxerre — de Nivernais fietsroute is een van de mooiste van Bourgondië. In de lente is het decor uitzonderlijk: platanen en elzen langs het kanaal springen in blad, sluizen worden weer bedient en sloepen hervatten rustig hun vaartochten.</p>
+<p>Voor een dagrit is het traject <strong>Clamecy–Corbigny</strong> ideaal: ongeveer 35 km retour met een lunchstop in Corbigny. Het vlakkere traject <strong>Cercy-la-Tour–Decize</strong> is perfect voor gezinnen met jonge kinderen.</p>
+
+<h2>Wandelen: de lentehoogtepunten</h2>
+<p>Drie suggesties om het Morvan in de lente optimaal te beleven:</p>
+<ul>
+  <li><strong>Rondwandeling Lac de Pannecière:</strong> 17 km rond het grootste stuwmeer van het Morvan. Prachtige vergezichten, nauwelijks hoogteverschil, toegankelijk voor iedereen.</li>
+  <li><strong>Mont Beuvray:</strong> locatie van het antieke Bibracte, hoofdstad van de Edue-stam. Het bos in mei is magisch en het panorama omvat meerdere departementen.</li>
+  <li><strong>Sentier de la Pierre-Écrite:</strong> een bospad tussen Corbigny en Lormes langs bronnen en bijna vergeten megaliethen.</li>
+</ul>
+
+<h2>Forellenvisserij</h2>
+<p>Het visseizoen opende in maart, en de Morvan-rivieren — geclassificeerd als première catégorie vanwege hun kristalheldere water — zijn een van de beste forellenbestemmingen van Bourgondië. De <strong>Aron</strong>, <strong>Chalaux</strong> en <strong>Toron</strong> zijn bijzonder in trek. Neem contact op met lokale hengelsportverenigingen voor dagvergunningen.</p>
+
+<p>Deze lente in de Nièvre is er geen excuus meer om binnen te blijven. Bekijk onze <a href="/evenements">evenementenagenda</a> en ga op ontdekking!</p>`,
+    },
+  },
+
   // ─── Hoge waterstanden Nièvre maart 2026 ─────────────────────
   {
     slug: 'crues-nievre-mars-2026',
