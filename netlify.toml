@@ -16,6 +16,11 @@
   to = "/robots.txt"
   status = 200
 
+[[redirects]]
+  from = "/ads.txt"
+  to = "/ads.txt"
+  status = 200
+
 # SPA fallback — React Router
 [[redirects]]
   from = "/*"
