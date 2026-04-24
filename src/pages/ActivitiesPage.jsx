@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { usePageTitle } from '../hooks/usePageTitle';
+import { useSEO } from '../hooks/useSEO';
 import ActivityCard from '../components/ActivityCard';
 import AdBanner from '../components/AdBanner';
 import { useActivities } from '../hooks/useActivities';
@@ -9,7 +9,7 @@ const CATS = ['all', 'wandelen', 'fietsen', 'water', 'kastelen', 'eten', 'overna
 const RADIUS_OPTIONS = [5, 10, 25, 50, 100];
 
 export default function ActivitiesPage({ lang, tr }) {
-  usePageTitle(tr?.pageTitles?.activities);
+  useSEO({ title: tr?.pageTitles?.activities, description: tr?.seoDesc?.activities, path: '/activites', lang });
   const [activeCat, setActiveCat] = useState('all');
   const [search, setSearch] = useState('');
   const [sortBy, setSortBy] = useState('name');

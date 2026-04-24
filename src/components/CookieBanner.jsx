@@ -75,7 +75,7 @@ export default function CookieBanner({ lang }) {
       if (choice === 'all' && !document.querySelector('script[src*="googletagmanager"]')) {
         const s = document.createElement('script');
         s.async = true;
-        s.src = 'https://www.googletagmanager.com/gtag/js?id=G-3MLK2LR2LF';
+        s.src = 'https://www.googletagmanager.com/gtag/js?id=G-GXDNXDBFN9';
         document.head.appendChild(s);
         window.gtag('event', 'page_view');
       }

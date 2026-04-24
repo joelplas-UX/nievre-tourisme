@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import AdBanner from '../components/AdBanner';
-import { usePageTitle } from '../hooks/usePageTitle';
+import { useSEO } from '../hooks/useSEO';
 
 const HIGHLIGHTS = [
   {
@@ -117,7 +117,7 @@ const HEADINGS = {
 };
 
 export default function RegionPage({ lang, tr }) {
-  usePageTitle(tr?.pageTitles?.region);
+  useSEO({ title: tr?.pageTitles?.region, description: tr?.seoDesc?.region, path: '/region', lang });
   const h  = HEADINGS[lang]  || HEADINGS.fr;
   const ss = SEASONS[lang]   || SEASONS.fr;
   const ns = NUMBERS[lang]   || NUMBERS.fr;

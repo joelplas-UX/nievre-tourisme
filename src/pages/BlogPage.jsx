@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useBlogPosts } from '../hooks/useBlogPosts';
-import { usePageTitle } from '../hooks/usePageTitle';
+import { useSEO, useJsonLd, BASE_URL } from '../hooks/useSEO';
 
 const COPY = {
   fr: {
@@ -33,9 +33,26 @@ function formatDate(dateStr, lang) {
 }
 
 export default function BlogPage({ lang, tr }) {
-  usePageTitle(tr?.pageTitles?.blog);
+  useSEO({ title: tr?.pageTitles?.blog, description: tr?.seoDesc?.blog, path: '/blog', lang });
   const c = COPY[lang] || COPY.fr;
   const { posts, loading } = useBlogPosts({ publishedOnly: true });
+
+  // JSON-LD: Blog (CollectionPage) met itemListElement per post
+  useJsonLd({
+    '@context': 'https://schema.org',
+    '@type': 'Blog',
+    name: 'Blog — Nièvre & Morvan',
+    url: `${BASE_URL}/blog`,
+    description: tr?.seoDesc?.blog || 'Blog over de Nièvre en Morvan',
+    inLanguage: lang === 'nl' ? 'nl-NL' : lang === 'en' ? 'en-GB' : 'fr-FR',
+    blogPost: posts.slice(0, 10).map(p => ({
+      '@type': 'BlogPosting',
+      headline: p.title?.[lang] || p.title?.fr || '',
+      url: `${BASE_URL}/blog/${p.slug}`,
+      datePublished: p.date,
+      image: p.image || undefined,
+    })),
+  });
 
   return (
     <main className="page">

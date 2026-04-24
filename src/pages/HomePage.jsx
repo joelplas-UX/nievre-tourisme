@@ -7,8 +7,42 @@ import MapSection from '../components/MapSection';
 import AdBanner from '../components/AdBanner';
 import { useEvents } from '../hooks/useEvents';
 import { useActivities } from '../hooks/useActivities';
+import { useSEO, useJsonLd, BASE_URL } from '../hooks/useSEO';
 
 export default function HomePage({ lang, tr }) {
+  useSEO({ title: tr?.pageTitles?.home, description: tr?.seoDesc?.home, path: '/', lang });
+
+  useJsonLd([
+    {
+      '@context': 'https://schema.org',
+      '@type': 'TouristDestination',
+      name: 'Nièvre & Morvan',
+      url: BASE_URL,
+      description: 'Région touristique au cœur de la Bourgogne, comprenant la Nièvre et le Parc Naturel Régional du Morvan.',
+      touristType: ['Famille', 'Randonneurs', 'Cyclistes', 'Amoureux de la nature'],
+      geo: {
+        '@type': 'GeoCoordinates',
+        latitude: 47.1,
+        longitude: 3.9,
+      },
+      containedInPlace: {
+        '@type': 'AdministrativeArea',
+        name: 'Bourgogne-Franche-Comté',
+        url: 'https://www.bourgognefranchecomte.fr',
+      },
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'WebSite',
+      name: 'Nièvre & Morvan',
+      url: BASE_URL,
+      potentialAction: {
+        '@type': 'SearchAction',
+        target: `${BASE_URL}/activites?q={search_term_string}`,
+        'query-input': 'required name=search_term_string',
+      },
+    },
+  ]);
   const { events } = useEvents();
   const { activities } = useActivities();
 

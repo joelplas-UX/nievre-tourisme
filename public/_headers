@@ -1,0 +1,18 @@
+# Cache-control voor statische assets
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Sitemap en robots altijd vers
+/sitemap.xml
+  Cache-Control: public, max-age=3600
+  Content-Type: application/xml; charset=utf-8
+
+/robots.txt
+  Cache-Control: public, max-age=86400
+
+# HTML-pagina's: kort gecacht zodat wijzigingen snel doorkomen
+/*
+  Cache-Control: public, max-age=0, must-revalidate
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin

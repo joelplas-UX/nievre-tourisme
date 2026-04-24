@@ -759,6 +759,10 @@ a { color: inherit; text-decoration: none; }
 .blog-post-article { max-width: 760px; margin: 0 auto; padding: 40px 24px; }
 .blog-post-header { margin-bottom: 32px; }
 .blog-back { font-size: .88rem; color: var(--green); font-weight: 700; text-decoration: none; display: inline-block; margin-bottom: 16px; }
+.blog-breadcrumb { font-size: .82rem; color: var(--text-muted); margin-bottom: 16px; display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+.blog-breadcrumb a { color: var(--green); text-decoration: none; font-weight: 600; }
+.blog-breadcrumb a:hover { text-decoration: underline; }
+.blog-breadcrumb span:last-child { color: var(--text); font-weight: 500; }
 .blog-post-meta { display: flex; gap: 12px; align-items: center; margin-bottom: 12px; flex-wrap: wrap; }
 .blog-post-title { font-size: clamp(1.5rem, 4vw, 2.2rem); line-height: 1.25; margin: 0 0 8px; }
 .blog-post-by { color: var(--gray-600); font-size: .85rem; margin: 0; }

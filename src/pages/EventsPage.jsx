@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { usePageTitle } from '../hooks/usePageTitle';
+import { useSEO, useJsonLd, BASE_URL } from '../hooks/useSEO';
 import EventCard from '../components/EventCard';
 import AdBanner from '../components/AdBanner';
 import { useEvents } from '../hooks/useEvents';
@@ -56,7 +56,7 @@ function eventMatchesTime(event, timeFilter) {
 }
 
 export default function EventsPage({ lang, tr }) {
-  usePageTitle(tr?.pageTitles?.events);
+  useSEO({ title: tr?.pageTitles?.events, description: tr?.seoDesc?.events, path: '/evenements', lang });
   const [activeType, setActiveType] = useState('all');
   const [timeKey, setTimeKey] = useState('all');
   const [search, setSearch] = useState('');
@@ -66,6 +66,39 @@ export default function EventsPage({ lang, tr }) {
   const [geocoding, setGeocoding] = useState(false);
   const [maxKm, setMaxKm] = useState(null);
   const { events, loading } = useEvents(activeType);
+
+  // JSON-LD: top-10 aankomende events als Event-schema voor Google rich results
+  const eventSchemas = events.slice(0, 10).map(ev => {
+    const startDate = ev.date?.toDate?.()?.toISOString?.() || ev.date || null;
+    const endDate   = ev.endDate?.toDate?.()?.toISOString?.() || startDate;
+    return {
+      '@context': 'https://schema.org',
+      '@type': 'Event',
+      name: ev.title?.[lang] || ev.title?.fr || ev.title || '',
+      description: ev.description?.[lang] || ev.description?.fr || ev.description || '',
+      startDate,
+      endDate,
+      eventStatus: 'https://schema.org/EventScheduled',
+      eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+      location: {
+        '@type': 'Place',
+        name: ev.location || ev.city || 'Nièvre / Morvan',
+        address: {
+          '@type': 'PostalAddress',
+          addressRegion: 'Nièvre',
+          addressCountry: 'FR',
+        },
+      },
+      organizer: {
+        '@type': 'Organization',
+        name: ev.source || 'Nièvre & Morvan',
+        url: BASE_URL,
+      },
+      ...(ev.image ? { image: ev.image } : {}),
+      ...(ev.url   ? { url: ev.url } : {}),
+    };
+  });
+  useJsonLd(eventSchemas.length ? eventSchemas : null);
 
   const timeFilters = getTimeFilters(lang);
   const activeTimeFilter = timeFilters.find(f => f.value === timeKey);

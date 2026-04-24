@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { usePageTitle } from '../hooks/usePageTitle';
+import { useSEO } from '../hooks/useSEO';
 
 const CONTENT = {
   fr: {
@@ -65,7 +65,7 @@ Nous ne sommes affiliés à aucun office de tourisme ni à aucune organisation c
 };
 
 export default function AboutPage({ lang, tr }) {
-  usePageTitle(tr?.pageTitles?.about);
+  useSEO({ title: tr?.pageTitles?.about, description: tr?.seoDesc?.about, path: '/over', lang });
   const c = CONTENT[lang] || CONTENT.fr;
   return (
     <main className="page">

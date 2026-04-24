@@ -5,6 +5,17 @@
 [build.environment]
   NODE_VERSION = "20"
 
+# Statische bestanden expliciet doorlaten (vóór de SPA catch-all)
+[[redirects]]
+  from = "/sitemap.xml"
+  to = "/sitemap.xml"
+  status = 200
+
+[[redirects]]
+  from = "/robots.txt"
+  to = "/robots.txt"
+  status = 200
+
 # SPA fallback — React Router
 [[redirects]]
   from = "/*"
