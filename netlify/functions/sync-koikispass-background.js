@@ -2,13 +2,14 @@
  * sync-koikispass-background.js
  * Scrapt de evenementenagenda op koikispass.com/lagenda/
  *
- * Strategie:
- *  1. Haal listing pages op (/lagenda/?period=toutes_les_dates&page=N, max 5 pages)
- *  2. Extraheer event-URLs: /lagenda/{id}/{slug}/
- *  3. Sla over als ID al verwerkt is (koiki_processed collectie)
- *  4. Fetch detail page per event — parse datum, locatie, prijs, foto
- *  5. Filter: alleen events met postcode 58xxx (Nièvre)
- *  6. Claude Haiku: vertaal titel+beschrijving naar EN/NL, classificeer type
+ * Verbeterde strategie (v2):
+ *  1. Haal listing pages op — detecteer max. paginanummer dynamisch
+ *  2. Parse per event-card op de listing: ID, URL, commune-code, titel,
+ *     stad, datum, afbeelding, categorie, korte beschrijving
+ *  3. Filter op commune-58xxx (Nièvre) — betrouwbaarder dan postcode in detail
+ *  4. Sla over als ID al verwerkt is (koiki_processed collectie)
+ *  5. Fetch detail page per nieuw Nièvre-event — pak beschrijving, tijd, prijs
+ *  6. Claude Haiku: vertaal titel+beschrijving naar EN/NL, verfijn type
  *  7. Sla op in Firestore morvan/data/events met ID koiki_{id}
  */
 
@@ -34,137 +35,178 @@ const anthropic = new Anthropic({
 
 const BASE        = 'https://www.koikispass.com';
 const LISTING_URL = `${BASE}/lagenda/`;
-const MAX_PAGES   = 5;
-const MAX_EVENTS  = 30; // veiligheidsgrens per run
+const MAX_PAGES   = 25;   // site heeft ~18 pagina's, ruim genoeg
+const MAX_EVENTS  = 100;  // max nieuwe events per run
 
 const FETCH_HEADERS = {
   'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
   'Accept': 'text/html,application/xhtml+xml,*/*;q=0.8',
   'Accept-Language': 'fr-FR,fr;q=0.9',
-  'Referer': 'https://www.google.com/',
+  'Referer': 'https://www.koikispass.com/',
 };
 
-// ── Stap 1: Extraheer event-URLs van listing pages ─────────────
-async function findEventUrls() {
-  const found = new Map(); // id → fullUrl
+const FR_MONTHS = {
+  janvier:1, 'f\u00e9vrier':2, mars:3, avril:4, mai:5, juin:6,
+  juillet:7, 'ao\u00fbt':8, septembre:9, octobre:10, novembre:11, 'd\u00e9cembre':12,
+};
 
-  for (let page = 1; page <= MAX_PAGES; page++) {
-    const url = `${LISTING_URL}?period=toutes_les_dates&page=${page}/`;
-    try {
-      const res = await fetch(url, { headers: FETCH_HEADERS });
-      if (!res.ok) break;
-      const html = await res.text();
-
-      // Patroon: /lagenda/12345/slug-van-het-event/
-      const regex = /href="(\/lagenda\/(\d+)\/[^"]+\/)"/gi;
-      let match;
-      let newOnPage = 0;
-      while ((match = regex.exec(html)) !== null) {
-        const [, path, id] = match;
-        if (!found.has(id)) {
-          found.set(id, BASE + path);
-          newOnPage++;
-        }
-      }
-
-      // Geen nieuwe events → stop met pagineren
-      if (newOnPage === 0) break;
-    } catch {
-      break;
-    }
-
-    // Korte pauze tussen pagina's
-    await new Promise(r => setTimeout(r, 500));
-  }
-
-  return [...found.entries()].map(([id, url]) => ({ id, url }));
-}
-
-// ── Stap 2: Haal detail page op ───────────────────────────────
-async function fetchDetail(url) {
-  const res = await fetch(url, { headers: FETCH_HEADERS });
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  return res.text();
-}
-
-// ── Stap 3: Parse detail page HTML ────────────────────────────
-function parseDetail(html) {
-  // Strip scripts/styles, zet over naar platte tekst
-  const clean = html
-    .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
-    .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
-    .replace(/<[^>]+>/g, ' ')
-    .replace(/\s{2,}/g, ' ')
-    .trim();
-
-  // Postcode — filter op Nièvre (58xxx)
-  const postcodeMatch = clean.match(/\b(58\d{3})\b/);
-  const postcode = postcodeMatch ? postcodeMatch[1] : null;
-
-  // Stad (woord(en) na postcode)
-  let city = null;
-  if (postcode) {
-    const cityMatch = clean.match(new RegExp(`${postcode}\\s+([A-ZÀ-Ÿ][A-Za-zÀ-ÿ\\s-]{2,30}?)(?:\\s{2,}|$)`));
-    city = cityMatch ? cityMatch[1].trim() : null;
-  }
-
-  // Datum + tijd: "4 avril 2026 à 20h30"
-  const FR_MONTHS = {
-    janvier:1, février:2, mars:3, avril:4, mai:5, juin:6,
-    juillet:7, août:8, septembre:9, octobre:10, novembre:11, décembre:12,
-  };
-  let dateObj = null;
-  let timeStart = null;
-  const dateMatch = clean.match(
-    /(\d{1,2})\s+(janvier|f[eé]vrier|mars|avril|mai|juin|juillet|ao[uû]t|septembre|octobre|novembre|d[eé]cembre)\s+(\d{4})(?:\s+[àa]\s+(\d{1,2})h(\d{2}))?/i
+// ── Datum parsen uit "mercredi 29 avril 2026" of "29 avril 2026 à 20h30" ──
+function parseFrenchDate(raw) {
+  if (!raw) return null;
+  const m = raw.match(
+    /(\d{1,2})\s+(janvier|f[eé]vrier|mars|avril|mai|juin|juillet|ao[uû]t|septembre|octobre|novembre|d[eé]cembre)\s+(\d{4})(?:.*?(\d{1,2})h(\d{2}))?/i
   );
-  if (dateMatch) {
-    const day   = parseInt(dateMatch[1]);
-    const month = FR_MONTHS[dateMatch[2].toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-      .replace('fevrier','février').replace('aout','août').replace('decembre','décembre')] ||
-      Object.entries(FR_MONTHS).find(([k]) => k.startsWith(dateMatch[2].toLowerCase().slice(0,4)))?.[1];
-    const year  = parseInt(dateMatch[3]);
-    const hour  = dateMatch[4] != null ? parseInt(dateMatch[4]) : null;
-    const min   = dateMatch[5] != null ? parseInt(dateMatch[5]) : 0;
-    if (month) {
-      dateObj = new Date(year, month - 1, day, hour ?? 0, min);
-      if (hour !== null) {
-        timeStart = `${String(hour).padStart(2,'0')}:${String(min).padStart(2,'0')}`;
-      }
-    }
-  }
+  if (!m) return null;
 
-  // Prijs: "37,00 € à 49,00 €" of "Gratuit"
-  let price = null;
-  if (/gratuit/i.test(clean)) {
-    price = 'Gratuit';
-  } else {
-    const priceMatch = clean.match(/(\d+[,.]\d{2})\s*€(?:\s*[àa]\s*(\d+[,.]\d{2})\s*€)?/);
-    if (priceMatch) {
-      price = priceMatch[2]
-        ? `${priceMatch[1].replace(',','.')} € – ${priceMatch[2].replace(',','.')} €`
-        : `${priceMatch[1].replace(',','.')} €`;
-    }
-  }
+  const day   = parseInt(m[1]);
+  const year  = parseInt(m[3]);
+  const hour  = m[4] != null ? parseInt(m[4]) : 0;
+  const min   = m[5] != null ? parseInt(m[5]) : 0;
 
-  // Afbeelding van agenda.koikispass.com
-  const imgMatch = html.match(/src="(https?:\/\/agenda\.koikispass\.com\/[^"]+\.(jpg|jpeg|png|webp))"/i);
-  const imageUrl = imgMatch ? imgMatch[1] : null;
+  // Maandnaam normaliseren (diacrieten verwijderen)
+  const normalized = m[2].toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  const month = FR_MONTHS[m[2].toLowerCase()] ||
+    Object.entries(FR_MONTHS).find(([k]) =>
+      k.normalize('NFD').replace(/[\u0300-\u036f]/g, '').startsWith(normalized.slice(0, 4))
+    )?.[1];
 
-  // Titel: eerste grote heading (h1)
-  const titleMatch = html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i);
-  const titleFr = titleMatch
-    ? titleMatch[1].replace(/<[^>]+>/g, '').trim()
+  if (!month) return null;
+
+  const timeStart = m[4] != null
+    ? `${String(hour).padStart(2,'0')}:${String(min).padStart(2,'0')}`
     : null;
 
-  // Beschrijving: eerste alinea na strip (ruwe benadering)
-  const descLines = clean.split(/\.(?:\s{2,}|\n)/).filter(l => l.length > 40).slice(0, 3);
-  const descFr = descLines.join('. ').slice(0, 400) || null;
-
-  return { postcode, city, dateObj, timeStart, price, imageUrl, titleFr, descFr, cleanText: clean };
+  return { dateObj: new Date(year, month - 1, day, hour, min), timeStart };
 }
 
-// ── Stap 4: Claude → vertaling + type ─────────────────────────
+// ── Koikispass categorie-slug → ons type-systeem ─────────────
+function mapCategory(slug) {
+  if (!slug) return 'overig';
+  const s = slug.toLowerCase();
+  if (s.includes('concert') || s.includes('musique'))    return 'muziek';
+  if (s.includes('festival') || s.includes('fete'))      return 'festival';
+  if (s.includes('brocante') || s.includes('marche') || s.includes('vide')) return 'markt';
+  if (s.includes('randonnee') || s.includes('sport') || s.includes('trail')) return 'sport';
+  if (s.includes('nature') || s.includes('plein-air'))   return 'natuur';
+  if (s.includes('exposition') || s.includes('spectacle') ||
+      s.includes('theatre') || s.includes('cinema') ||
+      s.includes('patrimoine') || s.includes('danse'))   return 'cultuur';
+  return 'overig';
+}
+
+// ── Detecteer het laatste paginanummer ────────────────────────
+function detectMaxPage(html) {
+  // Zoek de "laatste pagina"-link: ...page=18">>&gt;&gt;</a>
+  const lastMatch = html.match(/[?&]page=(\d+)[^"]*"[^>]*>(?:&gt;&gt;|>>|››|Dernière)/i);
+  if (lastMatch) return parseInt(lastMatch[1]);
+
+  // Fallback: hoogste paginanummer in pagination-blok
+  const pageNums = [...html.matchAll(/[?&]page=(\d+)/gi)].map(m => parseInt(m[1]));
+  return pageNums.length ? Math.max(...pageNums) : 5;
+}
+
+// ── Parse event-cards van een listing-pagina ──────────────────
+function parseListingPage(html) {
+  const events = [];
+
+  // Splits op elke event-card (bloc-agenda)
+  const cardRegex = /<div class="bloc-agenda([\s\S]*?)class="voir-evenement"[\s\S]*?<\/div>\s*<\/div>\s*<\/div>/gi;
+  let match;
+
+  while ((match = cardRegex.exec(html)) !== null) {
+    const chunk = match[0];
+
+    // Commune-code (commune-58086 etc.) — gebruikt voor Nièvre-filter
+    const communeMatch = chunk.match(/commune-(\d{5})/);
+    const communeCode  = communeMatch ? communeMatch[1] : null;
+
+    // Event-URL + numeriek ID
+    const urlMatch = chunk.match(/href="(\/lagenda\/(\d+)\/[^"]+\/)"/);
+    if (!urlMatch) continue;
+    const [, path, id] = urlMatch;
+    const url = `${BASE}${path}`;
+
+    // Titel
+    const titleMatch = chunk.match(/class="titre-agenda"[\s\S]*?<a[^>]*>([^<]+)<\/a>/);
+    const titleFr = titleMatch ? titleMatch[1].trim() : null;
+    if (!titleFr) continue;
+
+    // Stad
+    const cityMatch = chunk.match(/class="ville-agenda"[\s\S]*?<a[^>]*>([^<]+)<\/a>/);
+    const city = cityMatch ? cityMatch[1].trim() : null;
+
+    // Datum ("mercredi <span>29</span> avril 2026")
+    const dateHtml = (chunk.match(/class="date-evenement"[^>]*>([\s\S]*?)<\/div>/) || [])[1] || '';
+    const dateRaw  = dateHtml.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+    const dateParsed = parseFrenchDate(dateRaw);
+
+    // Afbeelding (lazy-loaded)
+    const imgMatch = chunk.match(/data-lazy-src="(https?:\/\/agenda\.koikispass\.com\/[^"]+\.(?:jpg|jpeg|png|webp))[^"]*"/i);
+    const imageUrl = imgMatch ? imgMatch[1] : null;
+
+    // Categorie-slug (voor type-mapping)
+    const catMatch = chunk.match(/\/lagenda\/categorie\/([^/"]+)\//);
+    const categorySlug = catMatch ? catMatch[1] : null;
+
+    // Korte beschrijving op de listing
+    const descHtml = (chunk.match(/class="texte-agenda"[^>]*>([\s\S]*?)<\/div>/) || [])[1] || '';
+    const descFr   = descHtml.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim().slice(0, 400) || null;
+
+    events.push({
+      id, url, communeCode, titleFr, city,
+      dateObj:   dateParsed?.dateObj   || null,
+      timeStart: dateParsed?.timeStart || null,
+      imageUrl, categorySlug, descFr,
+    });
+  }
+
+  return events;
+}
+
+// ── Haal extra detail (beschrijving, prijs, tijd) van detail page ──
+async function fetchDetailExtras(url) {
+  try {
+    const res = await fetch(url, { headers: FETCH_HEADERS });
+    if (!res.ok) return {};
+    const html = await res.text();
+
+    const clean = html
+      .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
+      .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
+      .replace(/<[^>]+>/g, ' ')
+      .replace(/\s{2,}/g, ' ')
+      .trim();
+
+    // Prijs
+    let price = null;
+    if (/gratuit/i.test(clean)) {
+      price = 'Gratuit';
+    } else {
+      const priceMatch = clean.match(/(\d+[,.]\d{2})\s*€(?:\s*[àa]\s*(\d+[,.]\d{2})\s*€)?/);
+      if (priceMatch) {
+        price = priceMatch[2]
+          ? `${priceMatch[1].replace(',','.')} € – ${priceMatch[2].replace(',','.')} €`
+          : `${priceMatch[1].replace(',','.')} €`;
+      }
+    }
+
+    // Langere beschrijving (alinea's van >60 tekens)
+    const descLines = clean.split(/\.(?:\s{2,}|\n)/).filter(l => l.trim().length > 60).slice(0, 4);
+    const fullDesc  = descLines.join('. ').slice(0, 600) || null;
+
+    // Tijd (als niet al op listing)
+    const timeMatch = clean.match(/\b(\d{1,2})h(\d{2})\b/);
+    const timeStart = timeMatch
+      ? `${String(parseInt(timeMatch[1])).padStart(2,'0')}:${timeMatch[2]}`
+      : null;
+
+    return { price, fullDesc, timeStart };
+  } catch {
+    return {};
+  }
+}
+
+// ── Claude: vertaal + verfijn type ────────────────────────────
 async function translateAndClassify(titleFr, descFr) {
   if (!titleFr) return { titleEn: null, titleNl: null, descEn: null, descNl: null, type: 'overig' };
 
@@ -178,19 +220,19 @@ async function translateAndClassify(titleFr, descFr) {
 Titel (FR): ${titleFr}
 Beschrijving (FR): ${descFr || ''}
 
-Geef ALLEEN dit JSON terug:
+Geef ALLEEN dit JSON terug (geen uitleg):
 {
-  "title_en": "Engelse vertaling van de titel",
-  "title_nl": "Nederlandse vertaling van de titel",
+  "title_en": "Engelse vertaling",
+  "title_nl": "Nederlandse vertaling",
   "desc_en": "Korte Engelse beschrijving (max 200 tekens)",
   "desc_nl": "Korte Nederlandse beschrijving (max 200 tekens)",
-  "type": "festival|concert|spectacle|sport|exposition|balade|foire|marche|vide-grenier|autre"
+  "type": "festival|muziek|markt|sport|natuur|cultuur|overig"
 }`,
     }],
   });
 
   try {
-    const raw = msg.content[0].text.trim();
+    const raw   = msg.content[0].text.trim();
     const start = raw.indexOf('{');
     const end   = raw.lastIndexOf('}') + 1;
     const obj   = JSON.parse(raw.slice(start, end));
@@ -199,16 +241,15 @@ Geef ALLEEN dit JSON terug:
       titleNl: obj.title_nl || titleFr,
       descEn:  obj.desc_en  || null,
       descNl:  obj.desc_nl  || null,
-      type:    obj.type     || 'autre',
+      type:    obj.type     || 'overig',
     };
   } catch {
-    return { titleEn: titleFr, titleNl: titleFr, descEn: null, descNl: null, type: 'autre' };
+    return { titleEn: titleFr, titleNl: titleFr, descEn: null, descNl: null, type: 'overig' };
   }
 }
 
 // ── Hoofd-handler ─────────────────────────────────────────────
 export const handler = async (event) => {
-  // Token-beveiliging
   const token     = event?.headers?.['x-cron-token'] || event?.queryStringParameters?.token;
   const cronToken = process.env.CRON_SECRET_TOKEN;
   if (cronToken && token !== cronToken && event?.headers?.['x-admin-trigger'] !== '1') {
@@ -216,92 +257,132 @@ export const handler = async (event) => {
   }
 
   const runRef = db.collection('morvan').doc('data').collection('scrape_runs').doc();
-  let saved = 0, skipped = 0, filtered = 0, errors = 0;
+  let saved = 0, skipped = 0, filteredDept = 0, filteredDate = 0, errors = 0;
   const log = [];
 
-  try {
-    // 1. Zoek event-URLs op listing pages
-    log.push('Listing pages ophalen…');
-    const allEvents = await findEventUrls();
-    log.push(`${allEvents.length} event-URL(s) gevonden`);
+  // Datum-grenzen: 7 dagen geleden t/m 120 dagen vooruit
+  const now     = new Date();
+  const minDate = new Date(now); minDate.setDate(minDate.getDate() - 7);
+  const maxDate = new Date(now); maxDate.setDate(maxDate.getDate() + 120);
 
-    // 2. Welke zijn al verwerkt?
+  try {
+    // ── Stap 1: Haal al verwerkte IDs op ──────────────────────
     const processedSnap = await db
       .collection('morvan').doc('data').collection('koiki_processed').get();
     const processed = new Set(processedSnap.docs.map(d => d.id));
+    log.push(`${processed.size} events al verwerkt`);
 
-    // Datum-grenzen: max 7 dagen geleden t/m 90 dagen vooruit
-    const now     = new Date();
-    const minDate = new Date(now); minDate.setDate(minDate.getDate() - 7);
-    const maxDate = new Date(now); maxDate.setDate(maxDate.getDate() + 90);
+    // ── Stap 2: Listing pages scrapen ─────────────────────────
+    let maxPage = MAX_PAGES;
+    const allListingEvents = [];
 
-    let count = 0;
-    for (const { id, url } of allEvents) {
-      if (count >= MAX_EVENTS) break;
-
-      if (processed.has(id)) {
-        skipped++;
-        continue;
-      }
-
+    for (let page = 1; page <= maxPage; page++) {
+      const url = `${LISTING_URL}?period=toutes_les_dates&page=${page}`;
       try {
-        // 3. Fetch + parse detail page
-        const html   = await fetchDetail(url);
-        const detail = parseDetail(html);
+        const res = await fetch(url, { headers: FETCH_HEADERS });
+        if (!res.ok) { log.push(`Listing p${page}: HTTP ${res.status}`); break; }
+        const html = await res.text();
 
-        // 4. Filter: alleen Nièvre (58xxx)
-        if (!detail.postcode) {
-          // Geen postcode gevonden — overslaan (kan ook buiten Nièvre zijn)
-          await db.collection('morvan').doc('data').collection('koiki_processed')
-            .doc(id).set({ url, reason: 'no_postcode', processedAt: Timestamp.now() });
-          filtered++;
-          continue;
-        }
-        if (!detail.postcode.startsWith('58')) {
-          await db.collection('morvan').doc('data').collection('koiki_processed')
-            .doc(id).set({ url, reason: 'outside_nievre', postcode: detail.postcode, processedAt: Timestamp.now() });
-          filtered++;
-          continue;
+        // Detecteer max paginanummer op de eerste pagina
+        if (page === 1) {
+          maxPage = Math.min(detectMaxPage(html), MAX_PAGES);
+          log.push(`Totaal ${maxPage} listing-pagina's gedetecteerd`);
         }
 
-        // 5. Datumcontrole
-        if (detail.dateObj) {
-          if (detail.dateObj < minDate || detail.dateObj > maxDate) {
-            await db.collection('morvan').doc('data').collection('koiki_processed')
-              .doc(id).set({ url, reason: 'date_out_of_range', processedAt: Timestamp.now() });
-            filtered++;
-            continue;
+        const pageEvents = parseListingPage(html);
+        log.push(`Pagina ${page}: ${pageEvents.length} cards gevonden`);
+
+        // Voeg toe, sla al-verwerkte over
+        for (const ev of pageEvents) {
+          if (!processed.has(ev.id)) {
+            allListingEvents.push(ev);
           }
         }
 
-        // 6. Claude: vertaal + classificeer
-        const translation = await translateAndClassify(detail.titleFr, detail.descFr);
+        // Geen nieuwe events meer op deze pagina → stop pagineren
+        if (pageEvents.length === 0) break;
 
-        // 7. Sla op in Firestore
-        const docId  = `koiki_${id}`;
+      } catch (err) {
+        log.push(`Listing p${page} fout: ${err.message}`);
+        break;
+      }
+
+      await new Promise(r => setTimeout(r, 400));
+    }
+
+    log.push(`${allListingEvents.length} nieuwe (nog niet verwerkte) events gevonden`);
+
+    // ── Stap 3: Filter + verwerk nieuwe events ─────────────────
+    let count = 0;
+
+    for (const ev of allListingEvents) {
+      if (count >= MAX_EVENTS) {
+        log.push(`MAX_EVENTS (${MAX_EVENTS}) bereikt — volgende run pakt de rest`);
+        break;
+      }
+
+      // Filter 1: département Nièvre (commune-58xxx)
+      if (!ev.communeCode || !ev.communeCode.startsWith('58')) {
+        filteredDept++;
+        // Niet markeren als processed — volgende run pakt ze opnieuw op (snel te filteren)
+        continue;
+      }
+
+      // Filter 2: datum
+      if (ev.dateObj) {
+        if (ev.dateObj < minDate || ev.dateObj > maxDate) {
+          filteredDate++;
+          await db.collection('morvan').doc('data').collection('koiki_processed')
+            .doc(ev.id).set({ url: ev.url, reason: 'date_out_of_range', processedAt: Timestamp.now() });
+          continue;
+        }
+      }
+
+      try {
+        // Stap 4: Detail page voor beschrijving, prijs en tijd
+        const detail = await fetchDetailExtras(ev.url);
+
+        // Gebruik langste beschrijving
+        const descFr = (detail.fullDesc && detail.fullDesc.length > (ev.descFr?.length || 0))
+          ? detail.fullDesc
+          : ev.descFr;
+
+        const timeStart = ev.timeStart || detail.timeStart || null;
+
+        // Stap 5: Claude — vertaal + classificeer
+        const translation = await translateAndClassify(ev.titleFr, descFr);
+
+        // Type: Claude verfijnt, listing-categorie als fallback
+        const type = translation.type !== 'overig'
+          ? translation.type
+          : mapCategory(ev.categorySlug);
+
+        // Stap 6: Opslaan in Firestore
+        const docId  = `koiki_${ev.id}`;
         const docRef = db.collection('morvan').doc('data').collection('events').doc(docId);
         const existing = await docRef.get();
+
         if (!existing.exists) {
           await docRef.set({
             title: {
-              fr: detail.titleFr || '',
-              en: translation.titleEn || detail.titleFr || '',
-              nl: translation.titleNl || detail.titleFr || '',
+              fr: ev.titleFr,
+              en: translation.titleEn || ev.titleFr,
+              nl: translation.titleNl || ev.titleFr,
             },
             description: {
-              fr: detail.descFr || null,
+              fr: descFr || null,
               en: translation.descEn || null,
               nl: translation.descNl || null,
             },
-            city:      detail.city || null,
-            location:  detail.city || null,
-            date:      detail.dateObj ? Timestamp.fromDate(detail.dateObj) : null,
-            timeStart: detail.timeStart || null,
+            city:      ev.city || null,
+            location:  ev.city || null,
+            date:      ev.dateObj ? Timestamp.fromDate(ev.dateObj) : null,
+            timeStart,
             timeEnd:   null,
-            type:      translation.type || 'autre',
+            type,
             price:     detail.price || null,
-            imageUrl:  detail.imageUrl || null,
-            sourceUrl: url,
+            imageUrl:  ev.imageUrl || null,
+            sourceUrl: ev.url,
             source:    'koikispass',
             hidden:    false,
             createdAt: Timestamp.now(),
@@ -309,33 +390,37 @@ export const handler = async (event) => {
           });
           saved++;
           count++;
+        } else {
+          skipped++;
         }
 
         // Markeer als verwerkt
         await db.collection('morvan').doc('data').collection('koiki_processed')
-          .doc(id).set({ url, processedAt: Timestamp.now() });
+          .doc(ev.id).set({ url: ev.url, processedAt: Timestamp.now() });
 
       } catch (err) {
-        log.push(`Fout bij event ${id}: ${err.message}`);
+        log.push(`Fout bij event ${ev.id}: ${err.message}`);
         errors++;
       }
 
-      // Pauze tussen events
-      await new Promise(r => setTimeout(r, 1000));
+      await new Promise(r => setTimeout(r, 800));
     }
 
-    log.push(`Klaar: ${saved} opgeslagen, ${skipped} al verwerkt, ${filtered} buiten Nièvre/datum, ${errors} fouten`);
+    const summary = `Klaar: ${saved} opgeslagen, ${skipped} al in DB, ${filteredDept} buiten Nièvre, ${filteredDate} buiten datumrange, ${errors} fouten`;
+    log.push(summary);
+
     await runRef.set({
       source: 'koikispass',
       savedCount: saved,
       skippedCount: skipped,
-      filteredCount: filtered,
+      filteredDeptCount: filteredDept,
+      filteredDateCount: filteredDate,
       errorCount: errors,
       log,
       createdAt: Timestamp.now(),
     });
 
-    return { statusCode: 200, body: JSON.stringify({ saved, skipped, filtered, errors }) };
+    return { statusCode: 200, body: JSON.stringify({ saved, skipped, filteredDept, filteredDate, errors }) };
 
   } catch (err) {
     console.error('[sync-koikispass]', err.message);
