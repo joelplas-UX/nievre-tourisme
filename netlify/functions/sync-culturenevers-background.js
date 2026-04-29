@@ -176,12 +176,23 @@ export const handler = async (event) => {
     const minDate = new Date(now); minDate.setDate(now.getDate() - 7);
     const maxDate = new Date(now); maxDate.setDate(now.getDate() + 90);
 
-    let page = 1, count = 0;
+    let page = 1, count = 0, totalPages = 99;
 
-    while (count < MAX_EVENTS) {
+    while (count < MAX_EVENTS && page <= totalPages) {
       const url = `${API}/evenement?per_page=50&page=${page}&status=publish&_fields=id,title,link,featured_media,evenement-lieu`;
       const res = await fetch(url, { headers: HEADERS });
+
+      // 400/404 = pagina bestaat niet meer → gewoon stoppen (geen fout)
+      if (res.status === 400 || res.status === 404) break;
       if (!res.ok) { log.push(`API pagina ${page} fout: ${res.status}`); break; }
+
+      // Lees totaal aantal pagina's uit WP header (alleen op pagina 1)
+      if (page === 1) {
+        const tp = parseInt(res.headers.get('X-WP-TotalPages') || '99');
+        if (!isNaN(tp)) totalPages = tp;
+        log.push(`Totaal ${totalPages} pagina('s) beschikbaar`);
+      }
+
       const items = await res.json();
       if (!items.length) break;
 
