@@ -106,51 +106,63 @@ function detectMaxPage(html) {
 }
 
 // ── Parse event-cards van een listing-pagina ──────────────────
+function decodeEntities(str) {
+  return (str || '')
+    .replace(/&agrave;/gi,'à').replace(/&eacute;/gi,'é').replace(/&egrave;/gi,'è')
+    .replace(/&ecirc;/gi,'ê').replace(/&euml;/gi,'ë').replace(/&ocirc;/gi,'ô')
+    .replace(/&ucirc;/gi,'û').replace(/&ugrave;/gi,'ù').replace(/&ccedil;/gi,'ç')
+    .replace(/&amp;/gi,'&').replace(/&quot;/gi,'"').replace(/&apos;/gi,"'")
+    .replace(/&nbsp;/gi,' ').replace(/&rsquo;/gi,'\u2019').replace(/&ndash;/gi,'\u2013')
+    .replace(/&#(\d+);/g, (_, n) => String.fromCharCode(parseInt(n, 10)));
+}
+
 function parseListingPage(html) {
   const events = [];
 
-  // Splits op elke event-card (bloc-agenda)
-  const cardRegex = /<div class="bloc-agenda([\s\S]*?)class="voir-evenement"[\s\S]*?<\/div>\s*<\/div>\s*<\/div>/gi;
-  let match;
+  // Split op het begin van elke card — robuuster dan een sluit-tag regex
+  // (de kaarten eindigen op <a class="big"> gevolgd door </div>, geen 3× </div> op rij)
+  const parts = html.split('<div class="bloc-agenda');
 
-  while ((match = cardRegex.exec(html)) !== null) {
-    const chunk = match[0];
+  for (let i = 1; i < parts.length; i++) {
+    const chunk = parts[i];
 
     // Commune-code (commune-58086 etc.) — gebruikt voor Nièvre-filter
     const communeMatch = chunk.match(/commune-(\d{5})/);
     const communeCode  = communeMatch ? communeMatch[1] : null;
 
-    // Event-URL + numeriek ID
-    const urlMatch = chunk.match(/href="(\/lagenda\/(\d+)\/[^"]+\/)"/);
+    // Event-URL + numeriek ID — URL is volledig (https://www.koikispass.com/lagenda/...)
+    const urlMatch = chunk.match(/href="(https?:\/\/www\.koikispass\.com\/lagenda\/(\d+)\/[^"]+\/)"/);
     if (!urlMatch) continue;
-    const [, path, id] = urlMatch;
-    const url = `${BASE}${path}`;
+    const url = urlMatch[1];
+    const id  = urlMatch[2];
 
-    // Titel
+    // Titel (from .titre-agenda)
     const titleMatch = chunk.match(/class="titre-agenda"[\s\S]*?<a[^>]*>([^<]+)<\/a>/);
-    const titleFr = titleMatch ? titleMatch[1].trim() : null;
+    const titleFr = titleMatch ? decodeEntities(titleMatch[1].trim()) : null;
     if (!titleFr) continue;
 
-    // Stad
+    // Stad (from .ville-agenda)
     const cityMatch = chunk.match(/class="ville-agenda"[\s\S]*?<a[^>]*>([^<]+)<\/a>/);
     const city = cityMatch ? cityMatch[1].trim() : null;
 
-    // Datum ("mercredi <span>29</span> avril 2026")
+    // Datum ("mercredi<span> 29 </span>avril 2026")
     const dateHtml = (chunk.match(/class="date-evenement"[^>]*>([\s\S]*?)<\/div>/) || [])[1] || '';
     const dateRaw  = dateHtml.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
     const dateParsed = parseFrenchDate(dateRaw);
 
-    // Afbeelding (lazy-loaded)
-    const imgMatch = chunk.match(/data-lazy-src="(https?:\/\/agenda\.koikispass\.com\/[^"]+\.(?:jpg|jpeg|png|webp))[^"]*"/i);
+    // Afbeelding — listing gebruikt src= (niet data-lazy-src)
+    const imgMatch = chunk.match(/src="(https?:\/\/agenda\.koikispass\.com\/[^"]+\.(?:jpg|jpeg|png|webp))[^"]*"/i);
     const imageUrl = imgMatch ? imgMatch[1] : null;
 
     // Categorie-slug (voor type-mapping)
     const catMatch = chunk.match(/\/lagenda\/categorie\/([^/"]+)\//);
     const categorySlug = catMatch ? catMatch[1] : null;
 
-    // Korte beschrijving op de listing
+    // Korte beschrijving — HTML entities decoderen
     const descHtml = (chunk.match(/class="texte-agenda"[^>]*>([\s\S]*?)<\/div>/) || [])[1] || '';
-    const descFr   = descHtml.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim().slice(0, 400) || null;
+    const descFr   = decodeEntities(
+      descHtml.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim()
+    ).slice(0, 400) || null;
 
     events.push({
       id, url, communeCode, titleFr, city,
