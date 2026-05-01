@@ -107,6 +107,11 @@ export default function AdminPage({ lang, tr }) {
   const [claudeUsageLoading, setClaudeUsageLoading] = useState(false);
   const [expandedSyncId, setExpandedSyncId] = useState(null);
 
+  // Handmatige import
+  const [importJson, setImportJson] = useState('');
+  const [importing, setImporting] = useState(false);
+  const [importResult, setImportResult] = useState(null);
+
   // Blog
   const [blogPosts, setBlogPosts] = useState([]);
   const [blogLoading, setBlogLoading] = useState(false);
@@ -246,6 +251,37 @@ export default function AdminPage({ lang, tr }) {
       setScrapeMsg('Fout: ' + err.message);
     } finally {
       if (isIncidental) setScrapingIncidental(false); else setScraping(false);
+    }
+  }
+
+  // ── Handmatige import ─────────────────────────────────────────────────────
+  async function handleImportEvents(e) {
+    e.preventDefault();
+    setImportResult(null);
+    let events;
+    try {
+      const parsed = JSON.parse(importJson.trim());
+      events = Array.isArray(parsed) ? parsed : [parsed];
+    } catch {
+      setImportResult({ error: 'Ongeldige JSON. Plak een geldige JSON-array.' });
+      return;
+    }
+    setImporting(true);
+    try {
+      const res = await fetch('/.netlify/functions/import-events', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-admin-trigger': '1' },
+        body: JSON.stringify({ events }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || `Status ${res.status}`);
+      setImportResult(data);
+      setImportJson('');
+      await loadData();
+    } catch (err) {
+      setImportResult({ error: err.message });
+    } finally {
+      setImporting(false);
     }
   }
 
@@ -896,6 +932,7 @@ export default function AdminPage({ lang, tr }) {
       <div className="admin-tabs">
         {[
           { key: 'scraping',    label: '🕷️ Scraping' },
+          { key: 'import',      label: '📥 Importeer' },
           { key: 'sources',     label: '🌐 Scrapebronnen' },
           { key: 'events',      label: '📅 Evenementen' },
           { key: 'activities',  label: '🥾 Activiteiten' },
@@ -994,7 +1031,8 @@ export default function AdminPage({ lang, tr }) {
                     const isExp     = expandedSyncId === s.id;
                     return (
                       <>
-                        <tr key={s.id} style={{ cursor: foutCount > 0 || s.log?.length ? 'pointer' : 'default' }}
+                        <tr key={s.id}
+                            style={{ cursor: foutCount > 0 || s.log?.length || s.sourceLogs?.length ? 'pointer' : 'default' }}
                             onClick={() => setExpandedSyncId(isExp ? null : s.id)}>
                           <td>{dateTs?.toDate?.().toLocaleString('nl-NL') || '–'}</td>
                           <td>{bron}</td>
@@ -1004,16 +1042,45 @@ export default function AdminPage({ lang, tr }) {
                           <td style={{ color: foutCount ? '#e63946' : 'inherit' }}>
                             {foutCount || 0}
                             {foutCount > 0 && <span style={{ marginLeft: 4 }}>⚠️</span>}
-                            {s.log?.length > 0 && <span style={{ marginLeft: 4, fontSize: '.75rem', color: 'var(--gray-400)' }}>{isExp ? '▲' : '▼'}</span>}
+                            {(s.log?.length > 0 || s.sourceLogs?.length > 0) && (
+                              <span style={{ marginLeft: 4, fontSize: '.75rem', color: 'var(--gray-400)' }}>{isExp ? '▲' : '▼'}</span>
+                            )}
                           </td>
                         </tr>
                         {isExp && (
                           <tr key={`${s.id}-log`}>
                             <td colSpan={6} style={{ background: 'var(--gray-50)', padding: '8px 12px', fontSize: '.82rem', color: 'var(--gray-700)' }}>
+                              {/* Globale logregels */}
                               {(s.log || errArray).map((l, i) => (
                                 <div key={i} style={{ color: /^fout/i.test(l) ? '#e63946' : 'inherit', marginBottom: 2 }}>{l}</div>
                               ))}
-                              {!s.log?.length && !errArray.length && <span style={{ color: 'var(--gray-400)' }}>Geen logregels.</span>}
+                              {/* Per-bron diagnose (sourceLogs) */}
+                              {s.sourceLogs?.length > 0 && (
+                                <div style={{ marginTop: 8 }}>
+                                  {s.sourceLogs.map((sl, i) => (
+                                    <div key={i} style={{ marginBottom: 10, padding: '6px 10px', background: '#fff', borderRadius: 6, border: '1px solid var(--gray-200)' }}>
+                                      <strong style={{ color: sl.error ? '#e63946' : 'var(--gray-800)' }}>
+                                        {sl.error ? '❌' : sl.eventsFound > 0 ? '✅' : '⚠️'} {sl.name}
+                                      </strong>
+                                      <span style={{ marginLeft: 8, color: 'var(--gray-500)' }}>
+                                        HTTP {sl.httpStatus ?? '–'} · {sl.htmlKb ?? '–'}KB → {sl.textKb ?? '–'}KB · {sl.eventsFound ?? 0} events
+                                      </span>
+                                      {sl.error && <div style={{ color: '#e63946', marginTop: 3 }}>{sl.error}</div>}
+                                      {sl.eventsFound === 0 && !sl.error && sl.textSample && (
+                                        <div style={{ marginTop: 4, color: 'var(--gray-500)', fontFamily: 'monospace', fontSize: '.78rem', whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>
+                                          Tekst: {sl.textSample}
+                                        </div>
+                                      )}
+                                      {sl.eventsFound === 0 && !sl.error && sl.claudeSample && (
+                                        <div style={{ marginTop: 4, color: '#92400e', fontFamily: 'monospace', fontSize: '.78rem', whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>
+                                          Claude: {sl.claudeSample}
+                                        </div>
+                                      )}
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                              {!s.log?.length && !errArray.length && !s.sourceLogs?.length && <span style={{ color: 'var(--gray-400)' }}>Geen logregels.</span>}
                             </td>
                           </tr>
                         )}
@@ -1024,6 +1091,126 @@ export default function AdminPage({ lang, tr }) {
               </table>
             )
           }
+        </section>
+      )}
+
+      {/* ── Scrapebronnen ── */}
+      {/* ── Handmatige import ── */}
+      {tab === 'import' && (
+        <section className="admin-section">
+          <h2>📥 Evenementen importeren</h2>
+          <p className="admin-hint">
+            Vraag Claude (in de chat) om evenementen uit een URL of HTML-pagina te extraheren.
+            Plak de teruggegeven JSON-array hieronder en klik op Importeer.
+          </p>
+
+          <div style={{ background: 'var(--gray-50)', border: '1px solid var(--gray-200)', borderRadius: 10, padding: 20, marginTop: 16 }}>
+            <h3 style={{ marginTop: 0, fontSize: '1rem', color: 'var(--gray-700)' }}>💬 Hoe werkt het?</h3>
+            <ol style={{ margin: '8px 0 0', paddingLeft: 20, lineHeight: 1.8, fontSize: '.9rem', color: 'var(--gray-600)' }}>
+              <li>Ga naar Claude in deze browser en zeg: <em style={{ color: 'var(--gray-800)' }}>"Extraheer evenementen van deze URL: https://..."</em></li>
+              <li>Claude haalt de pagina op en geeft een JSON-array terug</li>
+              <li>Controleer de resultaten, plak ze hieronder en klik op Importeer</li>
+            </ol>
+          </div>
+
+          <form onSubmit={handleImportEvents} style={{ marginTop: 20 }}>
+            <label style={{ display: 'block', fontWeight: 600, marginBottom: 6 }}>
+              JSON-array met evenementen
+            </label>
+            <textarea
+              value={importJson}
+              onChange={e => { setImportJson(e.target.value); setImportResult(null); }}
+              rows={16}
+              placeholder={'[\n  {\n    "title_fr": "Marché de Noël",\n    "title_en": "Christmas Market",\n    "title_nl": "Kerstmarkt",\n    "description_fr": "...",\n    "date_iso": "2026-12-15",\n    "end_date_iso": null,\n    "location": "Nevers",\n    "lat": 46.9897,\n    "lng": 3.1572,\n    "type": "markt",\n    "source_url": "https://...",\n    "image_url": "https://..."\n  }\n]'}
+              style={{
+                width: '100%', boxSizing: 'border-box',
+                fontFamily: 'monospace', fontSize: '.82rem',
+                border: '1px solid var(--gray-300)', borderRadius: 8,
+                padding: '10px 12px', resize: 'vertical',
+                background: '#fff',
+              }}
+            />
+            <div style={{ marginTop: 12, display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
+              <button
+                type="submit"
+                className="btn btn-primary"
+                disabled={importing || !importJson.trim()}
+              >
+                {importing ? '⏳ Importeren…' : '📥 Importeer evenementen'}
+              </button>
+              {importJson.trim() && (
+                <button type="button" className="btn btn-outline"
+                  onClick={() => { setImportJson(''); setImportResult(null); }}>
+                  Wissen
+                </button>
+              )}
+            </div>
+          </form>
+
+          {importResult && (
+            <div style={{
+              marginTop: 16, padding: '14px 18px', borderRadius: 10,
+              background: importResult.error ? '#fff5f5' : '#f0fdf4',
+              border: `1px solid ${importResult.error ? '#fecaca' : '#bbf7d0'}`,
+            }}>
+              {importResult.error ? (
+                <p style={{ margin: 0, color: '#dc2626', fontWeight: 600 }}>❌ {importResult.error}</p>
+              ) : (
+                <>
+                  <p style={{ margin: '0 0 6px', fontWeight: 700, color: '#15803d', fontSize: '1.05rem' }}>
+                    ✅ Import geslaagd
+                  </p>
+                  <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap', fontSize: '.9rem' }}>
+                    <span>🆕 <strong>{importResult.added}</strong> nieuw</span>
+                    <span>🔄 <strong>{importResult.updated}</strong> bijgewerkt</span>
+                    <span>⏭️ <strong>{importResult.skipped}</strong> overgeslagen</span>
+                  </div>
+                  {importResult.errors?.length > 0 && (
+                    <div style={{ marginTop: 10 }}>
+                      <strong style={{ color: '#dc2626' }}>Fouten ({importResult.errors.length}):</strong>
+                      {importResult.errors.map((e, i) => (
+                        <div key={i} style={{ fontSize: '.82rem', color: '#b91c1c', marginTop: 2 }}>{e}</div>
+                      ))}
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+          )}
+
+          <div style={{ marginTop: 32, padding: 16, background: 'var(--gray-50)', borderRadius: 10, border: '1px solid var(--gray-200)' }}>
+            <h3 style={{ marginTop: 0, fontSize: '.95rem', color: 'var(--gray-700)' }}>📋 Vereiste velden</h3>
+            <table style={{ width: '100%', fontSize: '.82rem', borderCollapse: 'collapse' }}>
+              <thead>
+                <tr style={{ borderBottom: '1px solid var(--gray-200)' }}>
+                  <th style={{ textAlign: 'left', padding: '4px 8px', color: 'var(--gray-500)' }}>Veld</th>
+                  <th style={{ textAlign: 'left', padding: '4px 8px', color: 'var(--gray-500)' }}>Verplicht</th>
+                  <th style={{ textAlign: 'left', padding: '4px 8px', color: 'var(--gray-500)' }}>Beschrijving</th>
+                </tr>
+              </thead>
+              <tbody>
+                {[
+                  ['title_fr', '✅', 'Titel in het Frans'],
+                  ['title_en', '–', 'Titel in het Engels (anders = title_fr)'],
+                  ['title_nl', '–', 'Titel in het Nederlands (anders = title_fr)'],
+                  ['description_fr / _en / _nl', '–', 'Beschrijving per taal (max 300 tekens)'],
+                  ['date_iso', '✅', 'Datum: "YYYY-MM-DD"'],
+                  ['end_date_iso', '–', 'Einddatum of null'],
+                  ['location', '–', 'Plaatsnaam of locatie'],
+                  ['lat / lng', '–', 'Coördinaten (getal of null)'],
+                  ['type', '–', 'festival | muziek | markt | sport | natuur | cultuur | overig'],
+                  ['source_url', '–', 'Bron-URL van de pagina'],
+                  ['image_url', '–', 'Absolute URL naar een afbeelding'],
+                ].map(([field, req, desc]) => (
+                  <tr key={field} style={{ borderBottom: '1px solid var(--gray-100)' }}>
+                    <td style={{ padding: '4px 8px', fontFamily: 'monospace', color: 'var(--gray-700)' }}>{field}</td>
+                    <td style={{ padding: '4px 8px' }}>{req}</td>
+                    <td style={{ padding: '4px 8px', color: 'var(--gray-600)' }}>{desc}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </section>
       )}
 
