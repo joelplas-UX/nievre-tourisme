@@ -255,6 +255,20 @@ export default function AdminPage({ lang, tr }) {
   }
 
   // ── Handmatige import ─────────────────────────────────────────────────────
+  function handleFileLoad(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      setImportJson(ev.target.result);
+      setImportResult(null);
+    };
+    reader.onerror = () => setImportResult({ error: 'Bestand kon niet worden gelezen.' });
+    reader.readAsText(file, 'UTF-8');
+    // Reset input so same file can be re-selected
+    e.target.value = '';
+  }
+
   async function handleImportEvents(e) {
     e.preventDefault();
     setImportResult(null);
@@ -1100,20 +1114,46 @@ export default function AdminPage({ lang, tr }) {
         <section className="admin-section">
           <h2>📥 Evenementen importeren</h2>
           <p className="admin-hint">
-            Vraag Claude (in de chat) om evenementen uit een URL of HTML-pagina te extraheren.
-            Plak de teruggegeven JSON-array hieronder en klik op Importeer.
+            Vraag Claude (in de chat) om evenementen uit een URL of HTML-pagina te extraheren als JSON-bestand.
+            Laad het bestand via de knop hieronder — of plak de JSON direct in het tekstveld.
           </p>
 
           <div style={{ background: 'var(--gray-50)', border: '1px solid var(--gray-200)', borderRadius: 10, padding: 20, marginTop: 16 }}>
             <h3 style={{ marginTop: 0, fontSize: '1rem', color: 'var(--gray-700)' }}>💬 Hoe werkt het?</h3>
             <ol style={{ margin: '8px 0 0', paddingLeft: 20, lineHeight: 1.8, fontSize: '.9rem', color: 'var(--gray-600)' }}>
-              <li>Ga naar Claude in deze browser en zeg: <em style={{ color: 'var(--gray-800)' }}>"Extraheer evenementen van deze URL: https://..."</em></li>
-              <li>Claude haalt de pagina op en geeft een JSON-array terug</li>
-              <li>Controleer de resultaten, plak ze hieronder en klik op Importeer</li>
+              <li>Ga naar Claude in deze browser en zeg: <em style={{ color: 'var(--gray-800)' }}>"Extraheer evenementen van deze URL: https://... en sla op als JSON-bestand"</em></li>
+              <li>Claude schrijft een <code>.json</code>-bestand naar de projectmap</li>
+              <li>Klik op <strong>📂 Kies JSON-bestand</strong>, selecteer het bestand, en klik op Importeer</li>
             </ol>
           </div>
 
           <form onSubmit={handleImportEvents} style={{ marginTop: 20 }}>
+            {/* File upload */}
+            <div style={{ marginBottom: 14, display: 'flex', alignItems: 'center', gap: 12 }}>
+              <label
+                style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 8,
+                  padding: '8px 16px', borderRadius: 8, cursor: 'pointer',
+                  background: 'var(--gray-100)', border: '1px solid var(--gray-300)',
+                  fontWeight: 600, fontSize: '.9rem', color: 'var(--gray-700)',
+                  transition: 'background .15s',
+                }}
+                onMouseEnter={e => e.currentTarget.style.background = 'var(--gray-200)'}
+                onMouseLeave={e => e.currentTarget.style.background = 'var(--gray-100)'}
+              >
+                📂 Kies JSON-bestand
+                <input
+                  type="file"
+                  accept=".json,application/json"
+                  style={{ display: 'none' }}
+                  onChange={handleFileLoad}
+                />
+              </label>
+              <span style={{ fontSize: '.82rem', color: 'var(--gray-400)' }}>
+                of plak JSON hieronder
+              </span>
+            </div>
+
             <label style={{ display: 'block', fontWeight: 600, marginBottom: 6 }}>
               JSON-array met evenementen
             </label>
