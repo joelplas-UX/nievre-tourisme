@@ -57,9 +57,22 @@ async function loadSources(db, mode = 'regular') {
   }
 }
 
+// ─── Strip boilerplate (scripts, styles, links) voor betere Claude-invoer ────
+function stripBoilerplate(html) {
+  return html
+    .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, '')
+    .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, '')
+    .replace(/<link\b[^>]*\/?>/gi, '')
+    .replace(/<meta\b[^>]*\/?>/gi, '')
+    .replace(/<!--[\s\S]*?-->/g, '')
+    .replace(/\s{3,}/g, '\n')
+    .trim();
+}
+
 // ─── Extractie prompt ─────────────────────────────────────────────────────────
 function buildPrompt(html, sourceName, sourceUrl) {
   const today = new Date().toISOString().split('T')[0];
+  const cleanHtml = stripBoilerplate(html).slice(0, 50000);
   return `You are a tourism data extractor. Extract ALL upcoming events from this HTML from the website "${sourceName}" (${sourceUrl}).
 Today is ${today}. Only include events on or after today.
 
@@ -83,7 +96,7 @@ Rules:
 - For image_url: look for <meta property="og:image" content="...">, <meta name="twitter:image" ...>, or the main event/article photo — always return an absolute URL starting with http
 
 HTML:
-${html.slice(0, 40000)}`;
+${cleanHtml}`;
 }
 
 // ─── ID voor deduplicatie ─────────────────────────────────────────────────────
