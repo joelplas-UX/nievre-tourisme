@@ -37,15 +37,23 @@ const FALLBACK_SOURCES = [
   { name: "Coeur de Nièvre",             url: 'https://www.tourismecoeurdenievre.com/agenda/' },
 ];
 
-async function loadSources(db) {
+async function loadSources(db, mode = 'regular') {
   try {
     const snap = await db.collection('morvan').doc('data').collection('scrape_sources').get();
-    if (snap.empty) return FALLBACK_SOURCES;
-    const sources = snap.docs.map(d => ({ id: d.id, ...d.data() })).filter(s => s.enabled !== false);
-    return sources.length > 0 ? sources : FALLBACK_SOURCES;
+    if (snap.empty) return mode === 'incidental' ? [] : FALLBACK_SOURCES;
+    let sources = snap.docs.map(d => ({ id: d.id, ...d.data() })).filter(s => s.enabled !== false);
+
+    // Filter op mode:
+    //   regular    → alleen vaste bronnen (incidental !== true)
+    //   incidental → alleen incidentele bronnen (incidental === true)
+    //   all        → alles
+    if (mode === 'regular')    sources = sources.filter(s => !s.incidental);
+    if (mode === 'incidental') sources = sources.filter(s => s.incidental === true);
+
+    return sources.length > 0 ? sources : (mode === 'incidental' ? [] : FALLBACK_SOURCES);
   } catch (err) {
     console.warn('Firestore bronnen niet geladen, gebruik fallback:', err.message);
-    return FALLBACK_SOURCES;
+    return mode === 'incidental' ? [] : FALLBACK_SOURCES;
   }
 }
 
@@ -85,7 +93,7 @@ function makeId(event) {
 }
 
 // ─── Hoofd scrape functie ─────────────────────────────────────────────────────
-export async function runScrape() {
+export async function runScrape({ mode = 'regular' } = {}) {
   const db = getDb();
   const claude = getClaude();
   const runRef = db.collection('morvan').doc('data').collection('scrape_runs').doc();
@@ -114,8 +122,8 @@ export async function runScrape() {
     console.warn('[scraper] Cleanup mislukt:', err.message);
   }
 
-  const sources = await loadSources(db);
-  console.log(`[scraper] ${sources.length} bronnen geladen`);
+  const sources = await loadSources(db, mode);
+  console.log(`[scraper] ${sources.length} bronnen geladen (mode: ${mode})`);
 
   for (const source of sources) {
     try {

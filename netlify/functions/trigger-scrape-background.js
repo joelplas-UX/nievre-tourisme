@@ -20,8 +20,11 @@ export const handler = async (event) => {
     }
   }
 
-  console.log('[trigger-scrape-background] Scraping gestart');
-  const result = await runScrape();
+  // mode: 'regular' (vast, standaard), 'incidental' (alleen incidenteel), 'all'
+  let mode = 'regular';
+  try { mode = JSON.parse(event.body || '{}').mode || 'regular'; } catch {}
+  console.log(`[trigger-scrape-background] Scraping gestart (mode: ${mode})`);
+  const result = await runScrape({ mode });
   console.log('[trigger-scrape-background] Klaar:', result);
   return { statusCode: 200, body: JSON.stringify(result) };
 };

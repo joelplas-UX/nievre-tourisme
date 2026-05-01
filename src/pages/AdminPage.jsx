@@ -54,12 +54,13 @@ export default function AdminPage({ lang, tr }) {
 
   // Scraping
   const [scraping, setScraping] = useState(false);
+  const [scrapingIncidental, setScrapingIncidental] = useState(false);
   const [scrapeMsg, setScrapeMsg] = useState('');
   const [runs, setRuns] = useState([]);
 
   // Sources
   const [sources, setSources] = useState([]);
-  const [newSource, setNewSource] = useState({ name: '', url: '' });
+  const [newSource, setNewSource] = useState({ name: '', url: '', incidental: false });
   const [sourcesLoading, setSourcesLoading] = useState(false);
 
   // Events
@@ -224,13 +225,19 @@ export default function AdminPage({ lang, tr }) {
   }
 
   // ── Scraping ─────────────────────────────────────────────────────────────
-  async function handleScrape() {
-    setScraping(true);
+  async function handleScrape(mode = 'regular') {
+    const isIncidental = mode === 'incidental';
+    if (isIncidental) setScrapingIncidental(true); else setScraping(true);
     setScrapeMsg('');
     try {
-      const res = await fetch('/.netlify/functions/trigger-scrape-background', { method: 'POST' });
+      const res = await fetch('/.netlify/functions/trigger-scrape-background', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mode }),
+      });
       if (res.status === 202 || res.ok) {
-        setScrapeMsg('✅ Scraping gestart! Resultaten verschijnen over 2–5 minuten.');
+        const label = isIncidental ? 'Incidentele bronnen' : 'Vaste bronnen';
+        setScrapeMsg(`✅ ${label} scraping gestart! Resultaten verschijnen over 2–5 minuten.`);
       } else {
         setScrapeMsg(`⚠️ Status ${res.status}`);
       }
@@ -238,7 +245,7 @@ export default function AdminPage({ lang, tr }) {
     } catch (err) {
       setScrapeMsg('Fout: ' + err.message);
     } finally {
-      setScraping(false);
+      if (isIncidental) setScrapingIncidental(false); else setScraping(false);
     }
   }
 
@@ -257,11 +264,14 @@ export default function AdminPage({ lang, tr }) {
   async function addSource(e) {
     e.preventDefault();
     if (!newSource.name || !newSource.url) return;
-    const ref = await addDoc(collection(db, 'morvan', 'data', 'scrape_sources'), {
-      name: newSource.name, url: newSource.url, enabled: true, createdAt: Timestamp.now(),
-    });
-    setSources(s => [...s, { id: ref.id, ...newSource, enabled: true }]);
-    setNewSource({ name: '', url: '' });
+    const data = {
+      name: newSource.name, url: newSource.url,
+      enabled: true, incidental: !!newSource.incidental,
+      createdAt: Timestamp.now(),
+    };
+    const ref = await addDoc(collection(db, 'morvan', 'data', 'scrape_sources'), data);
+    setSources(s => [...s, { id: ref.id, ...data }]);
+    setNewSource({ name: '', url: '', incidental: false });
   }
 
   // ── Events ────────────────────────────────────────────────────────────────
@@ -914,8 +924,12 @@ export default function AdminPage({ lang, tr }) {
             Je kunt ook handmatig triggeren:
           </p>
           <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginTop: 16 }}>
-            <button className="btn btn-primary" onClick={handleScrape} disabled={scraping}>
-              {scraping ? a.scraping : a.scrape}
+            <button className="btn btn-primary" onClick={() => handleScrape('regular')} disabled={scraping || scrapingIncidental}>
+              {scraping ? a.scraping : '🗓️ Vaste bronnen scrapen'}
+            </button>
+            <button className="btn btn-outline" onClick={() => handleScrape('incidental')} disabled={scraping || scrapingIncidental}
+              title="Scrapet alleen bronnen gemarkeerd als incidenteel (bijv. voor een speciaal weekend)">
+              {scrapingIncidental ? a.scraping : '🎪 Incidentele bronnen scrapen'}
             </button>
             <button className="btn btn-outline" onClick={handleSyncOAG} disabled={syncingOAG}>
               {syncingOAG ? a.syncing : '📅 Sync OpenAgenda'}
@@ -1028,7 +1042,10 @@ export default function AdminPage({ lang, tr }) {
               <tbody>
                 {sources.map(s => (
                   <tr key={s.id} className={s.enabled ? '' : 'row-hidden'}>
-                    <td><strong>{s.name}</strong></td>
+                    <td>
+                      <strong>{s.name}</strong>
+                      {s.incidental && <span style={{ marginLeft: 6, fontSize: '.72rem', background: '#fef3c7', color: '#92400e', borderRadius: 10, padding: '1px 7px', fontWeight: 700 }}>incidenteel</span>}
+                    </td>
                     <td><a href={s.url} target="_blank" rel="noreferrer" className="source-url">{s.url}</a></td>
                     <td>
                       <button className={`toggle-btn source-toggle ${s.enabled ? 'on' : 'off'}`} onClick={() => toggleSource(s.id, s.enabled)}>
@@ -1051,6 +1068,17 @@ export default function AdminPage({ lang, tr }) {
                 <input value={newSource.url} onChange={e => setNewSource(v => ({ ...v, url: e.target.value }))} placeholder="https://..." type="url" required />
               </label>
             </div>
+            <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', marginBottom: 12 }}>
+              <input
+                type="checkbox"
+                checked={!!newSource.incidental}
+                onChange={e => setNewSource(v => ({ ...v, incidental: e.target.checked }))}
+              />
+              <span>
+                <strong>Incidentele bron</strong>
+                <span className="admin-hint" style={{ marginLeft: 6 }}>— alleen scrapen via "Incidentele bronnen" knop, niet bij de wekelijkse scrape</span>
+              </span>
+            </label>
             <button type="submit" className="btn btn-primary">Bron toevoegen</button>
           </form>
         </section>
