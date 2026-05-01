@@ -57,45 +57,59 @@ async function loadSources(db, mode = 'regular') {
   }
 }
 
-// ─── Strip boilerplate (scripts, styles, links) voor betere Claude-invoer ────
-function stripBoilerplate(html) {
+// ─── HTML → plain text (maximale compressie voor Claude) ─────────────────────
+function htmlToText(html) {
   return html
+    // Verwijder blokken die geen leesbare inhoud bevatten
     .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, '')
     .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, '')
-    .replace(/<link\b[^>]*\/?>/gi, '')
-    .replace(/<meta\b[^>]*\/?>/gi, '')
+    .replace(/<svg\b[^>]*>[\s\S]*?<\/svg>/gi, '')
     .replace(/<!--[\s\S]*?-->/g, '')
-    .replace(/\s{3,}/g, '\n')
+    // Zet block-elementen om naar newlines (leesbare structuur bewaren)
+    .replace(/<\/?(p|div|h[1-6]|li|br|tr|section|article|header|footer)[^>]*>/gi, '\n')
+    // Strip alle overige HTML-tags
+    .replace(/<[^>]+>/g, ' ')
+    // HTML entities decoderen
+    .replace(/&amp;/g,  '&').replace(/&lt;/g,   '<').replace(/&gt;/g,   '>')
+    .replace(/&nbsp;/g, ' ').replace(/&quot;/g, '"').replace(/&#x27;/g, "'")
+    .replace(/&#(\d+);/g,    (_, n) => String.fromCharCode(parseInt(n, 10)))
+    .replace(/&#x([0-9a-f]+);/gi, (_, h) => String.fromCharCode(parseInt(h, 16)))
+    // Whitespace opruimen
+    .replace(/[ \t]+/g, ' ')
+    .replace(/\n{3,}/g, '\n\n')
     .trim();
 }
 
 // ─── Extractie prompt ─────────────────────────────────────────────────────────
 function buildPrompt(html, sourceName, sourceUrl) {
   const today = new Date().toISOString().split('T')[0];
-  const cleanHtml = stripBoilerplate(html).slice(0, 50000);
-  return `You are a tourism data extractor. Extract ALL upcoming events from this HTML from the website "${sourceName}" (${sourceUrl}).
+  const text = htmlToText(html);
+  console.log(`[scraper] HTML→text: ${Math.round(html.length/1024)}KB → ${Math.round(text.length/1024)}KB`);
+  const cleanHtml = text.slice(0, 50000);
+  return `You are a tourism data extractor. Extract ALL upcoming events from the text below, scraped from "${sourceName}" (${sourceUrl}).
 Today is ${today}. Only include events on or after today.
+
+The text may be a dedicated events page OR a news article listing events (e.g. "que faire ce week-end", brocantes, fêtes). Extract every individual event mentioned, even if listed in a compact format like "Alligny-en-Morvan. Marché, 17h30, Le Bourg."
 
 Return a JSON array. Each object must have (use null if unknown):
 - title_fr, title_en, title_nl: string
 - description_fr, description_en, description_nl: string (max 300 chars each)
 - date_iso: "YYYY-MM-DD"
 - end_date_iso: "YYYY-MM-DD" or null
-- location: string (town/venue)
+- location: string (town/venue name)
 - lat: number or null
 - lng: number or null
 - type: "festival"|"muziek"|"markt"|"sport"|"natuur"|"cultuur"|"overig"
-- source_url: string
-- image_url: string or null (check og:image meta tag, twitter:image, article/event main image — use absolute URL)
+- source_url: string (use the page URL: ${sourceUrl})
+- image_url: string or null
 
 Rules:
-- Translate to English and Dutch
-- Fill coordinates for well-known Nièvre/Morvan towns
+- Translate titles/descriptions to English and Dutch
+- Fill lat/lng coordinates for well-known Nièvre/Morvan towns
 - Return [] if no events found
-- Return ONLY valid JSON, no markdown
-- For image_url: look for <meta property="og:image" content="...">, <meta name="twitter:image" ...>, or the main event/article photo — always return an absolute URL starting with http
+- Return ONLY valid JSON, no markdown, no explanation
 
-HTML:
+PAGE TEXT:
 ${cleanHtml}`;
 }
 
