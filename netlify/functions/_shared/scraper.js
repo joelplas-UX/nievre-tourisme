@@ -152,17 +152,30 @@ export async function runScrape({ mode = 'regular' } = {}) {
   const sources = await loadSources(db, mode);
   console.log(`[scraper] ${sources.length} bronnen geladen (mode: ${mode})`);
 
+  const sourceLogs = [];
+
   for (const source of sources) {
+    const sourceLog = { name: source.name, url: source.url };
     try {
       console.log(`[scraper] Fetching: ${source.name} — ${source.url}`);
 
       const res = await fetch(source.url, {
-        headers: { 'User-Agent': 'NievreTourisme-Bot/1.0' },
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+          'Accept-Language': 'fr-FR,fr;q=0.9,en;q=0.8',
+        },
         signal: AbortSignal.timeout(15000),
       });
+      sourceLog.httpStatus = res.status;
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
       const html = await res.text();
-      console.log(`[scraper] HTML ontvangen (${Math.round(html.length / 1024)}KB)`);
+      const text = htmlToText(html);
+      sourceLog.htmlKb  = Math.round(html.length / 1024);
+      sourceLog.textKb  = Math.round(text.length / 1024);
+      sourceLog.textSample = text.slice(0, 300);   // eerste 300 chars voor diagnose
+      console.log(`[scraper] ${source.name}: ${sourceLog.htmlKb}KB → ${sourceLog.textKb}KB text`);
 
       const msg = await claude.messages.create({
         model: 'claude-haiku-4-5-20251001',
@@ -171,6 +184,7 @@ export async function runScrape({ mode = 'regular' } = {}) {
       }, { timeout: 60000 });
 
       const raw = msg.content[0]?.text?.trim() || '[]';
+      sourceLog.claudeSample = raw.slice(0, 200);  // eerste 200 chars van Claude-antwoord
       let extracted;
       try {
         extracted = JSON.parse(raw);
@@ -179,6 +193,7 @@ export async function runScrape({ mode = 'regular' } = {}) {
         extracted = match ? JSON.parse(match[0]) : [];
       }
 
+      sourceLog.eventsFound = extracted.length;
       eventsFound += extracted.length;
       console.log(`[scraper] ${source.name}: ${extracted.length} evenementen`);
 
@@ -215,10 +230,13 @@ export async function runScrape({ mode = 'regular' } = {}) {
           })
       );
       eventsAdded += writeResults.filter(r => r.status === 'fulfilled' && r.value === 'added').length;
+      sourceLogs.push(sourceLog);
 
     } catch (err) {
       console.error(`[scraper] Fout bij ${source.name}:`, err.message);
       errors.push(`${source.name}: ${err.message}`);
+      sourceLog.error = err.message;
+      sourceLogs.push(sourceLog);
     }
   }
 
@@ -233,6 +251,7 @@ export async function runScrape({ mode = 'regular' } = {}) {
     eventsAdded,
     eventsDeleted,
     errors,
+    sourceLogs,
     durationMs: Date.now() - startTime,
   });
 
