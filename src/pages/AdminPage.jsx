@@ -232,7 +232,7 @@ export default function AdminPage({ lang, tr }) {
     try {
       const res = await fetch('/.netlify/functions/trigger-scrape-background', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'x-admin-trigger': '1' },
         body: JSON.stringify({ mode }),
       });
       if (res.status === 202 || res.ok) {

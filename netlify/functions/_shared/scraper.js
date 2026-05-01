@@ -196,8 +196,11 @@ export async function runScrape({ mode = 'regular' } = {}) {
   }
 
   // Log de run
+  const now = Timestamp.now();
   await runRef.set({
-    timestamp: Timestamp.now(),
+    timestamp:  now,
+    createdAt:  now,   // zodat het ook in de history-tabel (orderBy createdAt) verschijnt
+    source:     `scraper (${mode})`,
     sourcesScraped: sources.length,
     eventsFound,
     eventsAdded,
