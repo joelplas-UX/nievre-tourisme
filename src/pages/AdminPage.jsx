@@ -119,6 +119,8 @@ export default function AdminPage({ lang, tr }) {
   const [editingBlogId, setEditingBlogId] = useState(null); // null = nieuw artikel
   const [blogMsg, setBlogMsg] = useState('');
   const [savingBlog, setSavingBlog] = useState(false);
+  const [generatingBlog, setGeneratingBlog] = useState(false);
+  const [generateBlogMsg, setGenerateBlogMsg] = useState('');
   const [translating, setTranslating] = useState(false);
   const [blogPreviewLang, setBlogPreviewLang] = useState('fr');
   const EMPTY_BLOG = {
@@ -251,6 +253,31 @@ export default function AdminPage({ lang, tr }) {
       setScrapeMsg('Fout: ' + err.message);
     } finally {
       if (isIncidental) setScrapingIncidental(false); else setScraping(false);
+    }
+  }
+
+  // ── Blog genereren ────────────────────────────────────────────────────────
+  async function handleGenerateBlog() {
+    if (!window.confirm('2 nieuwe blogartikelen genereren via Claude? Dit duurt ~30 seconden.')) return;
+    setGeneratingBlog(true);
+    setGenerateBlogMsg('');
+    try {
+      const res = await fetch('/.netlify/functions/write-blog-background', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-admin-trigger': '1' },
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok) {
+        const slugs = data.slugs?.join(', ') || '';
+        setGenerateBlogMsg(`✅ ${data.added ?? 0} artikelen gegenereerd${slugs ? ': ' + slugs : ''}`);
+        await loadData();
+      } else {
+        setGenerateBlogMsg(`⚠️ Status ${res.status}: ${data.error || 'Onbekende fout'}`);
+      }
+    } catch (err) {
+      setGenerateBlogMsg('❌ ' + err.message);
+    } finally {
+      setGeneratingBlog(false);
     }
   }
 
@@ -1675,8 +1702,23 @@ export default function AdminPage({ lang, tr }) {
         <section className="admin-section">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
             <h2>📝 Blog</h2>
-            <button className="btn btn-primary" onClick={openNewBlog}>+ Nieuw artikel</button>
+            <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
+              <button
+                className="btn btn-outline"
+                onClick={handleGenerateBlog}
+                disabled={generatingBlog}
+                title="Genereert automatisch 2 nieuwe artikelen via Claude"
+              >
+                {generatingBlog ? '⏳ Genereren…' : '🤖 Genereer 2 artikelen'}
+              </button>
+              <button className="btn btn-primary" onClick={openNewBlog}>+ Nieuw artikel</button>
+            </div>
           </div>
+          {generateBlogMsg && (
+            <p style={{ marginTop: 10, fontSize: '.9rem', color: generateBlogMsg.startsWith('✅') ? '#15803d' : '#dc2626' }}>
+              {generateBlogMsg}
+            </p>
+          )}
 
           {/* Editor */}
           {showBlogEditor && (

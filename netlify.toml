@@ -59,3 +59,7 @@
 # Culture Nevers — elke donderdag 07:15 UTC
 [functions."sync-culturenevers-background"]
   schedule = "15 7 * * 4"
+
+# Blog-generator — elke maandag 08:00 UTC (2 nieuwe artikelen via Claude)
+[functions."write-blog-background"]
+  schedule = "0 8 * * 1"
