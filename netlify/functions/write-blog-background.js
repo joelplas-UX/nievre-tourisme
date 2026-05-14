@@ -127,7 +127,7 @@ export const handler = async (event) => {
   let posts = [];
   try {
     const msg = await claude.messages.create({
-      model:      'claude-sonnet-4-5',
+      model:      'claude-3-5-sonnet-20241022',
       max_tokens: 8192,
       messages:   [{ role: 'user', content: prompt }],
     }, { timeout: 120000 });
