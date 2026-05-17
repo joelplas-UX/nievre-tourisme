@@ -97,18 +97,25 @@ Retourne SEULEMENT le JSON, sans markdown, sans explication.`;
 
 // ─── Handler ──────────────────────────────────────────────────────────────
 export const handler = async (event) => {
+  console.log('[write-blog] Started. Headers:', Object.keys(event.headers || {}));
+
   // Auth: Laat toe als admin trigger, cron token, of Netlify scheduled/invoked
   const isAdmin = event.headers?.['x-admin-trigger'] === '1';
   const isNetlifyCron = event.headers?.['x-netlify-cron'] === 'true'; // Netlify's scheduled functions
 
+  console.log('[write-blog] Auth check - isAdmin:', isAdmin, 'isNetlifyCron:', isNetlifyCron);
+
   if (!isAdmin && !isNetlifyCron) {
     const token     = event.headers?.['x-cron-token'] || event.queryStringParameters?.token;
     const cronToken = process.env.CRON_SECRET_TOKEN;
+    console.log('[write-blog] Token check - token:', token ? 'present' : 'missing', 'cronToken:', cronToken ? 'set' : 'not set');
     if (cronToken && token !== cronToken) {
+      console.log('[write-blog] ❌ Auth failed');
       return { statusCode: 401, body: 'Unauthorized' };
     }
   }
 
+  console.log('[write-blog] ✅ Auth passed');
   const db     = getDb();
   const claude = new Anthropic({ apiKey: process.env.CLAUDE_API_KEY });
   const start  = Date.now();
