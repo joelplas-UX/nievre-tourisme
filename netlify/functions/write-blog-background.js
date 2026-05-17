@@ -127,14 +127,19 @@ export const handler = async (event) => {
   // ── Haal bestaande titels op (vermijd duplicaten) ────────────────────────
   let existingTitles = [];
   try {
+    console.log('[write-blog] Fetching existing blog posts...');
     const snap = await db
       .collection('morvan').doc('data').collection('blog_posts')
       .orderBy('date', 'desc').limit(30).get();
     existingTitles = snap.docs.map(d => d.data().title?.fr).filter(Boolean);
-  } catch { /* geen probleem als leeg */ }
+    console.log('[write-blog] Found ' + existingTitles.length + ' existing posts');
+  } catch (err) {
+    console.error('[write-blog] Error fetching posts:', err.message);
+  }
 
   const month  = new Date().getMonth() + 1;
   const prompt = buildPrompt(month, existingTitles);
+  console.log('[write-blog] Prompt built, calling Claude...');
 
   // ── Genereer posts via Claude ────────────────────────────────────────────
   let posts = [];
