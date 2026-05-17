@@ -122,11 +122,11 @@ async function postToSocialMedia(caption, imageUrl) {
 
 // ─── Main handler ───────────────────────────────────────────────────────
 export default async (req, res) => {
-  // Auth: Laat toe als admin trigger, cron token, of Netlify scheduled/invoked
+  // Auth: Laat toe als admin trigger, Netlify invoked, of cron token matcht
   const isAdmin = req.headers['x-admin-trigger'] === '1';
-  const isNetlifyCron = req.headers['x-netlify-cron'] === 'true';
+  const isNetlifyInvoked = !!req.headers['x-netlify-event']; // Netlify "Run now" of scheduled
 
-  if (!isAdmin && !isNetlifyCron) {
+  if (!isAdmin && !isNetlifyInvoked) {
     const cronToken = req.headers['x-cron-token'];
     if (cronToken !== process.env.CRON_SECRET_TOKEN) {
       return res.status(401).json({ error: 'Unauthorized' });

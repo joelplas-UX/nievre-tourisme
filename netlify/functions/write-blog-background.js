@@ -97,20 +97,22 @@ Retourne SEULEMENT le JSON, sans markdown, sans explication.`;
 
 // ─── Handler ──────────────────────────────────────────────────────────────
 export const handler = async (event) => {
-  console.log('[write-blog] Started. Headers:', Object.keys(event.headers || {}));
+  console.log('[write-blog] Started');
 
-  // Auth: Laat toe als admin trigger, cron token, of Netlify scheduled/invoked
+  // Auth: Laat toe als:
+  // 1. x-admin-trigger = '1' (manual)
+  // 2. x-netlify-event present (Netlify scheduled/invoked)
+  // 3. cron token matcht
   const isAdmin = event.headers?.['x-admin-trigger'] === '1';
-  const isNetlifyCron = event.headers?.['x-netlify-cron'] === 'true'; // Netlify's scheduled functions
+  const isNetlifyInvoked = !!event.headers?.['x-netlify-event']; // Netlify "Run now" of scheduled
 
-  console.log('[write-blog] Auth check - isAdmin:', isAdmin, 'isNetlifyCron:', isNetlifyCron);
+  console.log('[write-blog] Auth: isAdmin=' + isAdmin + ', isNetlifyInvoked=' + isNetlifyInvoked);
 
-  if (!isAdmin && !isNetlifyCron) {
+  if (!isAdmin && !isNetlifyInvoked) {
     const token     = event.headers?.['x-cron-token'] || event.queryStringParameters?.token;
     const cronToken = process.env.CRON_SECRET_TOKEN;
-    console.log('[write-blog] Token check - token:', token ? 'present' : 'missing', 'cronToken:', cronToken ? 'set' : 'not set');
     if (cronToken && token !== cronToken) {
-      console.log('[write-blog] ❌ Auth failed');
+      console.log('[write-blog] ❌ Auth failed - token mismatch');
       return { statusCode: 401, body: 'Unauthorized' };
     }
   }
