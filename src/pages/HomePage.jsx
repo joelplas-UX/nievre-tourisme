@@ -160,17 +160,15 @@ export default function HomePage({ lang, tr }) {
                     />
                   </Link>
                 )}
-                <div className="blog-card-content">
-                  <Link to={`/blog/${post.slug}`}>
-                    <h3>{post.title[lang] || post.title.fr}</h3>
-                  </Link>
-                  <p className="blog-excerpt">{post.excerpt[lang] || post.excerpt.fr}</p>
+                <div className="blog-card-body">
                   <div className="blog-card-meta">
-                    <span className="blog-category">{post.category[lang] || post.category.fr}</span>
-                    <span className="blog-readtime">
-                      {post.readTime} {lang === 'en' ? 'min' : lang === 'nl' ? 'min' : 'min'}
-                    </span>
+                    <span className="blog-cat">{post.category[lang] || post.category.fr}</span>
+                    <span className="blog-read">{post.readTime} min</span>
                   </div>
+                  <h3 className="blog-card-title">
+                    <Link to={`/blog/${post.slug}`}>{post.title[lang] || post.title.fr}</Link>
+                  </h3>
+                  <p className="blog-card-excerpt">{post.excerpt[lang] || post.excerpt.fr}</p>
                 </div>
               </article>
             ))}
