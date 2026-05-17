@@ -154,7 +154,7 @@ export const handler = async (event) => {
         messages:   [{ role: 'user', content: prompt }],
       }),
       new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('Claude API timeout after 60s')), 60000)
+        setTimeout(() => reject(new Error('Claude API timeout after 180s')), 180000)
       )
     ]);
 
