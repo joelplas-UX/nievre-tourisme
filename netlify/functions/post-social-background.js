@@ -30,7 +30,8 @@ function randomItem(arr) {
 
 // ─── Helper: Caption genereren via Claude ───────────────────────────────
 async function generateCaption(type, title, description, url) {
-  const client = new Anthropic();
+  const apiKey = process.env.ANTHROPIC_API_KEY || process.env.CLAUDE_API_KEY;
+  const client = new Anthropic({ apiKey });
 
   const prompt = type === 'blog'
     ? `Je bent een socialmedia expert voor toerisme in Nièvre, Frankrijk. Schrijf een aantrekkelijke, korte Instagram/Facebook caption (max 150 woorden) voor deze blogpost. Gebruik veel emojis, begin met een hook. Taal: Nederlands met Franse/Engelse elementen waar gepast.
@@ -49,7 +50,7 @@ URL: ${url}
 Geef ALLEEN de caption, niets anders.`;
 
   const message = await client.messages.create({
-    model: 'claude-3-5-sonnet-20250514',
+    model: 'claude-haiku-4-5-20251001',
     max_tokens: 300,
     messages: [{ role: 'user', content: prompt }],
   });

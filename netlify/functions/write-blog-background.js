@@ -119,7 +119,9 @@ export const handler = async (event) => {
 
   console.log('[write-blog] ✅ Auth passed');
   const db     = getDb();
-  const claude = new Anthropic({ apiKey: process.env.CLAUDE_API_KEY });
+  const apiKey = process.env.ANTHROPIC_API_KEY || process.env.CLAUDE_API_KEY;
+  console.log('[write-blog] Using API key:', apiKey ? 'present' : 'MISSING');
+  const claude = new Anthropic({ apiKey });
   const start  = Date.now();
 
   // ── Haal bestaande titels op (vermijd duplicaten) ────────────────────────
@@ -138,7 +140,7 @@ export const handler = async (event) => {
   let posts = [];
   try {
     const msg = await claude.messages.create({
-      model:      'claude-3-5-sonnet-20250514',
+      model:      'claude-haiku-4-5-20251001',
       max_tokens: 8192,
       messages:   [{ role: 'user', content: prompt }],
     }, { timeout: 120000 });
