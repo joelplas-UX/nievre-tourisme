@@ -20,20 +20,17 @@ export function useBlogPosts({ publishedOnly = true } = {}) {
       let firestorePosts = [];
 
       try {
-        const q = publishedOnly
-          ? query(
-              collection(db, 'morvan', 'data', 'blog_posts'),
-              where('published', '==', true),
-              orderBy('date', 'desc')
-            )
-          : query(
-              collection(db, 'morvan', 'data', 'blog_posts'),
-              orderBy('date', 'desc')
-            );
+        // Geen composite where+orderBy om indexproblemen te voorkomen
+        const q = query(
+          collection(db, 'morvan', 'data', 'blog_posts'),
+          orderBy('date', 'desc')
+        );
         const snap = await getDocs(q);
-        firestorePosts = snap.docs.map(d => ({ id: d.id, _source: 'firestore', ...d.data() }));
-      } catch {
-        // Firestore niet beschikbaar of collectie bestaat nog niet — geen probleem
+        firestorePosts = snap.docs
+          .map(d => ({ id: d.id, _source: 'firestore', ...d.data() }))
+          .filter(p => !publishedOnly || p.published === true);
+      } catch (err) {
+        console.error('[useBlogPosts] Firestore fout:', err.message);
       }
 
       // Statische posts die geen Firestore-tegenhanger hebben
