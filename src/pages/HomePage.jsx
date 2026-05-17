@@ -7,6 +7,7 @@ import MapSection from '../components/MapSection';
 import AdBanner from '../components/AdBanner';
 import { useEvents } from '../hooks/useEvents';
 import { useActivities } from '../hooks/useActivities';
+import { useBlogPosts } from '../hooks/useBlogPosts';
 import { useSEO, useJsonLd, BASE_URL } from '../hooks/useSEO';
 
 export default function HomePage({ lang, tr }) {
@@ -45,6 +46,7 @@ export default function HomePage({ lang, tr }) {
   ]);
   const { events } = useEvents();
   const { activities } = useActivities();
+  const { posts: blogPosts } = useBlogPosts({ publishedOnly: true });
 
   const now = new Date(); now.setHours(0, 0, 0, 0);
   const featuredEvents = [...events]
@@ -128,6 +130,58 @@ export default function HomePage({ lang, tr }) {
           </Link>
         </div>
       </section>
+
+      {/* Blog posts */}
+      {blogPosts.length > 0 && (
+        <section className="section">
+          <div className="section-header">
+            <h2>
+              {lang === 'en' ? 'Latest articles' : lang === 'nl' ? 'Laatste artikelen' : 'Derniers articles'}
+            </h2>
+            <p>
+              {lang === 'en'
+                ? 'Insider tips and travel ideas for Nièvre & Morvan'
+                : lang === 'nl'
+                  ? 'Tips en reisideeën voor Nièvre & Morvan'
+                  : 'Conseils et idées de séjours pour la Nièvre & Morvan'}
+            </p>
+          </div>
+          <div className="blog-grid blog-grid-3">
+            {blogPosts.slice(0, 3).map(post => (
+              <article key={post.slug} className="blog-card">
+                {post.image && (
+                  <Link to={`/blog/${post.slug}`} className="blog-card-img-wrap">
+                    <img
+                      src={post.image}
+                      alt={post.title[lang] || post.title.fr}
+                      className="blog-card-img"
+                      loading="lazy"
+                      onError={e => { e.target.style.display = 'none'; }}
+                    />
+                  </Link>
+                )}
+                <div className="blog-card-content">
+                  <Link to={`/blog/${post.slug}`}>
+                    <h3>{post.title[lang] || post.title.fr}</h3>
+                  </Link>
+                  <p className="blog-excerpt">{post.excerpt[lang] || post.excerpt.fr}</p>
+                  <div className="blog-card-meta">
+                    <span className="blog-category">{post.category[lang] || post.category.fr}</span>
+                    <span className="blog-readtime">
+                      {post.readTime} {lang === 'en' ? 'min' : lang === 'nl' ? 'min' : 'min'}
+                    </span>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+          <div className="section-cta">
+            <Link to="/blog" className="btn btn-outline">
+              {lang === 'en' ? 'All articles' : lang === 'nl' ? 'Alle artikelen' : 'Tous les articles'} →
+            </Link>
+          </div>
+        </section>
+      )}
 
       {/* Map */}
       <MapSection events={events} activities={activities} lang={lang} tr={tr} />
