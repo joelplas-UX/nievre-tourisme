@@ -97,12 +97,14 @@ Retourne SEULEMENT le JSON, sans markdown, sans explication.`;
 
 // ─── Handler ──────────────────────────────────────────────────────────────
 export const handler = async (event) => {
-  // Auth
+  // Auth: Laat toe als admin trigger, cron token, of Netlify scheduled/invoked
   const isAdmin = event.headers?.['x-admin-trigger'] === '1';
-  if (!isAdmin) {
+  const isNetlifyCron = event.headers?.['x-netlify-cron'] === 'true'; // Netlify's scheduled functions
+
+  if (!isAdmin && !isNetlifyCron) {
     const token     = event.headers?.['x-cron-token'] || event.queryStringParameters?.token;
     const cronToken = process.env.CRON_SECRET_TOKEN;
-    if (!cronToken || token !== cronToken) {
+    if (cronToken && token !== cronToken) {
       return { statusCode: 401, body: 'Unauthorized' };
     }
   }
