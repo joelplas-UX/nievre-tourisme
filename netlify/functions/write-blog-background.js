@@ -145,11 +145,18 @@ export const handler = async (event) => {
   let posts = [];
   try {
     console.log('[write-blog] Calling Claude API...');
-    const msg = await claude.messages.create({
-      model:      'claude-haiku-4-5-20251001',
-      max_tokens: 8192,
-      messages:   [{ role: 'user', content: prompt }],
-    }, { timeout: 120000 });
+    console.log('[write-blog] Request started at ' + new Date().toISOString());
+
+    const msg = await Promise.race([
+      claude.messages.create({
+        model:      'claude-haiku-4-5-20251001',
+        max_tokens: 8192,
+        messages:   [{ role: 'user', content: prompt }],
+      }),
+      new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Claude API timeout after 60s')), 60000)
+      )
+    ]);
 
     console.log('[write-blog] Claude response received');
     const raw = msg.content[0]?.text?.trim() || '[]';
