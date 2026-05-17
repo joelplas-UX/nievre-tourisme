@@ -149,7 +149,7 @@ export const handler = async (event) => {
 
     const msg = await Promise.race([
       claude.messages.create({
-        model:      'claude-haiku-4-5-20251001',
+        model:      'claude-opus-4-1-20250805',
         max_tokens: 8192,
         messages:   [{ role: 'user', content: prompt }],
       }),
