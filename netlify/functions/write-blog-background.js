@@ -144,21 +144,27 @@ export const handler = async (event) => {
   // ── Genereer posts via Claude ────────────────────────────────────────────
   let posts = [];
   try {
+    console.log('[write-blog] Calling Claude API...');
     const msg = await claude.messages.create({
       model:      'claude-haiku-4-5-20251001',
       max_tokens: 8192,
       messages:   [{ role: 'user', content: prompt }],
     }, { timeout: 120000 });
 
+    console.log('[write-blog] Claude response received');
     const raw = msg.content[0]?.text?.trim() || '[]';
+    console.log('[write-blog] Raw response length:', raw.length);
     try {
       posts = JSON.parse(raw);
-    } catch {
+      console.log('[write-blog] Parsed ' + posts.length + ' posts');
+    } catch (parseErr) {
+      console.log('[write-blog] Parse error, trying regex...');
       const match = raw.match(/\[[\s\S]*\]/);
       posts = match ? JSON.parse(match[0]) : [];
     }
   } catch (err) {
     console.error('[write-blog] Claude fout:', err.message);
+    console.error('[write-blog] Full error:', JSON.stringify(err));
     return { statusCode: 500, body: JSON.stringify({ error: err.message }) };
   }
 
