@@ -53,46 +53,34 @@ function buildPrompt(month, existingTitles) {
 
   const imageTags = IMAGES.map(i => i.tag).join(', ');
 
-  return `Tu es Noah, rédacteur en chef du guide touristique indépendant "Nièvre & Morvan" (nievremorvan.com). Tu écris des articles de blog originaux, informatifs et engageants sur la Nièvre et le Parc Naturel Régional du Morvan.
+  return `Génère 2 articles de blog courts et engageants sur la Nièvre/Morvan (saison: ${season}).
 
-Date d'aujourd'hui: ${today}. Saison: ${season}.
-
-ARTICLES DÉJÀ PUBLIÉS (à ne pas reproduire):
+ARTICLES EXISTANTS (éviter):
 ${existingTitles.map(t => `- ${t}`).join('\n')}
 
-MISSION: Génère 2 nouveaux articles de blog complets et originaux adaptés à la saison ${season}. Chaque article doit couvrir un sujet différent et ne pas recouper les articles existants.
+POUR CHAQUE ARTICLE:
+- Titre unique (3-8 mots)
+- Slug: minuscules, tirets
+- Catégorie: Randonnées|Gastronomie|Patrimoine|Nature|Séjours|Pratique
+- Excerpt: 1-2 phrases accrocheuses
+- Contenu: 300-400 mots HTML avec <h2>, <ul>, <strong>
+- Image: choisir parmi: ${imageTags}
+- Readtime: 4-6 minutes
+- Traductions: FR, EN, NL
 
-RÈGLES DE CONTENU:
-- Français: 700-900 mots, HTML avec balises <h2>, <ul>/<li>, <strong>, <a href="/activites">...</a>, <a href="/evenements">...</a>
-- Chaque article doit contenir au moins 3 sections h2
-- Inclure des informations pratiques concrètes (noms de lieux, distances, conseils)
-- Ton: chaleureux, personnel, connaisseur de la région (pas de guide sec)
-- Anglais et néerlandais: traductions fidèles et naturelles (même longueur)
-- excerpt: 1-2 phrases accrocheuses (pas HTML)
-
-CATEGORIES DISPONIBLES (choisir la plus pertinente):
-fr: Randonnées | Gastronomie | Patrimoine | Nature | Séjours | Agenda | Pratique
-en: Hiking | Gastronomy | Heritage | Nature | Stays | Events | Tips
-nl: Wandelen | Gastronomie | Erfgoed | Natuur | Verblijf | Agenda | Tips
-
-IMAGE_TAGS DISPONIBLES (choisir le plus pertinent pour chaque article):
-${imageTags}
-
-SLUG: en minuscules, tirets, max 45 caractères, en français, descriptif.
-
-Retourne UNIQUEMENT un tableau JSON valide de 2 objets, chacun avec ces champs exacts:
-{
-  "slug": "string",
-  "date": "${today}",
-  "category": { "fr": "string", "en": "string", "nl": "string" },
-  "readTime": number,
-  "image_tag": "string",
-  "title": { "fr": "string", "en": "string", "nl": "string" },
-  "excerpt": { "fr": "string", "en": "string", "nl": "string" },
-  "content": { "fr": "string HTML", "en": "string HTML", "nl": "string HTML" }
-}
-
-Retourne SEULEMENT le JSON, sans markdown, sans explication.`;
+RETOURNE SEULEMENT CE JSON (2 articles):
+[
+  {
+    "slug": "string",
+    "date": "${today}",
+    "category": { "fr": "string", "en": "string", "nl": "string" },
+    "readTime": number,
+    "image_tag": "string",
+    "title": { "fr": "string", "en": "string", "nl": "string" },
+    "excerpt": { "fr": "string", "en": "string", "nl": "string" },
+    "content": { "fr": "HTML string", "en": "HTML string", "nl": "HTML string" }
+  }
+]`;
 }
 
 // ─── Handler ──────────────────────────────────────────────────────────────
@@ -149,7 +137,7 @@ export const handler = async (event) => {
 
     const msg = await Promise.race([
       claude.messages.create({
-        model:      'claude-3-5-sonnet',
+        model:      'claude-haiku-4-5-20251001',
         max_tokens: 8192,
         messages:   [{ role: 'user', content: prompt }],
       }),
