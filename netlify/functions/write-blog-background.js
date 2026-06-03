@@ -44,7 +44,16 @@ function imageUrl(tag) {
 
 // ─── Prompt ───────────────────────────────────────────────────────────────
 function buildPrompt(month, existingTitles) {
-  const today   = new Date().toISOString().split('T')[0];
+  // Lokale datum in Europa/Parijs timezone (Nièvre)
+  const now = new Date();
+  const formatter = new Intl.DateTimeFormat('sv-SE', {
+    timeZone: 'Europe/Paris',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  });
+  const today = formatter.format(now);
+
   const seasons = {
     1:'hiver',2:'hiver',3:'printemps',4:'printemps',5:'printemps',
     6:'été',7:'été',8:'été',9:'automne',10:'automne',11:'automne',12:'hiver',
@@ -125,7 +134,12 @@ export const handler = async (event) => {
     console.error('[write-blog] Error fetching posts:', err.message);
   }
 
-  const month  = new Date().getMonth() + 1;
+  // Lokale maand in Europa/Parijs timezone
+  const monthFormatter = new Intl.DateTimeFormat('sv-SE', {
+    timeZone: 'Europe/Paris',
+    month: '2-digit'
+  });
+  const month = parseInt(monthFormatter.format(new Date()), 10);
   const prompt = buildPrompt(month, existingTitles);
   console.log('[write-blog] Prompt built, calling Claude...');
 
