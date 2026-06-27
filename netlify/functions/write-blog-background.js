@@ -3,7 +3,7 @@
  * Genereert elke week 2 originele blogartikelen over de Nièvre & Morvan
  * via Claude en schrijft ze naar Firestore (morvan/data/blog_posts).
  *
- * Trigger: wekelijks cron (maandag 07:00 UTC) via netlify.toml
+ * Trigger: wekelijks cron (maandag 08:00 UTC) via netlify.toml
  * Auth:    x-admin-trigger: '1'  OF  x-cron-token: CRON_SECRET_TOKEN
  */
 
@@ -42,18 +42,18 @@ function imageUrl(tag) {
   return IMAGES.find(i => i.tag === tag)?.url ?? IMAGES[0].url;
 }
 
-// ─── Prompt ───────────────────────────────────────────────────────────────
-function buildPrompt(month, existingTitles) {
-  // Lokale datum in Europa/Parijs timezone (Nièvre)
-  const now = new Date();
-  const formatter = new Intl.DateTimeFormat('sv-SE', {
+// ─── Lokale datum (Europa/Parijs, Nièvre) ─────────────────────────────────
+function parisToday() {
+  return new Intl.DateTimeFormat('sv-SE', {
     timeZone: 'Europe/Paris',
     year: 'numeric',
     month: '2-digit',
-    day: '2-digit'
-  });
-  const today = formatter.format(now);
+    day: '2-digit',
+  }).format(new Date());
+}
 
+// ─── Prompt ───────────────────────────────────────────────────────────────
+function buildPrompt(month, existingTitles) {
   const seasons = {
     1:'hiver',2:'hiver',3:'printemps',4:'printemps',5:'printemps',
     6:'été',7:'été',8:'été',9:'automne',10:'automne',11:'automne',12:'hiver',
@@ -81,7 +81,6 @@ RETOURNE SEULEMENT CE JSON (2 articles):
 [
   {
     "slug": "string",
-    "date": "${today}",
     "category": { "fr": "string", "en": "string", "nl": "string" },
     "readTime": number,
     "image_tag": "string",
@@ -184,6 +183,7 @@ export const handler = async (event) => {
   // ── Schrijf naar Firestore ───────────────────────────────────────────────
   const col    = db.collection('morvan').doc('data').collection('blog_posts');
   const now    = Timestamp.now();
+  const today  = parisToday(); // publicatiedatum = generatiedatum, niet wat Claude verzint
   let added    = 0;
   const errors = [];
 
@@ -204,7 +204,7 @@ export const handler = async (event) => {
     try {
       await ref.set({
         slug:      p.slug,
-        date:      p.date || new Date().toISOString().split('T')[0],
+        date:      today,
         category:  p.category  || { fr: 'Découverte', en: 'Discovery', nl: 'Ontdekking' },
         readTime:  p.readTime  || 6,
         image:     imageUrl(p.image_tag),
