@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import CookieBanner from './components/CookieBanner';
+import RouteTracker from './components/RouteTracker';
 import HomePage from './pages/HomePage';
 import EventsPage from './pages/EventsPage';
 import ActivitiesPage from './pages/ActivitiesPage';
@@ -37,6 +38,7 @@ export default function App() {
 
   return (
     <BrowserRouter>
+      <RouteTracker />
       <div className="app">
         <Header lang={lang} setLang={setLang} tr={tr} />
         <Routes>
