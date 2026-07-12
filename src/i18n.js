@@ -4,7 +4,7 @@ export const t = {
   fr: {
     siteTitle: 'Nièvre & Morvan',
     tagline: 'Votre guide pour découvrir la Nièvre et le Morvan',
-    nav: { home: 'Accueil', events: 'Événements', activities: 'Activités', blog: 'Blog', region: 'La région', submit: 'Proposer', about: 'À propos', contact: 'Contact', privacy: 'Confidentialité', admin: 'Admin' },
+    nav: { home: 'Accueil', events: 'Événements', activities: 'Activités', places: 'Lieux', blog: 'Blog', region: 'La région', submit: 'Proposer', about: 'À propos', contact: 'Contact', privacy: 'Confidentialité', admin: 'Admin' },
     hero: {
       title: 'Découvrez la Nièvre & le Morvan',
       subtitle: 'Événements, activités et bons plans en Nièvre et Morvan',
@@ -101,6 +101,7 @@ export const t = {
       home:       'Découvrez la Nièvre & le Morvan',
       events:     'Événements dans la Nièvre & le Morvan',
       activities: 'Activités & sorties — Nièvre & Morvan',
+      places:     'Lieux à découvrir — Nièvre & Morvan',
       blog:       'Blog — Nièvre & Morvan',
       region:     'La région Nièvre & Morvan',
       about:      'À propos',
@@ -112,6 +113,7 @@ export const t = {
       home:       'Découvrez les meilleurs événements, randonnées et activités en Nièvre et Morvan. Votre guide indépendant pour explorer le cœur de la Bourgogne.',
       events:     'Concerts, festivals, marchés et expositions en Nièvre et Morvan. Agenda complet mis à jour chaque semaine.',
       activities: 'Randonnées, vélo, baignades et patrimoine en Nièvre et Morvan. Des idées de sorties pour toute la famille dans le Parc Naturel Régional du Morvan.',
+      places:     'Villes, lacs, cascades et sites classés : découvrez les lieux incontournables de la Nièvre et du Morvan avec une fiche pratique pour chaque destination.',
       blog:       'Idées de séjours, randonnées, gastronomie et coups de cœur dans la Nièvre et le Morvan. Blog indépendant mis à jour régulièrement.',
       region:     'Découvrez la Nièvre et le Morvan : histoire, nature, gastronomie et lacs. Un territoire d\'exception au cœur de la Bourgogne.',
       about:      'Nièvre & Morvan est un guide touristique indépendant pour explorer la Nièvre et le Parc Naturel Régional du Morvan.',
@@ -123,7 +125,7 @@ export const t = {
   en: {
     siteTitle: 'Nièvre & Morvan',
     tagline: 'Your guide to discovering the Nièvre and Morvan',
-    nav: { home: 'Home', events: 'Events', activities: 'Activities', blog: 'Blog', region: 'The region', submit: 'Suggest', about: 'About', contact: 'Contact', privacy: 'Privacy', admin: 'Admin' },
+    nav: { home: 'Home', events: 'Events', activities: 'Activities', places: 'Places', blog: 'Blog', region: 'The region', submit: 'Suggest', about: 'About', contact: 'Contact', privacy: 'Privacy', admin: 'Admin' },
     hero: {
       title: 'Discover the Nièvre & Morvan',
       subtitle: 'Events, activities and tips in the Nièvre and Morvan',
@@ -220,6 +222,7 @@ export const t = {
       home:       'Discover the Nièvre & Morvan',
       events:     'Events in the Nièvre & Morvan',
       activities: 'Activities & day trips — Nièvre & Morvan',
+      places:     'Places to explore — Nièvre & Morvan',
       blog:       'Blog — Nièvre & Morvan',
       region:     'The Nièvre & Morvan region',
       about:      'About',
@@ -231,6 +234,7 @@ export const t = {
       home:       'Discover the best events, hikes and activities in the Nièvre and Morvan. Your independent guide to exploring the heart of Burgundy.',
       events:     'Concerts, festivals, markets and exhibitions in the Nièvre and Morvan. Full calendar updated every week.',
       activities: 'Hiking, cycling, swimming and heritage in the Nièvre and Morvan. Day trip ideas for the whole family in the Morvan Natural Park.',
+      places:     'Towns, lakes, waterfalls and listed sites: discover the must-see places of the Nièvre and Morvan, each with a practical guide.',
       blog:       'Stay ideas, hiking, gastronomy and hidden gems in the Nièvre and Morvan. Independent blog updated regularly.',
       region:     'Discover the Nièvre and Morvan: history, nature, gastronomy and lakes. An exceptional territory in the heart of Burgundy.',
       about:      'Nièvre & Morvan is an independent travel guide to explore the Nièvre and the Morvan Regional Natural Park.',
@@ -242,7 +246,7 @@ export const t = {
   nl: {
     siteTitle: 'Nièvre & Morvan',
     tagline: 'Uw gids voor de Nièvre en de Morvan',
-    nav: { home: 'Home', events: 'Evenementen', activities: 'Activiteiten', blog: 'Blog', region: 'De regio', submit: 'Aanmelden', about: 'Over ons', contact: 'Contact', privacy: 'Privacy', admin: 'Admin' },
+    nav: { home: 'Home', events: 'Evenementen', activities: 'Activiteiten', places: 'Plaatsen', blog: 'Blog', region: 'De regio', submit: 'Aanmelden', about: 'Over ons', contact: 'Contact', privacy: 'Privacy', admin: 'Admin' },
     hero: {
       title: 'Ontdek de Nièvre & de Morvan',
       subtitle: 'Evenementen, activiteiten en tips in de Nièvre en de Morvan',
@@ -339,6 +343,7 @@ export const t = {
       home:       'Ontdek de Nièvre & de Morvan',
       events:     'Evenementen in de Nièvre & de Morvan',
       activities: 'Activiteiten & uitjes — Nièvre & Morvan',
+      places:     'Plaatsen om te ontdekken — Nièvre & Morvan',
       blog:       'Blog — Nièvre & Morvan',
       region:     'De regio Nièvre & Morvan',
       about:      'Over ons',
@@ -350,6 +355,7 @@ export const t = {
       home:       'Ontdek de beste evenementen, wandelingen en activiteiten in de Nièvre en Morvan. Uw onafhankelijke gids voor het hart van Bourgondië.',
       events:     'Concerten, festivals, markten en tentoonstellingen in de Nièvre en Morvan. Volledige agenda, wekelijks bijgewerkt.',
       activities: 'Wandelen, fietsen, zwemmen en erfgoed in de Nièvre en Morvan. Uitjes voor het hele gezin in het Regionaal Natuurpark Morvan.',
+      places:     'Steden, meren, watervallen en beschermde sites: ontdek de mooiste plekken van de Nièvre en het Morvan, elk met een praktische pagina.',
       blog:       'Verblijfsideeën, wandelingen, gastronomie en verborgen parels in de Nièvre en Morvan. Onafhankelijke blog regelmatig bijgewerkt.',
       region:     'Ontdek de Nièvre en Morvan: geschiedenis, natuur, gastronomie en meren. Een bijzonder gebied in het hart van Bourgondië.',
       about:      'Nièvre & Morvan is een onafhankelijke reisgids voor de Nièvre en het Regionaal Natuurpark Morvan.',

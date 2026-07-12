@@ -17,6 +17,7 @@ import { createServer } from 'http';
 import { createReadStream, mkdirSync, writeFileSync, existsSync } from 'fs';
 import { join, extname, dirname } from 'path';
 import { fileURLToPath } from 'url';
+import { PLACES } from '../src/data/places.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const DIST      = join(__dirname, '..', 'dist');
@@ -32,6 +33,8 @@ const ROUTES = [
   '/evenements',
   '/privacy',
   '/contact',
+  '/plaatsen',
+  ...PLACES.map(p => `/plaatsen/${p.slug}`),
 ];
 
 // ── Minimale statische server ──────────────────────────────────────────────

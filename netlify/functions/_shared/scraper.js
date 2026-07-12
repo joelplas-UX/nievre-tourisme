@@ -58,7 +58,7 @@ async function loadSources(db, mode = 'regular') {
 }
 
 // ─── HTML → plain text (maximale compressie voor Claude) ─────────────────────
-function htmlToText(html) {
+export function htmlToText(html) {
   return html
     // Verwijder blokken die geen leesbare inhoud bevatten
     .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, '')

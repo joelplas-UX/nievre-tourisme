@@ -48,6 +48,10 @@
 [functions."sync-lejdc-background"]
   schedule = "30 7 * * *"
 
+# Bourgondië Toerist agenda (NL) — elke donderdag 06:20 UTC, alleen Nièvre/Morvan
+[functions."sync-bourgondie-background"]
+  schedule = "20 6 * * 4"
+
 # FAS-platform sites — elke donderdag 06:15 UTC
 [functions."sync-fas-background"]
   schedule = "15 6 * * 4"
@@ -63,3 +67,7 @@
 # Blog-generator — elke maandag 08:00 UTC (2 nieuwe artikelen via Claude)
 [functions."write-blog-background"]
   schedule = "0 8 * * 1"
+
+# Social media poster — elke dag 08:00 UTC (1 post naar Facebook & Instagram)
+[functions."post-social-background"]
+  schedule = "0 8 * * *"

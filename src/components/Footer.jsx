@@ -16,6 +16,7 @@ export default function Footer({ tr, lang }) {
           <Link to="/">{tr.nav.home}</Link>
           <Link to="/evenements">{tr.nav.events}</Link>
           <Link to="/activites">{tr.nav.activities}</Link>
+          <Link to="/plaatsen">{tr.nav.places}</Link>
           <Link to="/blog">{tr.nav.blog}</Link>
           <Link to="/region">{tr.nav.region}</Link>
           <Link to="/over">{tr.nav.about}</Link>

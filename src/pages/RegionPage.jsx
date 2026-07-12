@@ -111,9 +111,9 @@ const INTROS = {
 };
 
 const HEADINGS = {
-  fr:  { highlights: 'Sites incontournables', seasons: 'La région au fil des saisons', numbers: 'La Nièvre en chiffres', cta: 'Prêt à explorer ?', ctaEvents: 'Voir les événements', ctaActivities: 'Découvrir les activités', ctaBlog: 'Lire notre blog' },
-  en:  { highlights: 'Must-see sites', seasons: 'The region through the seasons', numbers: 'The Nièvre in numbers', cta: 'Ready to explore?', ctaEvents: 'See events', ctaActivities: 'Discover activities', ctaBlog: 'Read our blog' },
-  nl:  { highlights: 'Onmisbare plekken', seasons: 'De regio door de seizoenen', numbers: 'De Nièvre in cijfers', cta: 'Klaar om te ontdekken?', ctaEvents: 'Evenementen', ctaActivities: 'Activiteiten', ctaBlog: 'Ons blog lezen' },
+  fr:  { highlights: 'Sites incontournables', seasons: 'La région au fil des saisons', numbers: 'La Nièvre en chiffres', cta: 'Prêt à explorer ?', ctaPlaces: 'Découvrir les lieux', ctaEvents: 'Voir les événements', ctaActivities: 'Découvrir les activités', ctaBlog: 'Lire notre blog' },
+  en:  { highlights: 'Must-see sites', seasons: 'The region through the seasons', numbers: 'The Nièvre in numbers', cta: 'Ready to explore?', ctaPlaces: 'Explore the places', ctaEvents: 'See events', ctaActivities: 'Discover activities', ctaBlog: 'Read our blog' },
+  nl:  { highlights: 'Onmisbare plekken', seasons: 'De regio door de seizoenen', numbers: 'De Nièvre in cijfers', cta: 'Klaar om te ontdekken?', ctaPlaces: 'Plaatsen ontdekken', ctaEvents: 'Evenementen', ctaActivities: 'Activiteiten', ctaBlog: 'Ons blog lezen' },
 };
 
 export default function RegionPage({ lang, tr }) {
@@ -188,7 +188,8 @@ export default function RegionPage({ lang, tr }) {
       <section className="section region-cta">
         <h2>{h.cta}</h2>
         <div className="region-cta-btns">
-          <Link to="/evenements" className="btn btn-primary">{h.ctaEvents}</Link>
+          <Link to="/plaatsen" className="btn btn-primary">{h.ctaPlaces}</Link>
+          <Link to="/evenements" className="btn btn-outline">{h.ctaEvents}</Link>
           <Link to="/activites" className="btn btn-outline">{h.ctaActivities}</Link>
           <Link to="/blog" className="btn btn-outline">{h.ctaBlog}</Link>
         </div>

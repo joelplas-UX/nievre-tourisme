@@ -8,6 +8,8 @@ import HomePage from './pages/HomePage';
 import EventsPage from './pages/EventsPage';
 import ActivitiesPage from './pages/ActivitiesPage';
 import RegionPage from './pages/RegionPage';
+import PlacesPage from './pages/PlacesPage';
+import PlaceDetailPage from './pages/PlaceDetailPage';
 import AdminPage from './pages/AdminPage';
 import SubmitPage from './pages/SubmitPage';
 import BlogPage from './pages/BlogPage';
@@ -46,6 +48,8 @@ export default function App() {
           <Route path="/evenements" element={<EventsPage lang={lang} tr={tr} />} />
           <Route path="/activites" element={<ActivitiesPage lang={lang} tr={tr} />} />
           <Route path="/region" element={<RegionPage lang={lang} tr={tr} />} />
+          <Route path="/plaatsen" element={<PlacesPage lang={lang} tr={tr} />} />
+          <Route path="/plaatsen/:slug" element={<PlaceDetailPage lang={lang} tr={tr} />} />
           <Route path="/proposer" element={<SubmitPage lang={lang} tr={tr} />} />
           <Route path="/admin" element={<AdminPage lang={lang} tr={tr} />} />
           <Route path="/blog" element={<BlogPage lang={lang} tr={tr} />} />
