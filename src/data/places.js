@@ -266,6 +266,28 @@ export const PLACES = [
       nl: '<p>Het kuuroord <strong>Saint-Honoré-les-Bains</strong>, al bekend bij de Romeinen, bewaarde de charme van Belle Époque-badplaatsen: kuurpark, bloemrijke villa’s en een casino. Een rustige uitvalsbasis aan de rand van het Morvan.</p><h2>Te genieten</h2><ul><li>De thermen en het bosrijke park</li><li>De 19e-eeuwse villa’s en kuurarchitectuur</li><li>Wandelingen in de omliggende bossen</li><li>De Mont Genièvre met uitzichtpunten</li></ul>',
     },
   },
+  {
+    slug: 'street-art-city', category: 'patrimonium', emoji: '🎨',
+    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/Street_Art_City_Lurcy-L%C3%A9vis_Hotel_128_Hinterseite.jpg/1280px-Street_Art_City_Lurcy-L%C3%A9vis_Hotel_128_Hinterseite.jpg',
+    imageCredit: 'Foto: Fonzie / Wikimedia Commons (CC BY-SA 4.0)',
+    coords: { lat: 46.7350, lng: 2.9250 },
+    name: { fr: 'Street Art City', en: 'Street Art City', nl: 'Street Art City' },
+    short: {
+      fr: 'Site de street art géant à Lurcy-Lévis, juste au sud de la Nièvre : des centaines d’œuvres et le célèbre Hôtel 128.',
+      en: 'A giant street-art site at Lurcy-Lévis, just south of the Nièvre: hundreds of works and the famous Hôtel 128.',
+      nl: 'Gigantisch street-art-terrein in Lurcy-Lévis, net onder de Nièvre: honderden werken en het beroemde Hôtel 128.',
+    },
+    long: {
+      fr: '<p>Installé sur un ancien centre de formation de France Télécom, <strong>Street Art City</strong> est devenu l’un des plus grands sites de street art d’Europe. Sur une dizaine d’hectares, des artistes du monde entier ont couvert murs et bâtiments de fresques monumentales.</p><h2>À découvrir</h2><ul><li>L’<strong>Hôtel 128</strong> : 128 chambres décorées chacune par un artiste différent</li><li>La galerie couverte « La Tour » sur plusieurs étages</li><li>Fresques en plein air, véhicules peints et sculptures</li><li>Un lieu vivant qui évolue au fil des résidences d’artistes</li></ul><p><em>À noter : Street Art City se trouve à Lurcy-Lévis, dans l’Allier — juste au-delà de la limite de la Nièvre, mais tout proche.</em></p>',
+      en: '<p>Set in a former France Télécom training centre, <strong>Street Art City</strong> has become one of Europe’s largest street-art sites. Over some ten hectares, artists from around the world have covered walls and buildings with monumental murals.</p><h2>Highlights</h2><ul><li>The <strong>Hôtel 128</strong>: 128 rooms each decorated by a different artist</li><li>The covered “La Tour” gallery across several floors</li><li>Open-air murals, painted vehicles and sculptures</li><li>A living place that changes with each artist residency</li></ul><p><em>Note: Street Art City is in Lurcy-Lévis, in the Allier — just beyond the Nièvre border, but very close by.</em></p>',
+      nl: '<p>Op een voormalig opleidingscentrum van France Télécom is <strong>Street Art City</strong> uitgegroeid tot een van de grootste street-art-locaties van Europa. Op zo’n tien hectare hebben kunstenaars van over de hele wereld muren en gebouwen bedekt met monumentale muurschilderingen.</p><h2>Te ontdekken</h2><ul><li>Het <strong>Hôtel 128</strong>: 128 kamers, elk beschilderd door een andere kunstenaar</li><li>De overdekte galerij “La Tour” over meerdere verdiepingen</li><li>Muurschilderingen in de openlucht, beschilderde voertuigen en sculpturen</li><li>Een levendige plek die verandert met elke kunstenaarsresidentie</li></ul><p><em>Let op: Street Art City ligt in Lurcy-Lévis, in de Allier — net over de grens van de Nièvre, maar heel dichtbij.</em></p>',
+    },
+    practical: {
+      fr: 'À Lurcy-Lévis (Allier), à ~40 km au sud de Nevers et ~25 km de Decize. Ouvert de façon saisonnière (env. avril à novembre), entrée payante — vérifiez les horaires avant de venir.',
+      en: 'In Lurcy-Lévis (Allier), ~40 km south of Nevers and ~25 km from Decize. Open seasonally (roughly April–November), paid entry — check opening times before you go.',
+      nl: 'In Lurcy-Lévis (Allier), ~40 km ten zuiden van Nevers en ~25 km van Decize. Seizoensgebonden geopend (ongeveer april–november), betaalde toegang — check de openingstijden vooraf.',
+    },
+  },
 ];
 
 export function getPlace(slug) {

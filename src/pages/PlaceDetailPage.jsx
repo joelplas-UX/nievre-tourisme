@@ -85,6 +85,7 @@ export default function PlaceDetailPage({ lang, tr }) {
           </span>
           <h1>{place.name[lang] || place.name.fr}</h1>
         </div>
+        {place.imageCredit && <span className="place-hero-credit">{place.imageCredit}</span>}
       </div>
 
       <div className="place-breadcrumb">

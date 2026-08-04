@@ -1150,6 +1150,16 @@ a { color: inherit; text-decoration: none; }
   opacity: .95;
 }
 .place-hero-overlay h1 { font-family: var(--font-head); font-size: 2.4rem; color: var(--white); line-height: 1.1; }
+.place-hero-credit {
+  position: absolute;
+  right: 10px;
+  bottom: 8px;
+  font-size: .68rem;
+  color: rgba(255,255,255,.72);
+  background: rgba(0,0,0,.35);
+  padding: 2px 7px;
+  border-radius: 6px;
+}
 
 .place-breadcrumb { max-width: 1200px; margin: 16px auto 0; padding: 0 24px; }
 .place-breadcrumb a { color: var(--green); font-weight: 600; text-decoration: none; }
