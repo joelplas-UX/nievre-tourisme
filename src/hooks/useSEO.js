@@ -54,7 +54,12 @@ function setLink(rel, hreflang, href) {
 export function useSEO({ title, description, path = '/', image, lang = 'fr', type = 'website' } = {}) {
   useEffect(() => {
     const fullTitle    = title ? `${title} — ${BASE_TITLE}` : BASE_TITLE;
-    const canonicalUrl = `${BASE_URL}${path}`;
+    // Netlify serveert alle routes mét trailing slash (…/blog/) en 301'et …/blog
+    // daarheen. De canonical/og:url/hreflang moeten daarom óók de slash-vorm
+    // gebruiken, anders wijst de canonical naar een URL die terug-redirect
+    // ("alternatieve pagina met canonieke tag" in Search Console).
+    const normPath     = path === '/' ? '/' : `/${path.replace(/^\/+|\/+$/g, '')}/`;
+    const canonicalUrl = `${BASE_URL}${normPath}`;
     const imgUrl       = image || DEFAULT_IMAGE;
     const ogLocale     = OG_LOCALES[lang] || 'fr_FR';
 
