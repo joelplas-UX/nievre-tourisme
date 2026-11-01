@@ -288,6 +288,123 @@ export const PLACES = [
       nl: 'In Lurcy-Lévis (Allier), ~40 km ten zuiden van Nevers en ~25 km van Decize. Seizoensgebonden geopend (ongeveer april–november), betaalde toegang — check de openingstijden vooraf.',
     },
   },
+  {
+    slug: 'chateau-de-bazoches', category: 'patrimonium', emoji: '🏰',
+    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Bazoches-ch%C3%A2teau-1.jpg/1280px-Bazoches-ch%C3%A2teau-1.jpg',
+    coords: { lat: 47.3808, lng: 3.7950 },
+    name: { fr: 'Château de Bazoches', en: 'Château de Bazoches', nl: 'Kasteel van Bazoches' },
+    short: {
+      fr: 'Le château de Vauban, ingénieur militaire de Louis XIV, face à la colline de Vézelay.',
+      en: 'The home of Vauban, Louis XIV’s military engineer, facing the hill of Vézelay.',
+      nl: 'Het kasteel van Vauban, militair ingenieur van Lodewijk XIV, met zicht op de heuvel van Vézelay.',
+    },
+    long: {
+      fr: '<p>Aux portes du Morvan, le <strong>château de Bazoches</strong> fut la demeure de Sébastien Le Prestre de <strong>Vauban</strong>, le célèbre ingénieur militaire de Louis XIV. C’est ici qu’il conçut nombre de ses fortifications, dans une galerie transformée en atelier.</p><h2>À voir</h2><ul><li>Les appartements meublés et la chambre de Vauban</li><li>La grande galerie où il dessinait ses plans de siège</li><li>La vue sur la colline et la basilique de Vézelay</li><li>Les jardins et l’architecture médiévale remaniée</li></ul>',
+      en: '<p>At the gateway to the Morvan, the <strong>Château de Bazoches</strong> was the home of Sébastien Le Prestre de <strong>Vauban</strong>, Louis XIV’s famous military engineer. It was here, in a gallery turned workshop, that he designed many of his fortifications.</p><h2>Highlights</h2><ul><li>The furnished apartments and Vauban’s bedroom</li><li>The great gallery where he drew up his siege plans</li><li>The view towards the hill and basilica of Vézelay</li><li>The gardens and reworked medieval architecture</li></ul>',
+      nl: '<p>Aan de rand van het Morvan was het <strong>kasteel van Bazoches</strong> de woning van Sébastien Le Prestre de <strong>Vauban</strong>, de beroemde militair ingenieur van Lodewijk XIV. Hier, in een tot atelier omgebouwde galerij, ontwierp hij veel van zijn vestingwerken.</p><h2>Bezienswaardig</h2><ul><li>De gemeubileerde vertrekken en Vaubans slaapkamer</li><li>De grote galerij waar hij zijn belegeringsplannen tekende</li><li>Het uitzicht op de heuvel en basiliek van Vézelay</li><li>De tuinen en de verbouwde middeleeuwse architectuur</li></ul>',
+    },
+    practical: {
+      fr: 'À Bazoches, entre Vézelay et Corbigny. Ouvert de façon saisonnière, visite payante — vérifiez les horaires.',
+      en: 'In Bazoches, between Vézelay and Corbigny. Open seasonally, paid visit — check opening times.',
+      nl: 'In Bazoches, tussen Vézelay en Corbigny. Seizoensgebonden geopend, betaalde toegang — check de openingstijden.',
+    },
+  },
+  {
+    slug: 'lac-de-pannecie', category: 'natuur', emoji: '🚣',
+    image: 'https://upload.wikimedia.org/wikipedia/commons/0/04/Morvan_Lac_Panneciere1.jpg',
+    coords: { lat: 47.1542, lng: 3.8956 },
+    name: { fr: 'Lac de Pannecière', en: 'Lac de Pannecière', nl: 'Lac de Pannecière' },
+    short: {
+      fr: 'Le plus grand lac du Morvan : vaste, sauvage et paisible, idéal pour la pêche et le calme.',
+      en: 'The Morvan’s largest lake: vast, wild and peaceful, ideal for fishing and quiet.',
+      nl: 'Het grootste meer van het Morvan: weids, wild en rustig — ideaal om te vissen en tot rust te komen.',
+    },
+    long: {
+      fr: '<p>Avec ses 520 hectares, le <strong>lac de Pannecière</strong> est le plus vaste des lacs du Morvan. Créé par un barrage sur l’Yonne, il est moins aménagé que le lac des Settons, ce qui en fait un havre de nature et de tranquillité.</p><h2>À faire</h2><ul><li>Pêche réputée (barbeau, brochet, sandre)</li><li>Canoë, kayak et balades sur les rives</li><li>Observation de la faune autour du barrage</li><li>Randonnées dans un paysage de collines boisées</li></ul>',
+      en: '<p>At 520 hectares, the <strong>Lac de Pannecière</strong> is the largest of the Morvan’s lakes. Created by a dam on the Yonne, it is far less developed than Lac des Settons, making it a haven of nature and quiet.</p><h2>Things to do</h2><ul><li>Renowned fishing (barbel, pike, zander)</li><li>Canoeing, kayaking and lakeside walks</li><li>Wildlife watching around the dam</li><li>Hikes through wooded rolling hills</li></ul>',
+      nl: '<p>Met 520 hectare is het <strong>Lac de Pannecière</strong> het grootste meer van het Morvan. Ontstaan door een stuwdam in de Yonne en veel minder aangelegd dan het Lac des Settons — een oase van natuur en rust.</p><h2>Te doen</h2><ul><li>Befaamd viswater (barbeel, snoek, snoekbaars)</li><li>Kanoën, kajakken en wandelen langs de oevers</li><li>Dieren spotten rond de stuwdam</li><li>Wandelingen door glooiend beboste heuvels</li></ul>',
+    },
+  },
+  {
+    slug: 'corbigny', category: 'stad', emoji: '🏘️',
+    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Anguison_river_in_Corbigny_%282%29.jpg/1280px-Anguison_river_in_Corbigny_%282%29.jpg',
+    coords: { lat: 47.2575, lng: 3.6842 },
+    name: { fr: 'Corbigny', en: 'Corbigny', nl: 'Corbigny' },
+    short: {
+      fr: 'Petite ville-porte du Morvan, autour de son abbaye et des rives de l’Anguison.',
+      en: 'A small gateway town to the Morvan, around its abbey and the banks of the Anguison.',
+      nl: 'Klein toegangsstadje tot het Morvan, rond zijn abdij en de oevers van de Anguison.',
+    },
+    long: {
+      fr: '<p>À la lisière nord du Morvan, <strong>Corbigny</strong> est une agréable petite ville traversée par l’Anguison et longée par le canal du Nivernais. Son ancienne abbaye bénédictine Saint-Léonard anime aujourd’hui la vie culturelle locale.</p><h2>À découvrir</h2><ul><li>L’abbaye Saint-Léonard et ses événements</li><li>L’église gothique flamboyant</li><li>Les bords de l’Anguison et le canal du Nivernais</li><li>Un bon point de départ vers le cœur du Morvan</li></ul>',
+      en: '<p>On the northern edge of the Morvan, <strong>Corbigny</strong> is a pleasant small town crossed by the Anguison and skirted by the Canal du Nivernais. Its former Benedictine abbey of Saint-Léonard now hosts local cultural life.</p><h2>To discover</h2><ul><li>The Saint-Léonard abbey and its events</li><li>The flamboyant Gothic church</li><li>The banks of the Anguison and the Canal du Nivernais</li><li>A handy starting point for the heart of the Morvan</li></ul>',
+      nl: '<p>Aan de noordrand van het Morvan ligt <strong>Corbigny</strong>, een aangenaam stadje aan de Anguison en langs het Canal du Nivernais. De voormalige benedictijnenabdij Saint-Léonard is nu een cultureel trefpunt.</p><h2>Te ontdekken</h2><ul><li>De abdij Saint-Léonard met haar evenementen</li><li>De flamboyant-gotische kerk</li><li>De oevers van de Anguison en het Canal du Nivernais</li><li>Een handig vertrekpunt naar het hart van het Morvan</li></ul>',
+    },
+  },
+  {
+    slug: 'moulins-engilbert', category: 'stad', emoji: '🐄',
+    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Moulins-Engilbert_Kastelo.JPG/1280px-Moulins-Engilbert_Kastelo.JPG',
+    coords: { lat: 46.9872, lng: 3.8106 },
+    name: { fr: 'Moulins-Engilbert', en: 'Moulins-Engilbert', nl: 'Moulins-Engilbert' },
+    short: {
+      fr: '« Petite cité de caractère » du Morvan, célèbre pour son marché au bétail charolais.',
+      en: 'A Morvan “petite cité de caractère”, famous for its Charolais cattle market.',
+      nl: 'Een Morvan-“petite cité de caractère”, bekend om zijn Charolais-veemarkt.',
+    },
+    long: {
+      fr: '<p>Nichée dans un vallon du sud du Morvan, <strong>Moulins-Engilbert</strong> est classée « Petite cité de caractère ». Ses maisons anciennes, ses ruelles et les ruines de son château composent un décor pittoresque, animé chaque semaine par l’un des grands marchés au bétail charolais de la région.</p><h2>À voir</h2><ul><li>Le marché au cadran (bovins charolais)</li><li>Les ruines du château et le vieux bourg</li><li>L’église et les ponts sur la Dragne</li><li>Les environs vallonnés, parfaits pour la randonnée</li></ul>',
+      en: '<p>Tucked in a valley of the southern Morvan, <strong>Moulins-Engilbert</strong> is a listed “Petite cité de caractère”. Its old houses, lanes and castle ruins form a picturesque setting, enlivened each week by one of the region’s major Charolais cattle markets.</p><h2>Highlights</h2><ul><li>The livestock auction market (Charolais cattle)</li><li>The castle ruins and the old town</li><li>The church and the bridges over the Dragne</li><li>The rolling surroundings, perfect for hiking</li></ul>',
+      nl: '<p>Verscholen in een dal in het zuiden van het Morvan is <strong>Moulins-Engilbert</strong> een erkende “Petite cité de caractère”. Oude huizen, steegjes en kasteelruïnes vormen een pittoresk geheel, elke week verlevendigd door een van de grote Charolais-veemarkten van de regio.</p><h2>Bezienswaardig</h2><ul><li>De veemarkt (Charolais-runderen)</li><li>De kasteelruïne en de oude kern</li><li>De kerk en de bruggen over de Dragne</li><li>De glooiende omgeving, perfect om te wandelen</li></ul>',
+    },
+  },
+  {
+    slug: 'donzy', category: 'patrimonium', emoji: '📜',
+    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Vue_a%C3%A9rienne_de_Donzy_-_close_up_%C3%A9glise.jpg/1280px-Vue_a%C3%A9rienne_de_Donzy_-_close_up_%C3%A9glise.jpg',
+    coords: { lat: 47.3716, lng: 3.1247 },
+    name: { fr: 'Donzy', en: 'Donzy', nl: 'Donzy' },
+    short: {
+      fr: 'Ancienne baronnie aux maisons médiévales, avec son moulin à papier en activité.',
+      en: 'A former barony of medieval houses, with its working paper mill.',
+      nl: 'Voormalige baronie met middeleeuwse huizen en een werkende papiermolen.',
+    },
+    long: {
+      fr: '<p>Jadis puissante baronnie, <strong>Donzy</strong> a conservé un riche patrimoine : maisons à pans de bois, vieux ponts et ruelles pittoresques. Son <strong>moulin de Maupertuis</strong> fait revivre l’art de la fabrication du papier à l’ancienne.</p><h2>À découvrir</h2><ul><li>Le moulin à papier de Maupertuis (démonstrations)</li><li>Les maisons médiévales et la collégiale du Pré</li><li>Les bords du Nohain</li><li>Le vignoble de Pouilly-sur-Loire tout proche</li></ul>',
+      en: '<p>Once a powerful barony, <strong>Donzy</strong> has kept a rich heritage: half-timbered houses, old bridges and picturesque lanes. Its <strong>Maupertuis mill</strong> brings the traditional art of papermaking back to life.</p><h2>To discover</h2><ul><li>The Maupertuis paper mill (demonstrations)</li><li>The medieval houses and the Pré collegiate church</li><li>The banks of the Nohain</li><li>The nearby Pouilly-sur-Loire vineyard</li></ul>',
+      nl: '<p>Ooit een machtige baronie, bewaarde <strong>Donzy</strong> een rijk erfgoed: vakwerkhuizen, oude bruggen en pittoreske straatjes. De <strong>molen van Maupertuis</strong> laat de ambachtelijke papierkunst herleven.</p><h2>Te ontdekken</h2><ul><li>De papiermolen van Maupertuis (demonstraties)</li><li>De middeleeuwse huizen en de collegiale kerk du Pré</li><li>De oevers van de Nohain</li><li>De nabije wijngaard van Pouilly-sur-Loire</li></ul>',
+    },
+  },
+  {
+    slug: 'guerigny', category: 'patrimonium', emoji: '⚓',
+    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/88/Gu%C3%A9rigny%2C_mairie.jpg/1280px-Gu%C3%A9rigny%2C_mairie.jpg',
+    coords: { lat: 47.0886, lng: 3.1953 },
+    name: { fr: 'Guérigny', en: 'Guérigny', nl: 'Guérigny' },
+    short: {
+      fr: 'Berceau des Forges Royales qui fabriquèrent les ancres de la marine française.',
+      en: 'Cradle of the Royal Forges that made the anchors of the French navy.',
+      nl: 'Bakermat van de Koninklijke Smederijen die de ankers van de Franse marine maakten.',
+    },
+    long: {
+      fr: '<p>À quelques kilomètres de Nevers, <strong>Guérigny</strong> abritait les <strong>Forges Royales de la Chaussade</strong>, qui fournirent pendant des siècles ancres, chaînes et canons à la marine royale française. Un patrimoine industriel rare au cœur de la Nièvre.</p><h2>À découvrir</h2><ul><li>Le site des anciennes forges et le musée de la métallurgie</li><li>Les bâtiments industriels le long de la Nièvre</li><li>Le parc et les étangs des forges</li><li>Les circuits du patrimoine métallurgique nivernais</li></ul>',
+      en: '<p>A few kilometres from Nevers, <strong>Guérigny</strong> was home to the <strong>Royal Forges of La Chaussade</strong>, which supplied anchors, chains and cannons to the French royal navy for centuries. A rare piece of industrial heritage in the heart of the Nièvre.</p><h2>To discover</h2><ul><li>The former forge site and the metallurgy museum</li><li>The industrial buildings along the Nièvre river</li><li>The forge park and ponds</li><li>Trails through the Nivernais metalworking heritage</li></ul>',
+      nl: '<p>Enkele kilometers van Nevers huisvestte <strong>Guérigny</strong> de <strong>Koninklijke Smederijen van La Chaussade</strong>, die eeuwenlang ankers, kettingen en kanonnen leverden aan de Franse koninklijke marine. Zeldzaam industrieel erfgoed in het hart van de Nièvre.</p><h2>Te ontdekken</h2><ul><li>Het terrein van de oude smederijen en het metaalmuseum</li><li>De industriële gebouwen langs de rivier de Nièvre</li><li>Het park en de vijvers van de smederijen</li><li>Routes langs het metaalerfgoed van de Nivernais</li></ul>',
+    },
+  },
+  {
+    slug: 'lormes', category: 'stad', emoji: '⛰️',
+    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/62/Lormes_-_Hotel_de_ville.jpg/1280px-Lormes_-_Hotel_de_ville.jpg',
+    coords: { lat: 47.2908, lng: 3.8183 },
+    name: { fr: 'Lormes', en: 'Lormes', nl: 'Lormes' },
+    short: {
+      fr: 'Bourg du Morvan dominé par sa terrasse panoramique, entre lacs et forêts.',
+      en: 'A Morvan town crowned by its panoramic terrace, among lakes and forests.',
+      nl: 'Morvan-stadje met een panoramaterras, tussen meren en bossen.',
+    },
+    long: {
+      fr: '<p>Au cœur du Morvan, <strong>Lormes</strong> s’étage à flanc de colline. Depuis la terrasse de son église néo-gothique, le panorama embrasse les monts du Morvan — et, par temps clair, les lointains sommets du Jura et des Alpes.</p><h2>À découvrir</h2><ul><li>La terrasse panoramique de Saint-Alban</li><li>Les étangs et lacs des environs (Chaumeçon, Crescent)</li><li>Les sentiers de randonnée et de VTT</li><li>Un bourg vivant, étape idéale dans le Morvan</li></ul>',
+      en: '<p>In the heart of the Morvan, <strong>Lormes</strong> rises on a hillside. From the terrace of its neo-Gothic church, the panorama sweeps across the Morvan hills — and, on a clear day, the distant peaks of the Jura and the Alps.</p><h2>To discover</h2><ul><li>The Saint-Alban panoramic terrace</li><li>The nearby lakes and ponds (Chaumeçon, Crescent)</li><li>Hiking and mountain-bike trails</li><li>A lively town, an ideal stop in the Morvan</li></ul>',
+      nl: '<p>In het hart van het Morvan ligt <strong>Lormes</strong> tegen een heuvelflank. Vanaf het terras bij de neogotische kerk reikt het panorama over de Morvan-heuvels — en bij helder weer tot de verre toppen van de Jura en de Alpen.</p><h2>Te ontdekken</h2><ul><li>Het panoramaterras van Saint-Alban</li><li>De meren en vijvers in de buurt (Chaumeçon, Crescent)</li><li>Wandel- en mountainbikeroutes</li><li>Een levendig stadje, ideale pleisterplaats in het Morvan</li></ul>',
+    },
+  },
 ];
 
 export function getPlace(slug) {
