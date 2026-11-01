@@ -1,0 +1,150 @@
+/**
+ * blog-keepers.js — herschreven, redactionele content voor de 7 behouden posts.
+ *
+ * Vervangt de dunne AI-teksten door langere, feitelijk juiste artikelen met
+ * concrete plaatsen en tips (FR primair, met EN/NL vertaling). Gebruikt door
+ * blog-rewrite.js. Slug, date en image blijven ongewijzigd.
+ */
+
+export const KEEPERS = [
+  {
+    slug: 'velo-canal-nivernais-mai-2026',
+    readTime: 7,
+    category: { fr: 'Randonnées', en: 'Cycling', nl: 'Fietsen' },
+    title: {
+      fr: 'Le Canal du Nivernais à vélo : 174 km au fil de l’eau',
+      en: 'Cycling the Canal du Nivernais: 174 km along the water',
+      nl: 'Met de fiets langs het Canal du Nivernais: 174 km langs het water',
+    },
+    excerpt: {
+      fr: 'Un itinéraire plat et ombragé le long de l’un des plus beaux canaux de France, entre écluses, villages et vallée de l’Yonne.',
+      en: 'A flat, shaded route along one of France’s finest canals, between locks, villages and the Yonne valley.',
+      nl: 'Een vlakke, schaduwrijke route langs een van de mooiste kanalen van Frankrijk, tussen sluizen, dorpen en het Yonne-dal.',
+    },
+    content: {
+      fr: '<p>Reliant Auxerre à Decize sur 174 km, le <strong>Canal du Nivernais</strong> est considéré comme l’un des plus beaux canaux de France. Son chemin de halage, plat et en grande partie ombragé, en fait un itinéraire idéal pour une balade à vélo en famille, loin de la circulation.</p><h2>Un parcours jalonné de trésors</h2><p>En partant du nord, on traverse <strong>Clamecy</strong>, ancienne capitale du flottage du bois, puis <strong>Corbigny</strong>, aux portes du Morvan. Plus au sud, le canal rejoint <strong>Châtillon-en-Bazois</strong> et son château, avant de descendre vers <strong>Decize</strong>, ville insulaire entre Loire et canaux.</p><h2>Le temps fort : les volées de Sardy</h2><p>Près de Sardy-lès-Épiry, l’<strong>échelle d’écluses de Sardy</strong> aligne seize écluses sur quelques kilomètres — un spectacle impressionnant, souvent animé par le passage des péniches de plaisance.</p><h2>Conseils pratiques</h2><ul><li>Le parcours est quasiment plat : accessible aux enfants et aux vélos chargés.</li><li>Location de vélos possible à Nevers, Clamecy et dans plusieurs haltes fluviales.</li><li>De nombreux villages offrent ravitaillement et aires de pique-nique au bord de l’eau.</li><li>Comptez plusieurs jours pour l’intégralité ; ou choisissez un tronçon pour une sortie à la journée.</li></ul><p>À combiner avec une mini-croisière : certains loueurs proposent la formule vélo + bateau pour varier les plaisirs.</p>',
+      en: '<p>Linking Auxerre to Decize over 174 km, the <strong>Canal du Nivernais</strong> is considered one of France’s most beautiful canals. Its towpath — flat and largely shaded — makes it an ideal route for a family bike ride, far from traffic.</p><h2>A route dotted with gems</h2><p>Coming from the north, you pass through <strong>Clamecy</strong>, former capital of log floating, then <strong>Corbigny</strong>, at the gateway to the Morvan. Further south the canal reaches <strong>Châtillon-en-Bazois</strong> and its château before dropping down to <strong>Decize</strong>, an island town between the Loire and the canals.</p><h2>The highlight: the Sardy flight</h2><p>Near Sardy-lès-Épiry, the <strong>Sardy flight of locks</strong> lines up sixteen locks within a few kilometres — an impressive sight, often busy with passing pleasure barges.</p><h2>Practical tips</h2><ul><li>The route is almost flat: suitable for children and loaded bikes.</li><li>Bike hire is available in Nevers, Clamecy and at several river stops.</li><li>Many villages offer supplies and picnic areas by the water.</li><li>Allow several days for the whole route, or pick one section for a day trip.</li></ul><p>Combine it with a short cruise: some rental firms offer a bike-and-boat formula for variety.</p>',
+      nl: '<p>Het <strong>Canal du Nivernais</strong> verbindt Auxerre en Decize over 174 km en geldt als een van de mooiste kanalen van Frankrijk. Het jaagpad — vlak en grotendeels schaduwrijk — is een ideale route voor een fietstocht met het gezin, ver van het verkeer.</p><h2>Een route vol pareltjes</h2><p>Vanuit het noorden passeer je <strong>Clamecy</strong>, ooit de hoofdstad van het houtvlotten, en daarna <strong>Corbigny</strong>, aan de rand van het Morvan. Verder zuidwaarts bereikt het kanaal <strong>Châtillon-en-Bazois</strong> met zijn kasteel, om vervolgens af te dalen naar <strong>Decize</strong>, een eilandstadje tussen Loire en kanalen.</p><h2>Het hoogtepunt: de sluizentrap van Sardy</h2><p>Bij Sardy-lès-Épiry rijgt de <strong>sluizentrap van Sardy</strong> zestien sluizen aaneen over enkele kilometers — een indrukwekkend schouwspel, vaak verlevendigd door passerende pleziervaart.</p><h2>Praktische tips</h2><ul><li>De route is vrijwel vlak: geschikt voor kinderen en bepakte fietsen.</li><li>Fietsverhuur in o.a. Nevers, Clamecy en diverse aanlegplaatsen.</li><li>Veel dorpen bieden bevoorrading en picknickplekken aan het water.</li><li>Reken enkele dagen voor de hele route, of kies één traject voor een dagtocht.</li></ul><p>Te combineren met een korte boottocht: sommige verhuurders bieden een fiets-en-boot-formule.</p>',
+    },
+  },
+  {
+    slug: 'baignade-lac-settons-ete',
+    readTime: 6,
+    category: { fr: 'Nature', en: 'Nature', nl: 'Natuur' },
+    title: {
+      fr: 'Se baigner au lac des Settons : plages, voile et balade au bord de l’eau',
+      en: 'Swimming at Lac des Settons: beaches, sailing and a lakeside walk',
+      nl: 'Zwemmen in het Lac des Settons: stranden, zeilen en een wandeling langs het water',
+    },
+    excerpt: {
+      fr: 'Avec ses 360 hectares, le plus populaire des lacs du Morvan combine baignade surveillée, sports nautiques et sentier du tour du lac.',
+      en: 'At 360 hectares, the Morvan’s most popular lake combines supervised swimming, water sports and a lakeside loop.',
+      nl: 'Met 360 hectare combineert het populairste meer van het Morvan bewaakt zwemmen, watersport en een rondwandeling.',
+    },
+    content: {
+      fr: '<p>Créé en 1858 pour réguler le flottage du bois vers Paris, le <strong>lac des Settons</strong> est aujourd’hui le site de baignade phare du Morvan. Ses 360 hectares, encadrés de forêts, accueillent chaque été familles, pêcheurs et amateurs de sports nautiques.</p><h2>Où se baigner</h2><p>Plusieurs plages aménagées bordent le lac, notamment côté <strong>Les Settons</strong> et <strong>Montsauche-les-Settons</strong>. La baignade y est surveillée en haute saison, avec des zones adaptées aux enfants.</p><h2>Sur et autour de l’eau</h2><ul><li>Voile, planche, pédalo, canoë et location de bateaux électriques.</li><li>Croisières commentées à bord d’un bateau promenade.</li><li>Le <strong>tour du lac</strong> (environ 13 km) à pied ou à vélo, en grande partie ombragé.</li><li>Pêche réputée (brochet, sandre, perche).</li></ul><h2>Bon à savoir</h2><p>Le site est très fréquenté en juillet-août : privilégiez le matin pour le stationnement et la tranquillité. Les abords proposent restaurants, glaciers et locations. À proximité, ne manquez pas la cascade du <strong>Saut de Gouloux</strong>, à quelques minutes en voiture.</p>',
+      en: '<p>Created in 1858 to regulate the floating of timber to Paris, <strong>Lac des Settons</strong> is now the Morvan’s flagship swimming spot. Its 360 hectares, framed by forests, welcome families, anglers and water-sports lovers every summer.</p><h2>Where to swim</h2><p>Several equipped beaches line the lake, notably on the <strong>Les Settons</strong> and <strong>Montsauche-les-Settons</strong> sides. Swimming is supervised in high season, with areas suited to children.</p><h2>On and around the water</h2><ul><li>Sailing, windsurfing, pedalos, canoeing and electric-boat hire.</li><li>Guided cruises aboard a tour boat.</li><li>The <strong>lakeside loop</strong> (about 13 km) on foot or by bike, largely shaded.</li><li>Renowned fishing (pike, zander, perch).</li></ul><h2>Good to know</h2><p>The site is very busy in July–August: arrive in the morning for easier parking and quiet. The shores offer restaurants, ice-cream stalls and rentals. Nearby, don’t miss the <strong>Saut de Gouloux</strong> waterfall, a few minutes away by car.</p>',
+      nl: '<p>Aangelegd in 1858 om het houtvlotten naar Parijs te reguleren, is het <strong>Lac des Settons</strong> nu de populairste zwemplek van het Morvan. De 360 hectare, omzoomd door bossen, trekken elke zomer gezinnen, vissers en watersporters.</p><h2>Waar zwemmen</h2><p>Langs het meer liggen meerdere ingerichte stranden, vooral aan de kant van <strong>Les Settons</strong> en <strong>Montsauche-les-Settons</strong>. In het hoogseizoen is er bewaakt zwemmen, met zones voor kinderen.</p><h2>Op en rond het water</h2><ul><li>Zeilen, surfen, waterfietsen, kanoën en elektrische bootjes huren.</li><li>Rondvaarten met uitleg aan boord van een rondvaartboot.</li><li>Het <strong>rondje om het meer</strong> (ongeveer 13 km) te voet of op de fiets, grotendeels schaduwrijk.</li><li>Befaamd viswater (snoek, snoekbaars, baars).</li></ul><h2>Handig om te weten</h2><p>In juli–augustus is het er erg druk: kom ’s ochtends voor parkeergemak en rust. Rond het meer zijn restaurants, ijssalons en verhuur. Vlakbij ligt de waterval <strong>Saut de Gouloux</strong>, op enkele minuten met de auto.</p>',
+    },
+  },
+  {
+    slug: 'fleurs-sauvages-morvan-printemps',
+    readTime: 6,
+    category: { fr: 'Nature', en: 'Nature', nl: 'Natuur' },
+    title: {
+      fr: 'Fleurs sauvages du Morvan : jonquilles, jacinthes et trésors des tourbières',
+      en: 'Wildflowers of the Morvan: daffodils, bluebells and peat-bog treasures',
+      nl: 'Wilde bloemen van het Morvan: narcissen, boshyacinten en hoogveenschatten',
+    },
+    excerpt: {
+      fr: 'Au printemps, prairies et sous-bois du Morvan se couvrent de fleurs. Petit guide pour les admirer sans les abîmer.',
+      en: 'In spring, the Morvan’s meadows and woodlands fill with flowers. A short guide to enjoying them without harm.',
+      nl: 'In het voorjaar kleuren de weiden en bossen van het Morvan vol bloemen. Een korte gids om ervan te genieten zonder schade.',
+    },
+    content: {
+      fr: '<p>Dès le mois d’avril, le <strong>Morvan</strong> se transforme en tableau fleuri. Le relief, les sols acides et le climat frais y favorisent une flore riche, parfois rare, que l’on découvre au fil des sentiers.</p><h2>Les vedettes du printemps</h2><ul><li>Les <strong>jonquilles</strong> (narcisses sauvages), qui tapissent les prairies d’altitude en avril.</li><li>Les <strong>jacinthes des bois</strong>, qui bleuissent les sous-bois de hêtres.</li><li>La digitale pourpre, les anémones et les orchidées sauvages en lisière.</li></ul><h2>Les tourbières, milieux précieux</h2><p>Le Morvan abrite de nombreuses <strong>tourbières</strong>, véritables réservoirs de biodiversité. On y trouve des plantes adaptées aux sols gorgés d’eau, comme la <strong>sphaigne</strong> et la rossolis (drosera), une petite plante carnivore protégée. Ces milieux fragiles se visitent sur sentiers balisés et passerelles.</p><h2>Observer sans déranger</h2><p>Beaucoup d’espèces sont protégées : on regarde, on photographie, mais on ne cueille pas. Restez sur les sentiers pour préserver les sols et les jeunes pousses. La Maison du Parc, à Saint-Brisson, propose un arboretum et des sentiers d’interprétation parfaits pour une première approche.</p>',
+      en: '<p>From April onwards, the <strong>Morvan</strong> turns into a flowering tableau. Its hills, acidic soils and cool climate favour a rich — sometimes rare — flora, best discovered along the trails.</p><h2>The stars of spring</h2><ul><li><strong>Wild daffodils</strong>, which carpet the upland meadows in April.</li><li><strong>Bluebells</strong>, which turn the beech woods blue.</li><li>Foxglove, anemones and wild orchids along the edges.</li></ul><h2>Peat bogs, precious habitats</h2><p>The Morvan has many <strong>peat bogs</strong>, true reservoirs of biodiversity. They host plants adapted to waterlogged soils, such as <strong>sphagnum moss</strong> and the sundew (drosera), a small protected carnivorous plant. These fragile sites are visited on waymarked paths and boardwalks.</p><h2>Watch without disturbing</h2><p>Many species are protected: look and photograph, but don’t pick. Stay on the paths to protect the soil and new shoots. The Park House at Saint-Brisson has an arboretum and interpretive trails, perfect for a first taste.</p>',
+      nl: '<p>Vanaf april verandert het <strong>Morvan</strong> in een bloementableau. Het reliëf, de zure bodem en het koele klimaat zorgen voor een rijke, soms zeldzame flora, het mooist te ontdekken langs de paden.</p><h2>De sterren van het voorjaar</h2><ul><li><strong>Wilde narcissen</strong>, die in april de hoger gelegen weiden bedekken.</li><li><strong>Boshyacinten</strong>, die de beukenbossen blauw kleuren.</li><li>Vingerhoedskruid, anemonen en wilde orchideeën langs de randen.</li></ul><h2>Hoogveen, kostbare natuur</h2><p>Het Morvan telt veel <strong>veengebieden</strong>, ware schatkamers van biodiversiteit. Er groeien planten die aangepast zijn aan drassige bodems, zoals <strong>veenmos</strong> en de zonnedauw (drosera), een klein beschermd vleesetend plantje. Deze kwetsbare gebieden bezoek je via bewegwijzerde paden en vlonderpaden.</p><h2>Kijken zonder te verstoren</h2><p>Veel soorten zijn beschermd: kijken en fotograferen mag, plukken niet. Blijf op de paden om bodem en jonge scheuten te sparen. Het Parkhuis in Saint-Brisson heeft een arboretum en leerpaden, ideaal voor een eerste kennismaking.</p>',
+    },
+  },
+  {
+    slug: 'automne-morvan-couleurs-feuillages',
+    readTime: 6,
+    category: { fr: 'Nature', en: 'Nature', nl: 'Natuur' },
+    title: {
+      fr: 'L’automne dans le Morvan : quand les forêts s’embrasent',
+      en: 'Autumn in the Morvan: when the forests catch fire',
+      nl: 'Herfst in het Morvan: wanneer de bossen in vuur en vlam staan',
+    },
+    excerpt: {
+      fr: 'En octobre, hêtres et chênes du Morvan virent à l’or et au rouge. Nos meilleurs spots pour admirer les couleurs.',
+      en: 'In October, the Morvan’s beeches and oaks turn gold and red. Our best spots to enjoy the colours.',
+      nl: 'In oktober kleuren de beuken en eiken van het Morvan goud en rood. Onze beste plekken voor de herfstkleuren.',
+    },
+    content: {
+      fr: '<p>Chaque automne, les vastes forêts de hêtres et de chênes du <strong>Morvan</strong> se parent de couleurs flamboyantes. De fin septembre à début novembre, la lumière rasante et les brumes matinales offrent des paysages spectaculaires.</p><h2>Les plus beaux points de vue</h2><ul><li>Les rives des grands lacs : <strong>lac des Settons</strong> et <strong>lac de Pannecière</strong>, où les forêts se reflètent dans l’eau.</li><li>Le <strong>Mont Beuvray</strong> (Bibracte) et ses hêtres tortueux séculaires.</li><li>Le chemin de halage du <strong>Canal du Nivernais</strong>, doré et paisible.</li><li>Les hauteurs de <strong>Château-Chinon</strong> et de <strong>Lormes</strong>, pour un panorama élargi.</li></ul><h2>Conseils de saison</h2><p>Partez tôt le matin pour les brumes et la lumière douce. Équipez-vous de bonnes chaussures : les sentiers peuvent être humides. L’automne est aussi la saison de la cueillette des champignons et des saveurs de gibier et de châtaignes dans les restaurants locaux — l’occasion d’allier balade et gastronomie.</p>',
+      en: '<p>Every autumn, the vast beech and oak forests of the <strong>Morvan</strong> take on blazing colours. From late September to early November, low light and morning mists create spectacular landscapes.</p><h2>The best viewpoints</h2><ul><li>The shores of the big lakes: <strong>Lac des Settons</strong> and <strong>Lac de Pannecière</strong>, where the forests mirror in the water.</li><li><strong>Mont Beuvray</strong> (Bibracte) and its ancient twisted beeches.</li><li>The towpath of the <strong>Canal du Nivernais</strong>, golden and peaceful.</li><li>The heights of <strong>Château-Chinon</strong> and <strong>Lormes</strong>, for a wider panorama.</li></ul><h2>Seasonal tips</h2><p>Set off early for the mists and soft light. Wear good shoes: paths can be damp. Autumn is also mushroom season and the time for game and chestnut flavours in local restaurants — a chance to combine a walk with good food.</p>',
+      nl: '<p>Elke herfst tooien de uitgestrekte beuken- en eikenbossen van het <strong>Morvan</strong> zich met vlammende kleuren. Van eind september tot begin november zorgen het lage licht en de ochtendnevels voor spectaculaire landschappen.</p><h2>De mooiste uitzichtpunten</h2><ul><li>De oevers van de grote meren: <strong>Lac des Settons</strong> en <strong>Lac de Pannecière</strong>, waar de bossen in het water weerspiegelen.</li><li>De <strong>Mont Beuvray</strong> (Bibracte) met zijn eeuwenoude kromme beuken.</li><li>Het jaagpad van het <strong>Canal du Nivernais</strong>, goudkleurig en rustig.</li><li>De hoogten van <strong>Château-Chinon</strong> en <strong>Lormes</strong>, voor een weids panorama.</li></ul><h2>Seizoenstips</h2><p>Vertrek vroeg voor de nevels en het zachte licht. Trek stevige schoenen aan: paden kunnen vochtig zijn. De herfst is ook paddenstoelenseizoen en de tijd voor wild- en kastanjegerechten in lokale restaurants — ideaal om een wandeling met lekker eten te combineren.</p>',
+    },
+  },
+  {
+    slug: 'villages-medievaux-nievre-printemps',
+    readTime: 6,
+    category: { fr: 'Patrimoine', en: 'Heritage', nl: 'Erfgoed' },
+    title: {
+      fr: 'Les plus beaux villages de la Nièvre et du Morvan',
+      en: 'The finest villages of the Nièvre and Morvan',
+      nl: 'De mooiste dorpen van de Nièvre en het Morvan',
+    },
+    excerpt: {
+      fr: 'Ruelles pavées, abbayes et maisons anciennes : tour d’horizon des bourgs de caractère à ne pas manquer.',
+      en: 'Cobbled lanes, abbeys and old houses: a tour of the characterful towns not to miss.',
+      nl: 'Geplaveide straatjes, abdijen en oude huizen: een rondgang langs de karaktervolle dorpen die je niet mag missen.',
+    },
+    content: {
+      fr: '<p>Au-delà de ses paysages, la <strong>Nièvre</strong> cultive un patrimoine de pierre remarquable. Voici quelques bourgs de caractère où le temps semble suspendu.</p><h2>À découvrir</h2><ul><li><strong>Donzy</strong> — ancienne baronnie aux maisons à pans de bois, avec son moulin à papier en activité.</li><li><strong>Moulins-Engilbert</strong> — « Petite cité de caractère » du Morvan, célèbre pour son marché au bétail charolais.</li><li><strong>La Charité-sur-Loire</strong> — cité du livre classée à l’UNESCO autour de son prieuré clunisien.</li><li><strong>Corbigny</strong> — ville-porte du Morvan, autour de son abbaye Saint-Léonard.</li><li><strong>Varzy</strong> et <strong>Tannay</strong> — petits bourgs authentiques, l’un avec son musée, l’autre avec son vignoble.</li></ul><h2>Comment en profiter</h2><p>Ces villages se prêtent à la flânerie : marchés, ateliers d’artisans, églises romanes et gothiques, terrasses au bord de l’eau. Beaucoup sont reliés par le <strong>Canal du Nivernais</strong> ou situés aux portes du Parc du Morvan, ce qui permet de combiner visite patrimoniale et balade nature. Renseignez-vous sur les jours de marché, souvent le meilleur moment pour sentir l’âme d’un lieu.</p>',
+      en: '<p>Beyond its landscapes, the <strong>Nièvre</strong> nurtures a remarkable stone heritage. Here are a few characterful towns where time seems to stand still.</p><h2>To discover</h2><ul><li><strong>Donzy</strong> — a former barony of half-timbered houses, with its working paper mill.</li><li><strong>Moulins-Engilbert</strong> — a Morvan “Petite cité de caractère”, famous for its Charolais cattle market.</li><li><strong>La Charité-sur-Loire</strong> — a UNESCO-listed book town around its Cluniac priory.</li><li><strong>Corbigny</strong> — a gateway town to the Morvan, around its Saint-Léonard abbey.</li><li><strong>Varzy</strong> and <strong>Tannay</strong> — authentic small towns, one with its museum, the other with its vineyard.</li></ul><h2>How to enjoy them</h2><p>These villages are made for strolling: markets, artisan workshops, Romanesque and Gothic churches, waterside terraces. Many are linked by the <strong>Canal du Nivernais</strong> or lie at the edge of the Morvan Park, so you can combine heritage with nature. Check market days — often the best time to feel the soul of a place.</p>',
+      nl: '<p>Naast haar landschappen koestert de <strong>Nièvre</strong> een opmerkelijk stenen erfgoed. Hier een paar karaktervolle dorpen waar de tijd lijkt stil te staan.</p><h2>Te ontdekken</h2><ul><li><strong>Donzy</strong> — voormalige baronie met vakwerkhuizen en een werkende papiermolen.</li><li><strong>Moulins-Engilbert</strong> — Morvan-“Petite cité de caractère”, bekend om zijn Charolais-veemarkt.</li><li><strong>La Charité-sur-Loire</strong> — UNESCO-boekenstad rond haar Cluniacenzer priorij.</li><li><strong>Corbigny</strong> — toegangsstadje tot het Morvan, rond de abdij Saint-Léonard.</li><li><strong>Varzy</strong> en <strong>Tannay</strong> — authentieke stadjes, de een met een museum, de ander met een wijngaard.</li></ul><h2>Hoe je ervan geniet</h2><p>Deze dorpen zijn gemaakt om te slenteren: markten, ambachtsateliers, Romaanse en gotische kerken, terrasjes aan het water. Veel liggen aan het <strong>Canal du Nivernais</strong> of aan de rand van het Morvan-park, zodat je erfgoed en natuur kunt combineren. Check de marktdagen — vaak hét moment om de ziel van een plek te proeven.</p>',
+    },
+  },
+  {
+    slug: 'vignobles-nivernais-automne-degustation',
+    readTime: 6,
+    category: { fr: 'Gastronomie', en: 'Food & wine', nl: 'Eten & wijn' },
+    title: {
+      fr: 'Les vins de la Nièvre : du Pouilly-Fumé aux coteaux confidentiels',
+      en: 'The wines of the Nièvre: from Pouilly-Fumé to hidden slopes',
+      nl: 'De wijnen van de Nièvre: van Pouilly-Fumé tot verborgen hellingen',
+    },
+    excerpt: {
+      fr: 'À l’ouest du département, le long de la Loire, se cache un vignoble réputé. Petit tour des appellations et des dégustations.',
+      en: 'In the west of the department, along the Loire, lies a renowned vineyard. A short tour of the appellations and tastings.',
+      nl: 'In het westen van het departement, langs de Loire, ligt een befaamde wijnstreek. Een korte rondgang langs de appellaties en proeverijen.',
+    },
+    content: {
+      fr: '<p>On l’oublie parfois, mais la <strong>Nièvre</strong> est aussi une terre de vins. À l’ouest du département, le long de la Loire, le vignoble du Centre-Loire voisine avec le Sancerrois.</p><h2>Les appellations à connaître</h2><ul><li>Le <strong>Pouilly-Fumé</strong> (cépage sauvignon), vin blanc sec et minéral, star de <strong>Pouilly-sur-Loire</strong>.</li><li>Le <strong>Pouilly-sur-Loire</strong>, plus rare, issu du cépage chasselas.</li><li>Les <strong>Coteaux du Giennois</strong>, à cheval sur la Nièvre et le Loiret.</li><li>Le <strong>Tannay</strong> (IGP), petit vignoble confidentiel au nord du département.</li></ul><h2>Quand et où déguster</h2><p>L’automne, après les vendanges de septembre, est une belle saison pour visiter les caves. De nombreux vignerons de Pouilly et des environs accueillent les visiteurs pour une dégustation commentée. On peut aussi longer le vignoble à vélo via <strong>La Loire à Vélo</strong>, en combinant l’itinéraire avec une étape à <strong>Cosne-Cours-sur-Loire</strong>.</p><p><em>À déguster avec modération ; prévoyez un conducteur désigné.</em></p>',
+      en: '<p>It’s sometimes forgotten, but the <strong>Nièvre</strong> is also wine country. In the west of the department, along the Loire, the Centre-Loire vineyard sits next to the Sancerre area.</p><h2>The appellations to know</h2><ul><li><strong>Pouilly-Fumé</strong> (Sauvignon), a dry, mineral white wine and the star of <strong>Pouilly-sur-Loire</strong>.</li><li><strong>Pouilly-sur-Loire</strong>, rarer, made from the Chasselas grape.</li><li>The <strong>Coteaux du Giennois</strong>, straddling the Nièvre and the Loiret.</li><li><strong>Tannay</strong> (IGP), a small, little-known vineyard in the north of the department.</li></ul><h2>When and where to taste</h2><p>Autumn, after the September harvest, is a fine season to visit the cellars. Many winegrowers in and around Pouilly welcome visitors for a guided tasting. You can also ride alongside the vineyard via <strong>La Loire à Vélo</strong>, combining the route with a stop at <strong>Cosne-Cours-sur-Loire</strong>.</p><p><em>Please taste in moderation; plan a designated driver.</em></p>',
+      nl: '<p>Men vergeet het soms, maar de <strong>Nièvre</strong> is ook wijnland. In het westen van het departement, langs de Loire, grenst de wijnstreek Centre-Loire aan het Sancerrois.</p><h2>De appellaties om te kennen</h2><ul><li><strong>Pouilly-Fumé</strong> (sauvignon), een droge, minerale witte wijn en de ster van <strong>Pouilly-sur-Loire</strong>.</li><li><strong>Pouilly-sur-Loire</strong>, zeldzamer, van de chasselasdruif.</li><li>De <strong>Coteaux du Giennois</strong>, op de grens van de Nièvre en het Loiret.</li><li><strong>Tannay</strong> (IGP), een kleine, onbekende wijngaard in het noorden van het departement.</li></ul><h2>Wanneer en waar proeven</h2><p>De herfst, na de oogst in september, is een mooi seizoen om de kelders te bezoeken. Veel wijnboeren in en rond Pouilly ontvangen bezoekers voor een proeverij met uitleg. Je kunt ook langs de wijngaard fietsen via <strong>La Loire à Vélo</strong>, gecombineerd met een stop in <strong>Cosne-Cours-sur-Loire</strong>.</p><p><em>Proef met mate; regel een bob.</em></p>',
+    },
+  },
+  {
+    slug: 'automne-morvan-champignons-forets',
+    readTime: 6,
+    category: { fr: 'Nature', en: 'Nature', nl: 'Natuur' },
+    title: {
+      fr: 'Cueillette des champignons dans le Morvan : conseils et prudence',
+      en: 'Mushroom foraging in the Morvan: tips and caution',
+      nl: 'Paddenstoelen plukken in het Morvan: tips en voorzichtigheid',
+    },
+    excerpt: {
+      fr: 'Cèpes, girolles et chanterelles peuplent les forêts morvandelles à l’automne. Nos conseils pour une cueillette responsable et sûre.',
+      en: 'Ceps, girolles and chanterelles fill the Morvan’s forests in autumn. Our tips for safe, responsible foraging.',
+      nl: 'Eekhoorntjesbrood, cantharellen en hanenkammen vullen de Morvan-bossen in de herfst. Onze tips voor veilig en verantwoord plukken.',
+    },
+    content: {
+      fr: '<p>Avec ses forêts de hêtres et de chênes et son climat humide, le <strong>Morvan</strong> est un terrain de prédilection pour les champignons. De septembre à novembre, les sous-bois regorgent de <strong>cèpes</strong>, <strong>girolles</strong>, chanterelles et pieds-de-mouton.</p><h2>Les règles d’or</h2><ul><li><strong>Ne ramassez que ce que vous identifiez avec certitude.</strong> En cas de doute, faites contrôler votre récolte par un pharmacien.</li><li>Utilisez un panier (jamais un sac plastique) pour laisser les spores se disperser.</li><li>Coupez ou dévissez délicatement le champignon sans retourner la litière.</li><li>Respectez les quantités raisonnables et la propriété privée.</li></ul><h2>Où et quand</h2><p>Les coins à champignons se transmettent discrètement… mais les forêts domaniales autour des grands lacs et du Parc offrent de belles possibilités après quelques jours de pluie suivis de douceur. Évitez les zones protégées et les bords de route.</p><h2>Attention</h2><p>Certaines espèces sont mortelles et ressemblent à des comestibles. Ne consommez jamais un champignon sans identification formelle. En cas de symptômes après un repas, contactez immédiatement un centre antipoison.</p>',
+      en: '<p>With its beech and oak forests and damp climate, the <strong>Morvan</strong> is prime mushroom country. From September to November, the undergrowth fills with <strong>ceps</strong>, <strong>girolles</strong>, chanterelles and hedgehog mushrooms.</p><h2>The golden rules</h2><ul><li><strong>Only pick what you can identify with certainty.</strong> If in doubt, have your haul checked by a pharmacist.</li><li>Use a basket (never a plastic bag) so spores can disperse.</li><li>Cut or gently twist the mushroom without disturbing the leaf litter.</li><li>Keep quantities reasonable and respect private property.</li></ul><h2>Where and when</h2><p>Good spots are shared discreetly… but the state forests around the big lakes and the Park offer fine possibilities after a few days of rain followed by mild weather. Avoid protected areas and roadsides.</p><h2>Caution</h2><p>Some species are deadly and resemble edible ones. Never eat a mushroom without formal identification. If symptoms appear after a meal, contact a poison control centre immediately.</p>',
+      nl: '<p>Met zijn beuken- en eikenbossen en vochtige klimaat is het <strong>Morvan</strong> een walhalla voor paddenstoelen. Van september tot november zit het struikgewas vol <strong>eekhoorntjesbrood</strong>, <strong>cantharellen</strong>, hanenkammen en schapenpootjes.</p><h2>De gouden regels</h2><ul><li><strong>Pluk alleen wat je met zekerheid herkent.</strong> Bij twijfel: laat je oogst controleren door een apotheker.</li><li>Gebruik een mand (nooit een plastic zak) zodat de sporen zich kunnen verspreiden.</li><li>Snijd of draai de paddenstoel voorzichtig los zonder de strooisellaag om te woelen.</li><li>Houd het bij redelijke hoeveelheden en respecteer privéterrein.</li></ul><h2>Waar en wanneer</h2><p>Goede plekjes worden discreet doorgegeven… maar de staatsbossen rond de grote meren en het Park bieden mooie kansen na een paar dagen regen gevolgd door zacht weer. Mijd beschermde gebieden en wegkanten.</p><h2>Let op</h2><p>Sommige soorten zijn dodelijk en lijken op eetbare. Eet nooit een paddenstoel zonder formele determinatie. Bij klachten na een maaltijd: neem meteen contact op met een antigifcentrum.</p>',
+    },
+  },
+];
